@@ -1,0 +1,14 @@
+'use strict';
+// Nama spesies, Bahasa Melayu. 100 entri; id sepadan dengan data/species/lv01.js .. lv10.js.
+PI.i18n.species.ms = {
+  ant: 'Semut', ladybug: 'Kumbang Kura-kura', housefly: 'Lalat Rumah', mosquito: 'Nyamuk', termite: 'Anai-anai', weevil: 'Kumbang Belalai', shrew: 'Cencurut', treefrog: 'Katak Pokok', gecko: 'Cicak', hummingbird: 'Burung Madu Kolibri',
+  grasshopper: 'Belalang', dragonfly: 'Pepatung', stagbeetle: 'Kumbang Rusa', mantis: 'Mentadak', cicada: 'Riang-riang', mouse: 'Tikus Mondok', sparrow: 'Burung Pipit', chameleon: 'Sesumpah', hermitcrab: 'Umang-umang', newt: 'Kadal Air',
+  rhinobeetle: 'Kumbang Badak', atlasmoth: 'Rama-rama Atlas', hornet: 'Tebuan', waterbug: 'Kepinding Air Gergasi', rat: 'Tikus', kingfisher: 'Burung Pekaka', mudskipper: 'Ikan Belacak', squirrel: 'Tupai', tarsier: 'Kera Hantu', compsognathus: 'Compsognathus',
+  goliathbeetle: 'Kumbang Goliath', stickinsect: 'Serangga Ranting', titanbeetle: 'Kumbang Titan', slowloris: 'Kongkang', mongoose: 'Cerpelai', colugo: 'Kubung', civet: 'Musang', hornbill: 'Burung Enggang', microraptor: 'Microraptor', psittacosaurus: 'Psittacosaurus',
+  herculesbeetle: 'Kumbang Hercules', gianthornet: 'Tebuan Gergasi', macaque: 'Kera', otter: 'Memerang', mousedeer: 'Kancil', pangolin: 'Tenggiling', beardedpig: 'Babi Berjanggut', velociraptor: 'Velociraptor', protoceratops: 'Protoceratops', oviraptor: 'Oviraptor',
+  atlasbeetle: 'Kumbang Atlas', meganeura: 'Meganeura', sunbear: 'Beruang Madu', cloudedleopard: 'Harimau Dahan', orangutan: 'Orang Utan', watermonitor: 'Biawak Air', dilophosaurus: 'Dilophosaurus', gallimimus: 'Gallimimus', pachycephalosaurus: 'Pachycephalosaurus', dimorphodon: 'Dimorphodon',
+  meganeuropsis: 'Meganeuropsis', saltwatercroc: 'Buaya Tembaga', tapir: 'Tapir Malaya', banteng: 'Banteng', python: 'Ular Sawa Batik', carnotaurus: 'Carnotaurus', parasaurolophus: 'Parasaurolophus', styracosaurus: 'Styracosaurus', pteranodon: 'Pteranodon', baryonyx: 'Baryonyx',
+  gigatitan: 'Gigatitan', elephant: 'Gajah Asia', sumatranrhino: 'Badak Sumatera', gaur: 'Seladang', allosaurus: 'Allosaurus', stegosaurus: 'Stegosaurus', triceratops: 'Triceratops', iguanodon: 'Iguanodon', ankylosaurus: 'Ankylosaurus', kentrosaurus: 'Kentrosaurus',
+  arthropleura: 'Arthropleura', paraceratherium: 'Paraceratherium', megatherium: 'Megatherium', tyrannosaurus: 'Tyrannosaurus', spinosaurus: 'Spinosaurus', giganotosaurus: 'Giganotosaurus', therizinosaurus: 'Therizinosaurus', quetzalcoatlus: 'Quetzalcoatlus', shantungosaurus: 'Shantungosaurus', amargasaurus: 'Amargasaurus',
+  palaeoloxodon: 'Palaeoloxodon', deinotherium: 'Deinotherium', elasmotherium: 'Elasmotherium', brachiosaurus: 'Brachiosaurus', argentinosaurus: 'Argentinosaurus', diplodocus: 'Diplodocus', apatosaurus: 'Apatosaurus', mamenchisaurus: 'Mamenchisaurus', dreadnoughtus: 'Dreadnoughtus', patagotitan: 'Patagotitan',
+};

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Pixel Island: eat lower-level creatures and evolve from level 1 to level 10.">
+<title>Pixel Island</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect width='16' height='16' fill='%23fff'/%3E%3Crect x='2' y='9' width='12' height='4' fill='%2330aaac'/%3E%3Crect x='4' y='7' width='8' height='4' fill='%23f0e9d2'/%3E%3Crect x='7' y='3' width='1' height='5' fill='%23705842'/%3E%3Crect x='5' y='2' width='5' height='2' fill='%234a844c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="src/ui/style.css">
+</head>
+<body>
+<div id="stage"><canvas id="c" aria-label="Pixel Island"></canvas></div>
+<div id="hud" hidden>
+  <div class="line"><span id="hud-level"></span><span id="hud-name"></span></div>
+  <div id="hud-pips" role="img"></div>
+</div>
+<div id="toasts" role="status" aria-live="polite"></div>
+<div id="stick-base" hidden></div><div id="stick-knob" hidden></div>
+<dialog id="screen" closedby="none" aria-labelledby="screen-title"></dialog>
+
+<!-- Load order matters: every file is a plain script that adds to the global PI object. All paths are relative. -->
+<script src="src/core/namespace.js"></script>
+<script src="src/core/config.js"></script>
+
+<!-- words -->
+<script src="data/i18n/ko.js"></script>
+<script src="data/i18n/en.js"></script>
+<script src="data/i18n/zh.js"></script>
+<script src="data/i18n/ms.js"></script>
+<script src="data/i18n/species/ko.js"></script>
+<script src="data/i18n/species/en.js"></script>
+<script src="data/i18n/species/zh.js"></script>
+<script src="data/i18n/species/ms.js"></script>
+<script src="src/i18n/i18n.js"></script>
+
+<!-- renderer -->
+<script src="src/gfx/screen.js"></script>
+<script src="src/gfx/color.js"></script>
+<script src="src/gfx/shapes.js"></script>
+<script src="src/gfx/box.js"></script>
+<script src="src/gfx/shadow.js"></script>
+<script src="src/gfx/outline.js"></script>
+<script src="src/gfx/wind.js"></script>
+<script src="src/gfx/marks.js"></script>
+
+<!-- creatures -->
+<script src="data/species/lv01.js"></script>
+<script src="data/species/lv02.js"></script>
+<script src="data/species/lv03.js"></script>
+<script src="data/species/lv04.js"></script>
+<script src="data/species/lv05.js"></script>
+<script src="data/species/lv06.js"></script>
+<script src="data/species/lv07.js"></script>
+<script src="data/species/lv08.js"></script>
+<script src="data/species/lv09.js"></script>
+<script src="data/species/lv10.js"></script>
+<script src="data/speeds.js"></script>
+<script src="src/creatures/palette.js"></script>
+<script src="src/creatures/builder.js"></script>
+<script src="src/creatures/bodies/hexapod.js"></script>
+<script src="src/creatures/bodies/winged.js"></script>
+<script src="src/creatures/bodies/worm.js"></script>
+<script src="src/creatures/bodies/serpent.js"></script>
+<script src="src/creatures/bodies/quadsmall.js"></script>
+<script src="src/creatures/bodies/quadlarge.js"></script>
+<script src="src/creatures/bodies/bird.js"></script>
+<script src="src/creatures/bodies/aquatic.js"></script>
+<script src="src/creatures/bodies/crustacean.js"></script>
+<script src="src/creatures/bodies/reptile.js"></script>
+<script src="src/creatures/bodies/biped.js"></script>
+<script src="src/creatures/bodies/quaddino.js"></script>
+<script src="src/creatures/bodies/longneck.js"></script>
+<script src="src/creatures/bodies/horned.js"></script>
+<script src="src/creatures/bodies/pterosaur.js"></script>
+
+<!-- world -->
+<script src="src/world/island.js"></script>
+<script src="src/world/flora.js"></script>
+<script src="src/world/props.js"></script>
+<script src="src/world/interactions.js"></script>
+<script src="src/world/maps/tanjung-aru.js"></script>
+<script src="src/world/maps/gaya-street.js"></script>
+<script src="src/world/maps/marine-park.js"></script>
+<script src="src/world/maps/mangrove.js"></script>
+<script src="src/world/maps/kinabalu.js"></script>
+<script src="src/world/map-cycle.js"></script>
+<script src="src/world/interactions/tanjung-aru/wave.js"></script>
+<script src="src/world/interactions/tanjung-aru/coconut-fall.js"></script>
+<script src="src/world/interactions/tanjung-aru/parasol.js"></script>
+<script src="src/world/interactions/tanjung-aru/beach-bar.js"></script>
+<script src="src/world/interactions/tanjung-aru/tide-pool.js"></script>
+<script src="src/world/interactions/gaya-street/food-stall.js"></script>
+<script src="src/world/interactions/gaya-street/handcart.js"></script>
+<script src="src/world/interactions/gaya-street/alley.js"></script>
+<script src="src/world/interactions/gaya-street/awning-bounce.js"></script>
+<script src="src/world/interactions/gaya-street/hawker.js"></script>
+<script src="src/world/interactions/marine-park/current.js"></script>
+<script src="src/world/interactions/marine-park/tide.js"></script>
+<script src="src/world/interactions/marine-park/pearl-clam.js"></script>
+<script src="src/world/interactions/marine-park/jellyfish.js"></script>
+<script src="src/world/interactions/marine-park/boat-ride.js"></script>
+<script src="src/world/interactions/mangrove/firefly.js"></script>
+<script src="src/world/interactions/mangrove/mud-pit.js"></script>
+<script src="src/world/interactions/mangrove/rotten-bridge.js"></script>
+<script src="src/world/interactions/mangrove/tree-rest.js"></script>
+<script src="src/world/interactions/mangrove/slippery-mud.js"></script>
+<script src="src/world/interactions/kinabalu/cloud-platform.js"></script>
+<script src="src/world/interactions/kinabalu/granite-wall.js"></script>
+<script src="src/world/interactions/kinabalu/fog.js"></script>
+<script src="src/world/interactions/kinabalu/high-altitude.js"></script>
+<script src="src/world/interactions/kinabalu/summit-flag.js"></script>
+
+<!-- game -->
+<script src="src/core/state.js"></script>
+<script src="src/creatures/senses.js"></script>
+<script src="src/behaviors/wander.js"></script>
+<script src="src/behaviors/skittish.js"></script>
+<script src="src/behaviors/ambush.js"></script>
+<script src="src/behaviors/charge.js"></script>
+<script src="src/behaviors/flock.js"></script>
+<script src="src/behaviors/erratic.js"></script>
+<script src="src/behaviors/glide.js"></script>
+<script src="src/behaviors/lurk.js"></script>
+<script src="src/core/input.js"></script>
+<script src="src/core/rules.js"></script>
+<script src="src/core/loop.js"></script>
+<script src="src/ui/stars.js"></script>
+<script src="src/ui/toast.js"></script>
+<script src="src/ui/hud.js"></script>
+<script src="src/ui/modal.js"></script>
+<script src="src/ui/language-select.js"></script>
+<script src="src/ui/screens.js"></script>
+<script src="src/core/boot.js"></script>
+</body>
+</html>

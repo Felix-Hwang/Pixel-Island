@@ -1,0 +1,14 @@
+'use strict';
+// Species names, English. 100 entries; ids match data/species/lv01.js .. lv10.js.
+PI.i18n.species.en = {
+  ant: 'Ant', ladybug: 'Ladybug', housefly: 'Housefly', mosquito: 'Mosquito', termite: 'Termite', weevil: 'Weevil', shrew: 'Shrew', treefrog: 'Tree Frog', gecko: 'Gecko', hummingbird: 'Hummingbird',
+  grasshopper: 'Grasshopper', dragonfly: 'Dragonfly', stagbeetle: 'Stag Beetle', mantis: 'Praying Mantis', cicada: 'Cicada', mouse: 'Mouse', sparrow: 'Sparrow', chameleon: 'Chameleon', hermitcrab: 'Hermit Crab', newt: 'Newt',
+  rhinobeetle: 'Rhinoceros Beetle', atlasmoth: 'Atlas Moth', hornet: 'Hornet', waterbug: 'Giant Water Bug', rat: 'Rat', kingfisher: 'Kingfisher', mudskipper: 'Mudskipper', squirrel: 'Squirrel', tarsier: 'Tarsier', compsognathus: 'Compsognathus',
+  goliathbeetle: 'Goliath Beetle', stickinsect: 'Stick Insect', titanbeetle: 'Titan Beetle', slowloris: 'Slow Loris', mongoose: 'Mongoose', colugo: 'Colugo', civet: 'Civet', hornbill: 'Hornbill', microraptor: 'Microraptor', psittacosaurus: 'Psittacosaurus',
+  herculesbeetle: 'Hercules Beetle', gianthornet: 'Giant Hornet', macaque: 'Macaque', otter: 'Otter', mousedeer: 'Mouse-deer', pangolin: 'Pangolin', beardedpig: 'Bearded Pig', velociraptor: 'Velociraptor', protoceratops: 'Protoceratops', oviraptor: 'Oviraptor',
+  atlasbeetle: 'Atlas Beetle', meganeura: 'Meganeura', sunbear: 'Sun Bear', cloudedleopard: 'Clouded Leopard', orangutan: 'Orangutan', watermonitor: 'Water Monitor', dilophosaurus: 'Dilophosaurus', gallimimus: 'Gallimimus', pachycephalosaurus: 'Pachycephalosaurus', dimorphodon: 'Dimorphodon',
+  meganeuropsis: 'Meganeuropsis', saltwatercroc: 'Saltwater Crocodile', tapir: 'Malayan Tapir', banteng: 'Banteng', python: 'Reticulated Python', carnotaurus: 'Carnotaurus', parasaurolophus: 'Parasaurolophus', styracosaurus: 'Styracosaurus', pteranodon: 'Pteranodon', baryonyx: 'Baryonyx',
+  gigatitan: 'Gigatitan', elephant: 'Asian Elephant', sumatranrhino: 'Sumatran Rhinoceros', gaur: 'Gaur', allosaurus: 'Allosaurus', stegosaurus: 'Stegosaurus', triceratops: 'Triceratops', iguanodon: 'Iguanodon', ankylosaurus: 'Ankylosaurus', kentrosaurus: 'Kentrosaurus',
+  arthropleura: 'Arthropleura', paraceratherium: 'Paraceratherium', megatherium: 'Megatherium', tyrannosaurus: 'Tyrannosaurus', spinosaurus: 'Spinosaurus', giganotosaurus: 'Giganotosaurus', therizinosaurus: 'Therizinosaurus', quetzalcoatlus: 'Quetzalcoatlus', shantungosaurus: 'Shantungosaurus', amargasaurus: 'Amargasaurus',
+  palaeoloxodon: 'Palaeoloxodon', deinotherium: 'Deinotherium', elasmotherium: 'Elasmotherium', brachiosaurus: 'Brachiosaurus', argentinosaurus: 'Argentinosaurus', diplodocus: 'Diplodocus', apatosaurus: 'Apatosaurus', mamenchisaurus: 'Mamenchisaurus', dreadnoughtus: 'Dreadnoughtus', patagotitan: 'Patagotitan',
+};

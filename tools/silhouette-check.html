@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pixel Island · silhouette check</title>
+<style>
+  body { margin: 16px; font: 13px/1.4 ui-monospace, Consolas, Menlo, monospace; color: #1c1b19; background: #fff; }
+  canvas { image-rendering: pixelated; }
+  #c { display: none; }
+  #sheet { display: block; max-width: 100%; }
+  .bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 12px; }
+  button { font: inherit; padding: 6px 10px; border: 1px solid #1c1b19; background: #fff; cursor: pointer; }
+  button[aria-pressed="true"] { background: #1c1b19; color: #fff; }
+  table { border-collapse: collapse; margin-top: 12px; }
+  td, th { padding: 2px 10px 2px 0; text-align: left; }
+  .bad { color: #b5392b; } .ok { color: #2f7a43; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <b>Silhouette check</b>
+  <button id="mode-still" aria-pressed="true">still</button>
+  <button id="mode-walk" aria-pressed="false">walk</button>
+  <button id="mode-run" aria-pressed="false">run</button>
+  <button id="turn" aria-pressed="false">turn through 8 facings</button>
+  <button id="shadow" aria-pressed="false">shadow only</button>
+  <span id="summary"></span>
+</div>
+<canvas id="c"></canvas>
+<canvas id="sheet"></canvas>
+<div id="report"></div>
+
+<script src="../src/core/namespace.js"></script>
+<script src="../src/core/config.js"></script>
+<script src="../src/gfx/screen.js"></script>
+<script src="../src/gfx/color.js"></script>
+<script src="../src/gfx/shapes.js"></script>
+<script src="../src/gfx/box.js"></script>
+<script src="../src/gfx/shadow.js"></script>
+<script src="../src/gfx/outline.js"></script>
+<script src="../src/gfx/wind.js"></script>
+<script src="../src/gfx/marks.js"></script>
+<script src="../data/i18n/species/en.js"></script>
+<script src="../data/species/lv01.js"></script>
+<script src="../data/species/lv02.js"></script>
+<script src="../data/species/lv03.js"></script>
+<script src="../data/species/lv04.js"></script>
+<script src="../data/species/lv05.js"></script>
+<script src="../data/species/lv06.js"></script>
+<script src="../data/species/lv07.js"></script>
+<script src="../data/species/lv08.js"></script>
+<script src="../data/species/lv09.js"></script>
+<script src="../data/species/lv10.js"></script>
+<script src="../data/speeds.js"></script>
+<script src="../src/creatures/palette.js"></script>
+<script src="../src/creatures/builder.js"></script>
+<script src="../src/creatures/bodies/hexapod.js"></script>
+<script src="../src/creatures/bodies/winged.js"></script>
+<script src="../src/creatures/bodies/worm.js"></script>
+<script src="../src/creatures/bodies/serpent.js"></script>
+<script src="../src/creatures/bodies/quadsmall.js"></script>
+<script src="../src/creatures/bodies/quadlarge.js"></script>
+<script src="../src/creatures/bodies/bird.js"></script>
+<script src="../src/creatures/bodies/aquatic.js"></script>
+<script src="../src/creatures/bodies/crustacean.js"></script>
+<script src="../src/creatures/bodies/reptile.js"></script>
+<script src="../src/creatures/bodies/biped.js"></script>
+<script src="../src/creatures/bodies/quaddino.js"></script>
+<script src="../src/creatures/bodies/longneck.js"></script>
+<script src="../src/creatures/bodies/horned.js"></script>
+<script src="../src/creatures/bodies/pterosaur.js"></script>
+<script>
+'use strict';
+// Renders every species alone on flat sand, reads its shadow from the shadow mask, and compares every pair.
+// Same level: the shadows must differ by at least 15%. Different levels: at least 8%.
+(() => {
+  const G = PI.gfx, KIND = G.KIND, W = 360, H = 280;
+  const CELL_W = 112, CELL_H = 88, SCALE = 2, COLS = 10, SAME = .15, CROSS = .08;
+  const X0 = W / 2 - 46, Y0 = H / 2 - 62;           // crop of the frame that holds one creature
+  G.init(document.getElementById('c'));
+  G.setScene({});
+  G.setMap(W, H); G.setView(W, H); G.toView();     // one small frame, no scrolling
+  const sheet = document.getElementById('sheet'), sctx = sheet.getContext('2d');
+  sheet.width = COLS * CELL_W * SCALE; sheet.height = 10 * CELL_H * SCALE;
+  sheet.style.width = sheet.width + 'px';
+  sctx.imageSmoothingEnabled = false;
+  const SAND = [[214, 190, 148], [222, 199, 156], [229, 207, 164]].map(c => G.pack(...c));
+  const list = [];
+  for (let lv = 1; lv <= 10; lv++) PI.species['lv' + lv].forEach((sp, n) => list.push({ sp, lv, n }));
+  const state = { mode: 'still', turn: false, shadowOnly: false, time: 0 };
+
+  function ground() {
+    G.clear();
+    for (let py = 0; py < H; py++) for (let px = 0; px < W; px++) {
+      const i = py * W + px;
+      G.col[i] = G.pick(SAND, G.noise(px * .08, py * .16), px, py);
+      G.kind[i] = KIND.GROUND;
+      G.dep[i] = G.depthOf(G.toGround(px + .5, py + .5).y, 0);
+    }
+  }
+  function render(item, face, time) {
+    ground();
+    const c = {
+      x: 0, y: 0, face, k: PI.config.sizeOf(item.lv), sp: item.sp, color: PI.palette.order[(item.n + item.lv) % 7], seed: item.n,
+      moving: state.mode !== 'still', running: state.mode === 'run', gaitQ: state.mode === 'run' ? 1 : .4,
+      gaitPhase: (time * (state.mode === 'run' ? 3.1 : 2) * (PI.bodies[item.sp.body].cadence || 1)) % 1,
+    };
+    PI.builder.draw(c, time);
+    const mask = new Uint8Array(CELL_W * CELL_H);
+    for (let y = 0; y < CELL_H; y++) for (let x = 0; x < CELL_W; x++) mask[y * CELL_W + x] = G.mask[(Y0 + y) * W + X0 + x] ? 1 : 0;
+    if (state.shadowOnly) {
+      for (let i = 0; i < G.col.length; i++) G.col[i] = G.mask[i] ? G.pack(40, 38, 60) : 0xffffffff;
+      G.mask.fill(0);
+    } else {
+      G.applyShadows();
+      G.outline(KIND.BODY);
+    }
+    G.present();
+    return mask;
+  }
+  function drawAll(time) {
+    const face = state.turn ? (Math.floor(time / 1.2) % 8) * Math.PI / 4 : Math.PI / 4;
+    const masks = [];
+    sctx.fillStyle = '#fff';
+    sctx.fillRect(0, 0, sheet.width, sheet.height);
+    list.forEach((item, idx) => {
+      masks.push(render(item, face, time));
+      const cx = (idx % COLS) * CELL_W * SCALE, cy = Math.floor(idx / COLS) * CELL_H * SCALE;
+      sctx.drawImage(G.canvas, X0, Y0, CELL_W, CELL_H, cx, cy, CELL_W * SCALE, CELL_H * SCALE);
+      sctx.fillStyle = '#1c1b19';
+      sctx.font = '10px ui-monospace, Consolas, monospace';
+      sctx.fillText(item.lv + ' ' + item.sp.id, cx + 3, cy + 11);
+    });
+    return masks;
+  }
+  function compare(masks) {
+    const bad = [];
+    let worstSame = 1, worstCross = 1;
+    for (let a = 0; a < list.length; a++) for (let b = a + 1; b < list.length; b++) {
+      let diff = 0, union = 0;
+      const A = masks[a], B = masks[b];
+      for (let i = 0; i < A.length; i++) { if (A[i] | B[i]) union++; if (A[i] ^ B[i]) diff++; }
+      const d = union ? diff / union : 0, same = list[a].lv === list[b].lv;
+      if (same) worstSame = Math.min(worstSame, d); else worstCross = Math.min(worstCross, d);
+      if (d < (same ? SAME : CROSS)) bad.push({ a: list[a], b: list[b], d, same });
+    }
+    bad.sort((p, q) => p.d - q.d);
+    document.getElementById('summary').innerHTML = (bad.length ? '<span class="bad">' : '<span class="ok">') + bad.length + ' pairs below the limit</span>' +
+      ' · closest same-level pair ' + (worstSame * 100).toFixed(1) + '% · closest cross-level pair ' + (worstCross * 100).toFixed(1) + '%';
+    document.getElementById('report').innerHTML = bad.length
+      ? '<table><tr><th>pair</th><th>levels</th><th>difference</th><th>limit</th></tr>' + bad.map(p =>
+        '<tr><td>' + p.a.sp.id + ' / ' + p.b.sp.id + '</td><td>' + p.a.lv + ' / ' + p.b.lv + '</td><td class="bad">' + (p.d * 100).toFixed(1) + '%</td><td>' + (p.same ? SAME : CROSS) * 100 + '%</td></tr>').join('') + '</table>'
+      : '';
+    return { bad: bad.map(p => [p.a.sp.id, p.b.sp.id, +(p.d * 100).toFixed(1)]), worstSame, worstCross };
+  }
+  let raf = 0;
+  function loop(now) {
+    state.time = now / 1000;
+    drawAll(state.time);
+    raf = requestAnimationFrame(loop);
+  }
+  function refresh() {
+    cancelAnimationFrame(raf);
+    if (state.mode === 'still' && !state.turn) PI.tools.silhouette = compare(drawAll(0));
+    else raf = requestAnimationFrame(loop);
+  }
+  for (const mode of ['still', 'walk', 'run']) {
+    document.getElementById('mode-' + mode).addEventListener('click', () => {
+      state.mode = mode;
+      for (const m of ['still', 'walk', 'run']) document.getElementById('mode-' + m).setAttribute('aria-pressed', String(m === mode));
+      refresh();
+    });
+  }
+  for (const [id, key] of [['turn', 'turn'], ['shadow', 'shadowOnly']]) {
+    document.getElementById(id).addEventListener('click', e => {
+      state[key] = !state[key];
+      e.currentTarget.setAttribute('aria-pressed', String(state[key]));
+      refresh();
+    });
+  }
+  refresh();
+})();
+</script>
+</body>
+</html>

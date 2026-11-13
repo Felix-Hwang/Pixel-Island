@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pixel Island · i18n check</title>
+<style>
+  body { margin: 16px; font: 13px/1.5 ui-monospace, Consolas, Menlo, monospace; color: #1c1b19; background: #fff; }
+  h1 { font-size: 15px; }
+  .bad { color: #b5392b; } .ok { color: #2f7a43; }
+  li { margin: 2px 0; }
+</style>
+</head>
+<body>
+<h1>i18n check</h1>
+<div id="report"></div>
+
+<script src="../src/core/namespace.js"></script>
+<script src="../data/i18n/ko.js"></script>
+<script src="../data/i18n/en.js"></script>
+<script src="../data/i18n/zh.js"></script>
+<script src="../data/i18n/ms.js"></script>
+<script src="../data/i18n/species/ko.js"></script>
+<script src="../data/i18n/species/en.js"></script>
+<script src="../data/i18n/species/zh.js"></script>
+<script src="../data/i18n/species/ms.js"></script>
+<script src="../data/species/lv01.js"></script>
+<script src="../data/species/lv02.js"></script>
+<script src="../data/species/lv03.js"></script>
+<script src="../data/species/lv04.js"></script>
+<script src="../data/species/lv05.js"></script>
+<script src="../data/species/lv06.js"></script>
+<script src="../data/species/lv07.js"></script>
+<script src="../data/species/lv08.js"></script>
+<script src="../data/species/lv09.js"></script>
+<script src="../data/species/lv10.js"></script>
+<script src="../data/speeds.js"></script>
+<script>
+'use strict';
+// Checks that the four language files agree: the same keys, the same {placeholders}, a name for each of the
+// 100 species in every language, and a speed for every species. English is the reference.
+(() => {
+  const LANGS = ['ko', 'en', 'zh', 'ms'], problems = [], notes = [];
+  const holders = s => (String(s).match(/\{\w+\}/g) || []).sort().join(' ');
+  const ref = PI.i18n.en;
+  for (const l of LANGS) {
+    const table = PI.i18n[l];
+    if (!table) { problems.push(l + ': strings file missing'); continue; }
+    for (const key of Object.keys(ref)) {
+      if (table[key] == null || table[key] === '') problems.push(l + ': missing key ' + key);
+      else if (holders(table[key]) !== holders(ref[key])) problems.push(l + ': placeholders differ in ' + key + ' (' + (holders(table[key]) || 'none') + ' vs ' + (holders(ref[key]) || 'none') + ')');
+    }
+    for (const key of Object.keys(table)) if (ref[key] == null) problems.push(l + ': extra key ' + key);
+    notes.push(l + ': ' + Object.keys(table).length + ' strings');
+  }
+  const ids = PI.allSpecies().map(s => s.id);
+  if (ids.length !== 100) problems.push('species count is ' + ids.length + ', expected 100');
+  const seen = new Set();
+  for (const id of ids) { if (seen.has(id)) problems.push('duplicate species id ' + id); seen.add(id); }
+  for (let lv = 1; lv <= 10; lv++) if ((PI.species['lv' + lv] || []).length !== 10) problems.push('level ' + lv + ' has ' + (PI.species['lv' + lv] || []).length + ' species, expected 10');
+  for (const l of LANGS) {
+    const names = PI.i18n.species[l] || {};
+    for (const id of ids) if (!names[id]) problems.push(l + ': no name for species ' + id);
+    for (const id of Object.keys(names)) if (!seen.has(id)) problems.push(l + ': name for unknown species ' + id);
+    notes.push(l + ': ' + Object.keys(names).length + ' species names');
+  }
+  for (const id of ids) if (!PI.speeds[id]) problems.push('no speed for species ' + id);
+  for (const id of Object.keys(PI.speeds)) if (!seen.has(id)) problems.push('speed for unknown species ' + id);
+  for (const key of ['tanjung-aru', 'gaya-street', 'marine-park', 'mangrove', 'kinabalu']) if (!ref['map.' + key]) problems.push('en: no map name map.' + key);
+
+  PI.tools.i18n = { problems, notes };
+  document.getElementById('report').innerHTML =
+    (problems.length ? '<p class="bad">' + problems.length + ' problem(s)</p><ul>' + problems.map(p => '<li class="bad">' + p + '</li>').join('') + '</ul>'
+      : '<p class="ok">All four languages agree. No problems.</p>') +
+    '<ul>' + notes.map(n => '<li>' + n + '</li>').join('') + '</ul>';
+})();
+</script>
+</body>
+</html>
