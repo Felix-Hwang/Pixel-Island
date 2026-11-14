@@ -1,9 +1,12 @@
 'use strict';
 // Map 1: Tanjung Aru Beach at sunset. A wide beach: dunes along the back, warm sand, palm silhouettes with
 // long shadows, and the glowing sea along the front. The sea is shallow; it can be waded all the way to the edge.
+// From the real beach: the casuarina (aru) trees behind the sand, a timber jetty, fishing boats pulled up on the
+// shore, and the path of the setting sun across the water.
 (() => {
-  const G = PI.gfx, F = PI.flora, P = PI.props, I = PI.island;
+  const G = PI.gfx, F = PI.flora, P = PI.props, I = PI.island, M = PI.landmarks;
   const pack = c => G.pack(c[0], c[1], c[2]);
+  const JETTY = { x: -14, y: 50.5, hx: 1, hy: 7.5 }, SUN_X = 12; // the sun sets straight out from x = 12
   const SAND = [[222, 160, 118], [232, 174, 126], [240, 188, 136], [248, 202, 148]].map(pack);
   const WET = [[168, 116, 110], [184, 130, 116], [198, 144, 122]].map(pack);
   const SEA = [[80, 68, 132], [96, 80, 146], [116, 94, 156], [140, 108, 162], [170, 124, 160]].map(pack);
@@ -35,7 +38,8 @@
       if (y > shore) {
         const depth = y - shore;
         if (depth < .45 && G.rand2(wx, wy) > .3) return FOAM;
-        if (G.noise(x * 1.1 + 5, y * 3.2) > .69) return GLINT[G.rand2(wx, wy) > .6 ? 1 : 0]; // the low sun on the water
+        const sun = Math.max(0, 1 - Math.abs(x - SUN_X) / 13) * .2; // more glitter in the path of the sun
+        if (G.noise(x * 1.1 + 5, y * 3.2) > .69 - sun) return GLINT[G.rand2(wx, wy) > .6 - sun ? 1 : 0]; // the low sun on the water
         return G.pick(SEA, .85 - depth * .035 + (G.noise(x * .5, y * 1.5 + 9) - .5) * .5, wx, wy);
       }
       if (y > shore - 1.6) return G.pick(WET, G.noise(x * .8, y * 1.2) + (y - shore + 1.6) * .2, wx, wy);
@@ -54,6 +58,11 @@
         map.crowns.push(F.palm(p.x, p.y, 4 + G.rand2(n, 3) * .9, (n % 2 ? 1 : -1) * (.5 + G.rand2(n, 5) * .4), n * 1.7, SUNSET_PALM));
         I.addSolid({ x: p.x, y: p.y, r: .3 });
       });
+      M.planks(JETTY.x, JETTY.y, JETTY.hx, JETTY.hy, [150, 108, 88], false, 2.5);
+      for (const side of [-1, 1]) M.lamp(JETTY.x + side * 1.25, JETTY.y + JETTY.hy - .4);
+      [[21, 0, .25, [70, 130, 190]], [27.5, .6, -.2, [226, 92, 84]], [-31, .2, .15, [240, 232, 214]]].forEach(([x, dy, yaw, rgb]) =>
+        I.addSolid(P.boat(x, shoreAt(x) - 3 + dy, yaw, rgb))); // fishing boats pulled up on the sand
+      I.scatter(18, 140, 7, (x, y) => y < duneAt(x) + 5, (x, y, n) => M.casuarina(x, y, 5.4 + (n % 3) * .7, n));
       I.scatter(12, 210, 8, (x, y) => y > -38 && y < shoreAt(x) - 6, (x, y, n) => // beach towels
         P.box({ x, y, z0: 0, z1: .06, hx: .9, hy: .5, yaw: (n % 5 - 2) * .2 }, CLOTH[n % CLOTH.length], { grain: .3, topTone: 3.2 }));
       const log = G.ramp([120, 86, 70]);

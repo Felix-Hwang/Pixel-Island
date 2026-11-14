@@ -1,29 +1,46 @@
 'use strict';
-// Notice cards on the right, shown when a round starts and on every evolution. Cards queue and show one at a time.
+// Notices at the top right, directly under the name of the map.
+// show() is for the start of a round and for evolutions: the cards queue and show one at a time.
+// flash() is for eating: one short card that the next one replaces, so quick meals never pile up.
 (() => {
   const queue = [];
-  let card = null, timer = 0;
+  let card = null, timer = 0, quick = null, quickTimer = 0;
+  const box = () => document.getElementById('toasts');
+  const make = (text, cls) => {
+    const el = document.createElement('div');
+    el.className = cls;
+    el.textContent = text;
+    return el;
+  };
   function close() {
     clearTimeout(timer);
     if (card) card.remove();
     card = null;
   }
+  function closeQuick() {
+    clearTimeout(quickTimer);
+    if (quick) quick.remove();
+    quick = null;
+  }
   function pump() {
     if (card || !queue.length) return;
-    const { title, sub } = queue.shift(), b = document.createElement('b'), span = document.createElement('span');
-    card = document.createElement('div');
-    card.className = 'toast';
-    b.textContent = title; span.textContent = sub || '';
-    card.append(b, span);
-    document.getElementById('toasts').append(card);
+    card = make(queue.shift(), 'toast');
+    box().prepend(card);
     timer = setTimeout(() => {
       card.classList.add('out');
       timer = setTimeout(() => { close(); pump(); }, 220);
     }, PI.config.toastMs);
   }
   PI.ui.toast = {
-    show(title, sub) { queue.push({ title, sub }); pump(); },
-    // at the start of a new round, remove the card on screen and empty the queue
-    clear() { queue.length = 0; close(); },
+    show(text) { queue.push(text); pump(); },
+    flash(text) {
+      if (!PI.settings.on('notice')) return;
+      closeQuick();
+      quick = make(text, 'toast quick');
+      box().append(quick);
+      quickTimer = setTimeout(closeQuick, PI.config.eatToastMs);
+    },
+    // at the start of a new round, remove the cards on screen and empty the queue
+    clear() { queue.length = 0; close(); closeQuick(); },
   };
 })();

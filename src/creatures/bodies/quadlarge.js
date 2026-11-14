@@ -10,8 +10,10 @@ PI.bodies.quadlarge = {
     const s = R.s, L = s.len, leg = s.legLen, bulk = s.bulky ? 1.2 : s.thin ? .7 : 1, rb = .24 * bulk;
     const h = leg + rb * .6;
     const rear = [-L * .38, 0, h], shoulder = [L * .3, 0, h + (s.arms ? .12 : 0)];
-    R.belly(rear, shoulder, rb, rb * 1.05);
-    if (s.saddle) R.bone([-L * .3, 0, h + .01], [L * .02, 0, h + .02], rb * 1.04, rb * 1.06, 'light'); // a pale band round the middle
+    R.torso(rear, shoulder, rb, rb * 1.05);
+    if (s.saddle) R.torso([-L * .3, 0, h + .01], [L * .02, 0, h + .02], rb * 1.04, rb * 1.06, .38, 'light'); // a pale band round the middle
+    R.haunch(shoulder[0] - .04, shoulder[2] + rb * .1, rb * .82, rb * .62); // shoulders
+    R.haunch(rear[0] + .05, h + rb * .05, rb * .86, rb * .58);              // haunches
     if (s.spots) for (const [f, side] of [[-.28, 1], [-.14, -1], [0, 1], [.14, -1], [.24, 1], [-.02, -1]]) R.ball([f * L, side * rb * .5, h + rb * .78], .07, 'ink');
     if (s.hump) R.ball([L * .12, 0, h + rb * .5], rb * (.7 + s.hump * .35));
     if (s.chest) R.ball([shoulder[0] + rb * .55, 0, h - rb * .35], rb * .5, 'light');
@@ -43,7 +45,7 @@ PI.bodies.quadlarge = {
     const legs = [[L * .26, 1, 0, 0], [L * .26, -1, .5, .1], [-L * .32, 1, .5, .5], [-L * .32, -1, 0, .6]];
     for (const [f, side, ph, phRun] of legs) {
       const arm = f > 0 && s.arms;
-      R.leg([f, side * rb * .55, h * .92], [f + (arm ? .12 : 0), side * (rb * .6 + (arm ? .12 * s.arms : .02))], {
+      R.leg([f, side * rb * .95, h * .92], [f + (arm ? .12 : 0), side * (rb * 1.05 + (arm ? .12 * s.arms : .02))], {
         ph, phRun, r: lr * (arm ? 1.15 : 1), stride, knee: [f > 0 ? .03 : -.07, 0, .02],
         sock: s.socks ? 'light' : null, foot: arm ? 'bone' : 'ink', footR: lr * .95, // hooves, or claws on a long arm
       });

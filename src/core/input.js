@@ -31,7 +31,7 @@
     if (pointer) {
       const dx = pointer.x - pointer.x0, dy = pointer.y - pointer.y0, len = Math.hypot(dx, dy);
       if (len < DEAD) { In.x = 0; In.y = 0; return In; }
-      // the ground is seen at 30 degrees, so a screen direction is stretched along y to get the world direction
+      // the ground is seen at an angle, so a screen direction is stretched along y to get the world direction
       const wx = dx, wy = dy / PI.gfx.SIN, wl = Math.hypot(wx, wy), mag = Math.min(1, (len - DEAD) / (FULL - DEAD));
       In.x = wx / wl * mag; In.y = wy / wl * mag;
       return In;

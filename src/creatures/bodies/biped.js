@@ -9,7 +9,8 @@ PI.bodies.biped = {
     const s = R.s, L = s.len, leg = s.legLen || s.h, rb = .2 + (s.head > .8 ? .04 : 0) + (s.belly ? .06 : 0);
     const hipZ = leg + rb * .3;
     const hip = [-L * .08, 0, hipZ], chest = [L * .22, 0, hipZ + .06 + (s.belly ? .12 : 0)];
-    R.belly(hip, chest, rb * 1.05, rb * .95);
+    R.torso(hip, chest, rb * 1.05, rb * .95, .26);
+    R.haunch(hip[0], hipZ - .02, rb * .8, rb * .62); // thighs
     const hr = .1 + s.head * .11, head = [chest[0] + .1 + s.neck * .3, 0, chest[2] + .05 + s.neck * .5];
     R.belly(chest, head, rb * .6, hr * .8); // neck and throat
     const jaw = [head[0] + hr * .6 + s.head * .22 + (s.snout ? .2 : 0), 0, head[2] - hr * .25];
@@ -34,7 +35,7 @@ PI.bodies.biped = {
         R.bone(sh, hand, .06, .05, 'dark');
         if (s.claw) R.bone(hand, [hand[0] + .06 * s.claw, hand[1], hand[2] - .1 * s.claw], .04, .03, 'bone');
       }
-      R.leg([hip[0], side * rb * .5, hipZ - .05], [hip[0] + .05, side * rb * .55], {
+      R.leg([hip[0], side * rb * .8, hipZ - .05], [hip[0] + .05, side * rb * .95], {
         ph: side > 0 ? 0 : .5, r: .08 + (rb - .2) * .3, r0: .13, stride: .2 + leg * .25, knee: [.1, 0, .02], foot: 'bone', footR: .06,
       });
     }

@@ -11,7 +11,10 @@ PI.bodies.quadsmall = {
     if (s.scales) { // overlapping armour plates
       R.banded(back, front, rb * 1.08, rb, false, 'dark', 5);
       R.ball([-.02, 0, h + .1], rb * 1.05);
-    } else R.belly(back, front, rb * 1.05, rb);
+    } else {
+      R.torso(back, front, rb * 1.05, rb, .32);
+      R.haunch(back[0] + .04, h + rb * .05, rb * .8, rb * .5); // haunches
+    }
     if (s.spots) for (const f of [-.24, -.08, .08]) R.ball([f * L, (f * 10 % 2 ? .06 : -.06), h + rb * .82], .06, 'ink');
     const hr = rb * .82 * (s.head || 1), head = [L * .5 - hr * .4, 0, h + .08 + up * .45];
     R.bone(front, head, rb * .7, hr * .8);
@@ -27,7 +30,7 @@ PI.bodies.quadsmall = {
     const legs = [[L * .2, 1, 0, 0], [L * .2, -1, .5, .12], [-L * .26, 1, .5, .5], [-L * .26, -1, 0, .62]]; // f, side, walk phase, run phase
     for (const [f, side, ph, phRun] of legs) {
       const fore = f > 0;
-      R.leg([f, side * rb * .55, h * .9 + (fore ? up * .2 : 0)], [f + (fore ? .05 : -.02), side * (rb * .6 + .06)], {
+      R.leg([f, side * rb * .9, h * .9 + (fore ? up * .2 : 0)], [f + (fore ? .05 : -.02), side * (rb + .06)], {
         ph, phRun, r: fore && s.arms ? .08 : .07, stride, knee: [fore ? .04 : -.06, 0, .03],
       });
     }

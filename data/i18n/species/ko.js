@@ -3,7 +3,7 @@
 PI.i18n.species.ko = {
   ant: '개미', ladybug: '무당벌레', housefly: '집파리', mosquito: '모기', termite: '흰개미', weevil: '바구미', shrew: '땃쥐', treefrog: '청개구리', gecko: '도마뱀붙이', hummingbird: '벌새',
   grasshopper: '메뚜기', dragonfly: '잠자리', stagbeetle: '사슴벌레', mantis: '사마귀', cicada: '매미', mouse: '생쥐', sparrow: '참새', chameleon: '카멜레온', hermitcrab: '소라게', newt: '영원',
-  rhinobeetle: '장수풍뎅이', atlasmoth: '아틀라스나방', hornet: '말벌', waterbug: '물장군', rat: '쥐', kingfisher: '물총새', mudskipper: '말뚝망둥어', squirrel: '다람쥐', tarsier: '안경원숭이', compsognathus: '콤프소그나투스',
+  rhinobeetle: '장수풍뎅이', atlasmoth: '아틀라스나방', hornet: '말벌', waterbug: '물장군', rat: '시궁쥐', kingfisher: '물총새', mudskipper: '말뚝망둥어', squirrel: '다람쥐', tarsier: '안경원숭이', compsognathus: '콤프소그나투스',
   goliathbeetle: '골리앗꽃무지', stickinsect: '대벌레', titanbeetle: '타이탄하늘소', slowloris: '늘보로리스', mongoose: '몽구스', colugo: '날원숭이', civet: '사향고양이', hornbill: '코뿔새', microraptor: '미크로랍토르', psittacosaurus: '프시타코사우루스',
   herculesbeetle: '헤라클레스장수풍뎅이', gianthornet: '장수말벌', macaque: '마카크원숭이', otter: '수달', mousedeer: '쥐사슴', pangolin: '천산갑', beardedpig: '수염멧돼지', velociraptor: '벨로키랍토르', protoceratops: '프로토케라톱스', oviraptor: '오비랍토르',
   atlasbeetle: '아틀라스장수풍뎅이', meganeura: '메가네우라', sunbear: '말레이곰', cloudedleopard: '구름표범', orangutan: '오랑우탄', watermonitor: '물왕도마뱀', dilophosaurus: '딜로포사우루스', gallimimus: '갈리미무스', pachycephalosaurus: '파키케팔로사우루스', dimorphodon: '디모르포돈',

@@ -1,9 +1,12 @@
 'use strict';
 // Map 2: Gaya Street on Sunday. Three streets and two cross lanes of a market town in daylight: rows of roofed
 // stalls and open tables, signboards, shophouses, hawkers, and a park along the front. The only map with people on it.
+// From the real street: the arch gates at the ends of the lanes, strings of red lanterns, shophouse fronts with
+// shutters and awnings, and the Atkinson Clock Tower in the park.
 (() => {
-  const G = PI.gfx, F = PI.flora, P = PI.props, I = PI.island;
+  const G = PI.gfx, F = PI.flora, P = PI.props, I = PI.island, M = PI.landmarks;
   const pack = c => G.pack(c[0], c[1], c[2]);
+  const SHUTTERS = [[66, 118, 126], [150, 74, 62], [84, 110, 70]], TOWER = { x: -2, y: 54 };
   const STREET = [[132, 128, 136], [146, 142, 148], [158, 154, 158], [170, 166, 168]].map(pack);
   const JOINT = pack([112, 108, 120]);
   const WALK = [[204, 186, 158], [214, 197, 168], [224, 208, 178], [232, 218, 190]].map(pack);
@@ -71,13 +74,17 @@
       houses.forEach((h, k) => {
         P.box(h, WALLS[k % WALLS.length], { seed: k * 3 + 1, grain: .7 });
         P.box({ x: h.x, y: h.y, z0: h.z1, z1: h.z1 + .25, hx: h.hx + .15, hy: h.hy + .15, yaw: 0 }, TILES[k % TILES.length], { grain: .5, seed: 5 + k });
+        M.shopfront(h, SHUTTERS[k % SHUTTERS.length], ROOFS[(k + 2) % ROOFS.length]);
         I.addSolid(h);
       });
+      for (const l of lanes) for (const y of [45.6, -45.6]) M.gate(l.x, y, l.w + .5, 3.3, [196, 52, 46], [232, 186, 76], [58, 122, 98]);
+      for (const s of streets) M.lanterns(-45, 45, s.y - s.w + .35);
+      M.clockTower(TOWER.x, TOWER.y);
       for (const s of streets) for (const l of lanes) for (const side of [-1, 1]) { // a signboard at every corner
         P.post(l.x + side * (l.w + .8), s.y - s.w - .8, 2.5, ROOFS[(n++) % ROOFS.length], { w: .6, h: .35 });
       }
       I.scatter(22, 640, 6, (x, y) => !onStreet(x, y) && !inPark(x, y), (x, y, k) => P.crate(x, y, .3 + (k % 3) * .04, [146 + (k % 4) * 4, 110, 70], k * .4, k));
-      I.scatter(20, 700, 7, (x, y) => inPark(x, y), (x, y, k) => { F.tree(x, y, .8 + (k % 3) * .08, k * 3 + 2); I.addSolid({ x, y, r: .3 }); });
+      I.scatter(20, 700, 7, (x, y) => inPark(x, y) && !onStreet(x, y), (x, y, k) => { F.tree(x, y, .8 + (k % 3) * .08, k * 3 + 2); I.addSolid({ x, y, r: .3 }); });
       I.scatter(30, 900, 4.5, (x, y) => !onStreet(x, y), (x, y, k) => F.bush(x, y, .7 + (k % 2) * .15, k * 5 + 1));
     },
 

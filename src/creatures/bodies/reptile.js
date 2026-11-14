@@ -9,7 +9,7 @@ PI.bodies.reptile = {
     const s = R.s, L = s.len, h = s.h + .05, rb = .17 + (s.ridges ? .03 : 0) + (L > 1.2 ? .03 : 0);
     const p0 = [-L * .3, R.wave(2) * .05, h], p1 = [0, R.wave(1) * .04, h], p2 = [L * .25, R.wave(0) * .03, h];
     if (s.bands) { R.banded(p0, p1, rb, rb * .95, false, 'dark', 3); R.banded(p1, p2, rb * .95, rb * .9, 'dark', false, 3); }
-    else { R.belly(p0, p1, rb, rb * .95); R.belly(p1, p2, rb * .95, rb * .9); }
+    else { R.torso(p0, p1, rb, rb * .95, .3); R.torso(p1, p2, rb * .95, rb * .9, .3); }
     if (s.spots) for (const f of [-.22, -.08, .06, .18]) R.ball([f * L, 0, h + rb * .88], .06, 'light');
     const head = [L * .42, 0, h + .02];
     R.bone(p2, head, rb * .8, rb * .7);

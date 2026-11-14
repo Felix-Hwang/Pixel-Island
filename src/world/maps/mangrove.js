@@ -1,8 +1,10 @@
 'use strict';
 // Map 4: the mangrove forest at night. Moonlit mud, moss and stilt roots, with a river winding from the back of
 // the map to the front. The player only sees clearly inside a circle of light (see the firefly interaction).
+// From the real wetlands: lamp-lit boardwalks through the trees, nipah palms along the banks, and river cruise
+// boats moored with a lantern.
 (() => {
-  const G = PI.gfx, F = PI.flora, I = PI.island;
+  const G = PI.gfx, F = PI.flora, I = PI.island, P = PI.props, M = PI.landmarks;
   const pack = c => G.pack(c[0], c[1], c[2]);
   const MUD = [[54, 62, 74], [66, 76, 84], [80, 90, 94], [96, 106, 104]].map(pack);
   const BANK = [[40, 48, 62], [50, 58, 70]].map(pack);
@@ -15,7 +17,10 @@
   // signed distance to the river: negative inside
   const riverAt = (x, y) => Math.abs(x - riverX(y)) - riverWidth - (G.noise(x * .5, y * .5) - .5) * .6;
   const clearOf = (list, d) => (x, y) => list.every(p => Math.hypot(p.x - x, p.y - y) > d);
-  const dry = (x, y) => riverAt(x, y) > 3;
+  const WALKS = [{ x: -30.5, y: -26, hx: 13.5 }, { x: 33.5, y: 26, hx: 10.5 }]; // boardwalks, running left to right
+  const offWalk = (x, y) => WALKS.every(w => Math.abs(y - w.y) > 2.4 || Math.abs(x - w.x) > w.hx + 1.5);
+  const offBridge = y => Math.abs(y - Math.round(y / 17) * 17) > 2.6; // the bridges cross the river every 17 units
+  const dry = (x, y) => riverAt(x, y) > 3 && offWalk(x, y);
   // the layout: shelters, then pits and slopes around them
   const shelters = I.spread(7, 41, 26, dry, 7);
   const pits = I.spread(9, 63, 20, (x, y) => dry(x, y) && clearOf(shelters, 8)(x, y), 6);
@@ -45,7 +50,16 @@
     },
 
     props() {
-      const open = (x, y) => riverAt(x, y) > 1.8 && clearOf(shelters, 4.5)(x, y) && clearOf(pits, 3.5)(x, y) && clearOf(slopes, 4)(x, y);
+      const open = (x, y) => riverAt(x, y) > 1.8 && offWalk(x, y) && clearOf(shelters, 4.5)(x, y) && clearOf(pits, 3.5)(x, y) && clearOf(slopes, 4)(x, y);
+      for (const w of WALKS) {
+        M.planks(w.x, w.y, w.hx, .9, [98, 90, 96], true);
+        for (let x = w.x - w.hx + 1; x < w.x + w.hx; x += 6.3) M.lamp(x, w.y - 1.1, 1.7);
+      }
+      for (const y of [-8.5, 42.5]) { // river cruise boats
+        const hull = I.addSolid(P.boat(riverX(y) + .3, y, 1.5, [176, 70, 64]));
+        G.ball(hull.x, hull.y - .6, 1, .2, G.ramp([255, 208, 120]), G.STYLE.GLOSS, G.KIND.PROP);
+      }
+      I.scatter(24, 990, 6, (x, y) => riverAt(x, y) > .5 && riverAt(x, y) < 3.2 && offWalk(x, y) && offBridge(y), (x, y, n) => M.nipah(x, y, .9 + (n % 3) * .12, n * 2.1, NIGHT_LEAF));
       I.scatter(46, 120, 8, open, (x, y, n) => {
         F.mangrove(x, y, .85 + (n % 4) * .1, n * 2.3, NIGHT_LEAF);
         I.addSolid({ x, y, r: .3 });

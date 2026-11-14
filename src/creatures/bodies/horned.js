@@ -8,7 +8,9 @@ PI.bodies.horned = {
   build(R) {
     const s = R.s, L = s.len, leg = s.h * .75, rb = .25, h = leg + rb * .55;
     const rear = [-L * .3, 0, h + .04], front = [L * .2, 0, h];
-    R.belly(rear, front, rb, rb * .95);
+    R.torso(rear, front, rb, rb * .95);
+    R.haunch(rear[0] + .06, h + .05, rb * .84, rb * .6);  // haunches
+    R.haunch(front[0] - .04, h + .02, rb * .78, rb * .6); // shoulders
     const hr = .17, head = [L * .42, 0, h - .02];
     R.bone(front, head, rb * .7, hr);
     const beak = [head[0] + .18 + s.beak * .2, 0, head[2] - .1];
@@ -27,7 +29,7 @@ PI.bodies.horned = {
     const stride = .15 + leg * .2;
     const legs = [[L * .2, 1, 0, 0], [L * .2, -1, .5, .1], [-L * .28, 1, .5, .5], [-L * .28, -1, 0, .6]];
     for (const [f, side, ph, phRun] of legs) {
-      R.leg([f, side * rb * .55, h * .9], [f, side * (rb * .6 + .03)], { ph, phRun, r: .09, stride, knee: [f > 0 ? .03 : -.06, 0, .02], foot: 'ink', footR: .085 });
+      R.leg([f, side * rb * .95, h * .9], [f, side * (rb * 1.05 + .03)], { ph, phRun, r: .09, stride, knee: [f > 0 ? .03 : -.06, 0, .02], foot: 'ink', footR: .085 });
     }
     R.eyes(head, hr);
   },

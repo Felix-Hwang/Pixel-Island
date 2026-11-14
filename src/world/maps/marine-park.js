@@ -2,9 +2,12 @@
 // Map 3: Tunku Abdul Rahman Marine Park. A white sand island and four islets in shallow emerald water.
 // The renderer has no transparency, so the water is all colour and dither. The whole sea is shallow, so every part
 // of the map can be waded. Two sandbars join the big island to its nearest islets at low tide.
+// From the real park: the long jetty where the boats land, thatched beach pavilions, and the line of swim-zone
+// floats off the main beach.
 (() => {
-  const G = PI.gfx, F = PI.flora, P = PI.props, I = PI.island;
+  const G = PI.gfx, F = PI.flora, P = PI.props, I = PI.island, M = PI.landmarks;
   const pack = c => G.pack(c[0], c[1], c[2]);
+  const JETTY = { x: 0, y: 25, hx: 1, hy: 6.5 }, PAVILIONS = [{ x: -9, y: -17 }, { x: 9, y: 3 }, { x: -5, y: 12 }];
   const SAND = [[230, 222, 198], [240, 233, 210], [247, 242, 224], [253, 250, 238]].map(pack);
   const DAMP = [[206, 204, 178], [218, 214, 188], [228, 224, 198]].map(pack);
   const SEA = [[30, 132, 156], [40, 154, 166], [52, 174, 174], [74, 194, 184], [106, 214, 198], [150, 228, 210]].map(pack);
@@ -54,6 +57,11 @@
     },
 
     props() {
+      M.planks(JETTY.x, JETTY.y, JETTY.hx, JETTY.hy, [178, 150, 118], false, 2.6);
+      for (const side of [-1, 1]) M.lamp(JETTY.x + side * 1.25, JETTY.y + JETTY.hy - .4);
+      PAVILIONS.forEach(p => M.pavilion(p.x, p.y));
+      const main = ISLES[0];
+      M.buoys(main.x, main.y, main.rx * 1.24, main.ry * 1.24, .3, 2.85, (x, y) => terrain(x, y) === 'sea' && Math.abs(x - JETTY.x) > 2.4);
       I.scatter(11, 70, 9, (x, y) => sandAt(x, y) < .75, (x, y, n) => {
         F.palm(x, y, 3.9 + G.rand2(n, 3) * .7, (n % 2 ? 1 : -1) * (.5 + G.rand2(n, 5) * .4), n * 1.3 + 1);
         I.addSolid({ x, y, r: .3 });

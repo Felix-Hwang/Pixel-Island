@@ -9,8 +9,10 @@ PI.bodies.quaddino = {
     const s = R.s, L = s.len, leg = s.legLen, rb = s.wide ? .3 : .25, h = leg + rb * .5;
     const hipZ = h + (s.arch ? .12 * s.arch : 0) + (s.frontLow ? .1 : 0), shZ = h - (s.frontLow ? .05 : 0);
     const rear = [-L * .3, 0, hipZ], mid = [-L * .02, 0, hipZ + .03], front = [L * .25, 0, shZ];
-    R.belly(rear, mid, rb, rb * .93);
-    R.belly(mid, front, rb * .93, rb * .85);
+    R.torso(rear, mid, rb, rb * .93);
+    R.torso(mid, front, rb * .93, rb * .85);
+    R.haunch(rear[0] + .06, hipZ, rb * .84, rb * .6);    // haunches
+    R.haunch(front[0] - .05, shZ + .02, rb * .7, rb * .6); // shoulders
     if (s.wide) for (const side of [1, -1]) R.bone([-L * .25, side * .14, h], [L * .15, side * .14, h], rb * .85, rb * .75); // broad armoured back
     const head = [front[0] + .15 + s.neck * .35, 0, shZ - .05 + s.neck * .35 - (s.plates ? .12 : 0)];
     R.bone(front, head, rb * .55, .12);
@@ -28,7 +30,7 @@ PI.bodies.quaddino = {
     const stride = .16 + leg * .2;
     const legs = [[L * .2, 1, 0, 0], [L * .2, -1, .5, .1], [-L * .28, 1, .5, .5], [-L * .28, -1, 0, .6]];
     for (const [f, side, ph, phRun] of legs) {
-      R.leg([f, side * rb * .55, h * .9], [f, side * (rb * .6 + .03)], { ph, phRun, r: .09, stride, knee: [f > 0 ? .03 : -.06, 0, .02], foot: 'ink', footR: .085 });
+      R.leg([f, side * rb * .95, h * .9], [f, side * (rb * 1.05 + .03)], { ph, phRun, r: .09, stride, knee: [f > 0 ? .03 : -.06, 0, .02], foot: 'ink', footR: .085 });
     }
     R.eyes(head, .12);
   },

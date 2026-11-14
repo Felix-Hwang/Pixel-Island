@@ -6,13 +6,17 @@ PI.behaviors.lurk = {
     const reaction = A.react(self, { range: .65, fear: .8 });
     if (reaction) return reaction;
     s.stay = (s.stay || 0) - dt;
-    if (!s.spot || s.stay <= 0) { // pick a hiding place, mostly a near one
-      s.stay = 10 + Math.random() * 12;
-      const near = cover.slice().sort((a, b) => A.dist(self, a) - A.dist(self, b));
-      s.spot = near.length ? near[Math.min(near.length - 1, Math.random() * 3 | 0)] : null;
+    if (!s.spot || s.stay <= 0) {
+      // Pick a hiding place inside its own range, at random, and skip one that another lurker already took.
+      // Choosing the nearest one sent every lurker of an area to the same bush.
+      const now = PI.state.time;
+      s.stay = (8 + Math.random() * 12) / self.temper;
+      const free = cover.filter(c => !(c.until > now) && Math.hypot(c.x - self.home.x, c.y - self.home.y) < self.roam + 6);
+      s.spot = free.length ? free[Math.random() * free.length | 0] : null;
+      if (s.spot) s.spot.until = now + s.stay; // the claim ends by itself, also when this creature is gone
     }
     if (!s.spot) return A.wander(self, dt, .3, 2, 5, .6);
-    if (A.dist(self, s.spot) > s.spot.r) return A.home(self, A.toward(self, s.spot.x, s.spot.y, .45));
+    if (A.dist(self, s.spot) > s.spot.r) return A.home(self, A.toward(self, s.spot.x, s.spot.y, .45 * self.temper));
     return A.wander(self, dt, .12, 1.5, 4, .7); // shuffles about inside the cover
   },
 };

@@ -1,10 +1,10 @@
 'use strict';
-// The frame buffers and the fixed 30-degree camera.
+// The frame buffers and the fixed camera, which looks down at 36 degrees.
 // There are two sets of buffers. The MAP is the whole world, baked once per round. The VIEW is the window onto it
 // that fills the screen; every frame starts as a copy of the map under the camera, then the moving things are drawn in.
 // World axes: x runs screen-right, y runs toward the viewer (screen-down), z is up. 1 unit = 10 px.
 (() => {
-  const U = 10, TILT = Math.PI / 6, SIN = Math.sin(TILT), COS = Math.cos(TILT);
+  const U = 10, TILT = Math.PI / 5, SIN = Math.sin(TILT), COS = Math.cos(TILT);
   const KIND = { EMPTY: 0, GROUND: 1, GRASS: 2, PROP: 3, BODY: 4 };
   const DEFAULT_SCENE = { shadowX: 1.25, shadowY: -.1, shadowTint: [.56, .53, .74], deepTint: [.38, .35, .58] };
   // W, H, col, dep, kind, mask, ox, oy always describe the buffers being drawn into right now.

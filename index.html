@@ -12,16 +12,20 @@
 <body>
 <div id="stage"><canvas id="c" aria-label="Pixel Island"></canvas></div>
 <div id="hud" hidden>
-  <div class="line"><span id="hud-level"></span><span id="hud-name"></span></div>
+  <div class="line"><span id="hud-level"></span><span id="hud-name"></span><span id="hud-grade"></span></div>
   <div id="hud-pips" role="img"></div>
 </div>
-<div id="toasts" role="status" aria-live="polite"></div>
+<div id="side">
+  <div id="map-name"></div>
+  <div id="toasts" role="status" aria-live="polite"></div>
+</div>
 <div id="stick-base" hidden></div><div id="stick-knob" hidden></div>
 <dialog id="screen" closedby="none" aria-labelledby="screen-title"></dialog>
 
 <!-- Load order matters: every file is a plain script that adds to the global PI object. All paths are relative. -->
 <script src="src/core/namespace.js"></script>
 <script src="src/core/config.js"></script>
+<script src="src/core/settings.js"></script>
 
 <!-- words -->
 <script src="data/i18n/ko.js"></script>
@@ -56,6 +60,7 @@
 <script src="data/species/lv09.js"></script>
 <script src="data/species/lv10.js"></script>
 <script src="data/speeds.js"></script>
+<script src="data/grades.js"></script>
 <script src="src/creatures/palette.js"></script>
 <script src="src/creatures/builder.js"></script>
 <script src="src/creatures/bodies/hexapod.js"></script>
@@ -78,6 +83,7 @@
 <script src="src/world/island.js"></script>
 <script src="src/world/flora.js"></script>
 <script src="src/world/props.js"></script>
+<script src="src/world/landmarks.js"></script>
 <script src="src/world/interactions.js"></script>
 <script src="src/world/maps/tanjung-aru.js"></script>
 <script src="src/world/maps/gaya-street.js"></script>
@@ -123,12 +129,14 @@
 <script src="src/behaviors/glide.js"></script>
 <script src="src/behaviors/lurk.js"></script>
 <script src="src/core/input.js"></script>
+<script src="src/core/fx.js"></script>
 <script src="src/core/rules.js"></script>
 <script src="src/core/loop.js"></script>
 <script src="src/ui/stars.js"></script>
 <script src="src/ui/toast.js"></script>
 <script src="src/ui/hud.js"></script>
 <script src="src/ui/modal.js"></script>
+<script src="src/ui/flags.js"></script>
 <script src="src/ui/language-select.js"></script>
 <script src="src/ui/screens.js"></script>
 <script src="src/core/boot.js"></script>

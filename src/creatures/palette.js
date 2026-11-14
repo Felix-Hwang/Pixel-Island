@@ -26,6 +26,8 @@
     order, rgb, mats,
     // outside the light on the night map every material is drawn in these two dark tones
     dim: { body: SHADE, dark: SHADE_DARK, light: SHADE, bone: SHADE, ink: SHADE_DARK },
+    // a body made of light, shown for a moment while a creature changes shape
+    flash: { body: [255, 250, 226], dark: [255, 238, 190], light: [255, 255, 246], bone: [255, 255, 246], ink: [250, 226, 170] },
     random: () => order[Math.random() * order.length | 0],
   };
 })();

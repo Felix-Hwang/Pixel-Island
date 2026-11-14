@@ -1,5 +1,6 @@
 'use strict';
-// Flock. It keeps close to others of its own species and moves the way they move.
+// Flock. It keeps loosely to others of its own species and moves the way they move. A group stays small:
+// once three others are near, it stops closing in, so a flock never grows into a crowd.
 PI.behaviors.flock = {
   steer(self, dt) {
     const A = PI.ai, reaction = A.react(self);
@@ -13,9 +14,9 @@ PI.behaviors.flock = {
     if (!n) return v;
     cx /= n; cy /= n;
     const d = Math.hypot(cx - self.x, cy - self.y);
-    if (d > 1.4) { const to = A.toward(self, cx, cy, .3); v.x += to.x; v.y += to.y; } // close the gap
+    if (n <= 3 && d > 3) { const to = A.toward(self, cx, cy, .25); v.x += to.x; v.y += to.y; } // close the gap, but keep some room
     const hl = Math.hypot(hx, hy);
-    if (hl > .01) { v.x += hx / hl * .15; v.y += hy / hl * .15; }                      // match their heading
+    if (hl > .01) { v.x += hx / hl * .15; v.y += hy / hl * .15; }                               // match their heading
     return v;
   },
 };

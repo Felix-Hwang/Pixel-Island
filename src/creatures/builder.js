@@ -1,28 +1,32 @@
 'use strict';
 // Turns a species into capsules. A body template (src/creatures/bodies) describes the animal in its own
 // frame: [forward, left, up], in units of the creature size. This file handles facing, gait, materials and drawing:
-// eight facings, a stepped walk cycle, a faster longer-striding run cycle, wing beats and tail sway.
+// eight facings, a walk cycle, a run cycle with longer strides and a moment in the air, wing beats, tail sway,
+// and squash and stretch. The amount of run (runQ) rises smoothly with speed, so a walk grows into a run.
 // Parts name a material (see palette.js): nothing or false = body, true or 'dark', 'light', 'bone', 'ink'.
 (() => {
   const G = PI.gfx, TAU = Math.PI * 2, STEP = Math.PI / 4;
   const MIN_R = .085;                 // thinner parts collapse into a 1px dot
-  const FRAMES = 4;                   // poses per gait cycle
+  const FRAMES = 8;                   // poses per gait cycle
   const FLAP = [1, .15, -.9, .15];    // wing poses per beat
   const INK = G.pack(26, 24, 38), WHITE = G.pack(255, 255, 255);
   const frac = v => v - Math.floor(v);
-  let k = 1, px = 0, py = 0, cy = 1, sy = 0, lean = 0, bob = 0, baseZ = 0, mats = null, ramps = null, shadow = true, dim = false;
-  const R = { s: null, t: 0, gait: { phase: 0, run: 0, moving: false, q: 0 }, flap: 0 };
+  let k = 1, px = 0, py = 0, cy = 1, sy = 0, lean = 0, bob = 0, sway = 0, tall = 1, wide = 1, baseZ = 0, mats = null, ramps = null, shadow = true, dim = false;
+  // gait.run is 1 while running; gait.mix runs 0..1 from a slow walk to a full run
+  const R = { s: null, t: 0, gait: { phase: 0, run: 0, mix: 0, moving: false, q: 0 }, flap: 0 };
+  const ease = t => t * t * (3 - 2 * t);
 
   const rampOf = m => {
     const key = m === true ? 'dark' : m || 'body';
     return ramps[key] || (ramps[key] = G.ramp(mats[key] || mats.body));
   };
+  // tall and wide carry the squash and stretch: a stretched body is taller and thinner, a squashed one lower and wider
   function world(l) {
-    const f = (l[0] + (l[2] - .3) * lean) * k, s = l[1] * k, u = (l[2] + bob) * k + baseZ;
+    const f = (l[0] + (l[2] - .3) * lean) * k * wide, s = (l[1] + sway) * k * wide, u = (l[2] + bob) * k * tall + baseZ;
     return [px + f * cy - s * sy, py + f * sy + s * cy, u < 0 ? 0 : u];
   }
-  function planted(l) { // feet stay on the ground, so they get no bob and no lean
-    const f = l[0] * k, s = l[1] * k;
+  function planted(l) { // feet stay on the ground, so they get no bob, no lean and no sway
+    const f = l[0] * k * wide, s = l[1] * k * wide;
     return [px + f * cy - s * sy, py + f * sy + s * cy, Math.max(0, l[2] * k) + baseZ];
   }
   function seg(a, b, ra, rb, mat) {
@@ -52,6 +56,16 @@
     seg(world(a), world(b), ra, rb, false);
     G.under = null;
   };
+  // A torso that is wider than it is tall: two capsules side by side with a pale underside, so an animal seen from
+  // the front, the back or above shows a broad back and not a thin tube. spread: half the gap, as a share of the radius.
+  // mat: paint the whole part in that material (a saddle or a band) and leave the underside as it is.
+  R.torso = (a, b, ra, rb = ra, spread = .38, mat = false) => {
+    if (!mat) G.under = rampOf('light');
+    for (const side of [1, -1]) seg(world([a[0], a[1] + side * ra * spread, a[2]]), world([b[0], b[1] + side * rb * spread, b[2]]), ra, rb, mat);
+    G.under = null;
+  };
+  // the muscle over a shoulder or a haunch: one ball on each side of the body at f
+  R.haunch = (f, z, r, side = .5, mat = false) => { for (const sd of [1, -1]) R.ball([f, sd * side, z], r, mat); };
   // hip: [f, s, u]. foot: [f, s] where the foot rests. o.ph / o.phRun: where in the cycle this leg steps.
   // o.mat: the leg's material (dark by default). o.foot: material of a paw, hoof or claw at its end.
   R.leg = (hip, foot, o = {}) => {
@@ -59,9 +73,15 @@
     let df = 0, lift = 0;
     if (g.moving) {
       const p = frac(g.phase + (g.run && o.phRun != null ? o.phRun : o.ph || 0));
-      const reach = (o.stride == null ? .16 : o.stride) * (g.run ? 1.8 : 1);
-      if (p < .5) df = reach * (1 - p * 4);                       // planted, sliding back under the body
-      else { df = reach * ((p - .5) * 4 - 1); lift = Math.sin((p - .5) * TAU) * (g.run ? .22 : .1) * (o.lift == null ? 1 : o.lift); }
+      // A walking foot is on the ground for 60% of the cycle and a running foot for 40%, which leaves a moment
+      // in the air. Strides get longer and feet lift higher as the walk turns into a run.
+      const stance = .6 - .2 * g.mix, reach = (o.stride == null ? .16 : o.stride) * (.85 + .25 * g.q + .8 * g.mix);
+      if (p < stance) df = reach * (1 - p / stance * 2);          // planted, sliding back under the body
+      else {
+        const s = (p - stance) / (1 - stance);                    // swinging forward: quick out of the ground, slow into it
+        df = reach * (ease(s) * 2 - 1);
+        lift = Math.pow(Math.sin(s * Math.PI), .8) * (.1 + .14 * g.mix) * (o.lift == null ? 1 : o.lift);
+      }
     }
     const top = world(hip), end = planted([foot[0] + df, foot[1], lift]);
     if (o.knee) {
@@ -136,19 +156,27 @@
   B.tick = (c, dt, vx, vy, ratio) => {
     const tmpl = PI.bodies[c.sp.body];
     c.gaitQ += (ratio - c.gaitQ) * Math.min(1, dt * 12);
+    const was = c.moving;
     c.moving = c.gaitQ > .08;
     if (!c.running && c.gaitQ > .7) c.running = true; else if (c.running && c.gaitQ < .55) c.running = false;
+    c.runQ += ((c.running ? 1 : 0) - c.runQ) * Math.min(1, dt * 9);
+    if (c.moving !== was) c.sqv += c.moving ? -2.2 : 1.6; // crouch into the first step, settle on stopping
     if (c.moving) {
-      const cadence = (c.running ? 3.1 : 2) * (tmpl.cadence || 1); // cycles per second: 8 fps walking, 12 fps running
+      const cadence = (2 + 1.1 * c.runQ) * (tmpl.cadence || 1); // steps per second rise with the run
       c.gaitPhase = frac(c.gaitPhase + dt * cadence);
       const want = Math.atan2(vy, vx);
       let diff = want - c.face;
       diff = Math.atan2(Math.sin(diff), Math.cos(diff));
-      if (Math.abs(diff) > STEP * .62) c.face = Math.round(want / STEP) * STEP; // snap to one of eight facings
+      if (Math.abs(diff) > STEP * .62) { c.face = Math.round(want / STEP) * STEP; c.sqv -= 1.2; } // snap to one of eight facings
     }
+    // squash and stretch is a damped spring: anything that hits the body gives sqv a kick and it rings out
+    c.sqv += (-c.sq * 210 - c.sqv * 15) * dt;
+    c.sq = G.clamp(c.sq + c.sqv * dt, -.4, .5);
     if (c.pop > 0) c.pop = Math.max(0, c.pop - dt * 3);
+    if (c.morph) { c.morph.t += dt; if (c.morph.t >= PI.config.morph) c.morph = null; }
   };
-  // c: { x, y, face, k, sp, color, gaitPhase, gaitQ, moving, running, pop }. opt.dim draws a dark silhouette.
+  // c: { x, y, face, k, sp, color, gaitPhase, gaitQ, runQ, moving, running, pop, sq }.
+  // opt.dim draws a dark silhouette and opt.flash a body of white light.
   B.draw = (c, time, opt = {}) => {
     const tmpl = PI.bodies[c.sp.body], g = R.gait, s = c.sp.sil, pal = PI.palette;
     k = c.k * (1 + (c.pop || 0) * .3);
@@ -156,15 +184,20 @@
     px = Math.round(c.x * G.U) / G.U; py = Math.round(c.y * G.U * G.SIN) / (G.U * G.SIN);
     cy = Math.cos(c.face); sy = Math.sin(c.face);
     dim = !!opt.dim;
-    mats = dim ? pal.dim : pal.mats[c.color];
+    mats = opt.flash ? pal.flash : dim ? pal.dim : pal.mats[c.color];
     ramps = mats.ramps || (mats.ramps = {});
     shadow = opt.shadow !== false;
-    g.moving = !!c.moving; g.run = c.running ? 1 : 0; g.q = c.gaitQ || 0;
+    g.moving = !!c.moving; g.run = c.running ? 1 : 0; g.mix = c.runQ || 0; g.q = Math.min(1.2, c.gaitQ || 0);
     g.phase = (Math.floor((c.gaitPhase || 0) * FRAMES) + .5) / FRAMES;
-    const beat = Math.abs(Math.sin(g.phase * TAU));
-    bob = !g.moving ? 0 : g.run ? beat * .1 * (tmpl.bounce == null ? 1 : tmpl.bounce) : beat * .03;
-    lean = g.moving && g.run ? (tmpl.lean == null ? .12 : tmpl.lean) : 0;
     const hover = s.hover || 0, seed = c.seed || 0;
+    // Two bounces per cycle. Walking barely lifts the body; running throws it up between footfalls.
+    const beat = Math.abs(Math.sin(g.phase * TAU)), spring = tmpl.bounce == null ? 1 : tmpl.bounce;
+    bob = g.moving ? beat * (.03 + .09 * g.mix * spring) : hover ? 0 : (Math.floor(time * 2.4 + seed * .37) & 1) * .014; // standing still, it breathes
+    lean = g.moving ? (tmpl.lean == null ? .12 : tmpl.lean) * g.mix : 0;
+    sway = g.moving && !hover ? Math.sin(g.phase * TAU) * .022 * (1 - g.mix * .6) : 0; // weight shifts from side to side
+    // stretch in the air and squash on landing while running, on top of the spring
+    const squash = G.clamp((c.sq || 0) + (g.moving ? (beat - .55) * .09 * g.mix * spring : 0), -.3, .38);
+    tall = 1 + squash * .55; wide = 1 - squash * .3;
     baseZ = hover ? (hover + Math.round(Math.sin(Math.floor(time * 6) / 6 * 2.2 + seed) * 2) * .03) * k : 0;
     const rate = !hover && !g.moving ? 0 : g.run ? 6 : g.moving ? 4.2 : 2.6; // wing beats per second
     R.flap = rate ? FLAP[Math.floor(time * rate * FLAP.length + seed) & 3] : .15;

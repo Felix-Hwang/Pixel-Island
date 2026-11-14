@@ -8,7 +8,9 @@ PI.bodies.longneck = {
   build(R) {
     const s = R.s, L = s.len, leg = s.legLen, rb = .26 * (s.bulky ? 1.15 : 1), h = leg + rb * .5;
     const rear = [-L * .28, 0, h], front = [L * .25, 0, h + (s.frontHigh ? .15 : 0)];
-    R.belly(rear, front, rb, rb * .95);
+    R.torso(rear, front, rb, rb * .95);
+    R.haunch(rear[0] + .06, h + .02, rb * .85, rb * .6);       // haunches
+    R.haunch(front[0] - .05, front[2] + .02, rb * .8, rb * .6); // shoulders
     const up = s.neckUp || 0, reach = s.neck * .75, neck = [];
     for (let i = 0; i <= 4; i++) {
       const t = i / 4, a = (.15 + up) * (.6 + .4 * t);
@@ -26,7 +28,7 @@ PI.bodies.longneck = {
     const stride = .18 + leg * .15;
     const legs = [[L * .2, 1, 0, 0], [L * .2, -1, .5, .12], [-L * .24, 1, .5, .5], [-L * .24, -1, 0, .62]];
     for (const [f, side, ph, phRun] of legs) {
-      R.leg([f, side * rb * .55, h * .9], [f, side * (rb * .6 + .02)], { ph, phRun, r: .11, r1: .11, stride, knee: [f > 0 ? .02 : -.04, 0, .02], foot: 'ink', footR: .1 });
+      R.leg([f, side * rb * .95, h * .9], [f, side * (rb * 1.05 + .02)], { ph, phRun, r: .11, r1: .11, stride, knee: [f > 0 ? .02 : -.04, 0, .02], foot: 'ink', footR: .1 });
     }
     R.eyes(head, .11);
   },
