@@ -6,7 +6,10 @@ window.PI = {
   state: {},
   species: {},        // lv1 to lv10, each an array of species definitions (data/species)
   speeds: {},         // speed in px/s by species id (data/speeds.js)
-  i18n: { species: {} }, // strings by language, and species names by language under species
+  grades: {},         // grade by species id (data/grades.js)
+  senses: {},         // detection range by species id (data/senses.js)
+  styles: {},         // temperament by map id, then species id (data/styles.js)
+  i18n: { species: {}, facts: {} }, // strings by language, and species names by language under species
   bodies: {},         // body templates (src/creatures/bodies)
   behaviors: {},      // steering styles (src/behaviors)
   maps: {},           // map definitions by id (src/world/maps)
@@ -16,11 +19,20 @@ window.PI = {
   tools: {},
 };
 PI.register = (group, id, def) => { PI[group][id] = def; return def; };
-PI.registerMap = def => { PI.maps[def.id] = def; PI.mapOrder[def.order - 1] = def.id; return def; };
+// A map may list only the temperament numbers it changes; the rest come from config.styles.
+PI.registerMap = def => {
+  const styles = {};
+  for (const key of Object.keys(PI.config.styles)) styles[key] = { ...PI.config.styles[key], ...((def.styles || {})[key] || {}) };
+  def.styles = styles;
+  PI.maps[def.id] = def; PI.mapOrder[def.order - 1] = def.id;
+  return def;
+};
 PI.registerInteraction = (mapId, id, def) => { def.id = id; def.map = mapId; PI.interactions[mapId + '/' + id] = def; return def; };
 PI.allSpecies = () => Object.keys(PI.species).sort().flatMap(k => PI.species[k]);
 PI.speciesById = id => PI.allSpecies().find(s => s.id === id);
 PI.levelOf = id => { for (let lv = 1; lv <= 10; lv++) if (PI.species['lv' + lv].some(s => s.id === id)) return lv; return 0; };
+// A test parameter from the page address. It is null when absent and '' when given without a value, which means random.
+PI.param = name => { try { const q = new URLSearchParams(location.search); return q.has(name) ? q.get(name) : null; } catch { return null; } };
 PI.store = {
   get(key) { try { return localStorage.getItem('pixel-island.' + key); } catch { return null; } },
   set(key, value) { try { localStorage.setItem('pixel-island.' + key, value); } catch {} },

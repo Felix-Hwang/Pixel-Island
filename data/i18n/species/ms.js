@@ -1,5 +1,5 @@
 'use strict';
-// Nama spesies, Bahasa Melayu. 100 entri; id sepadan dengan data/species/lv01.js .. lv10.js.
+// Species names. 100 entries; ids match data/species/lv01.js .. lv10.js.
 PI.i18n.species.ms = {
   ant: 'Semut', ladybug: 'Kumbang Kura-kura', housefly: 'Lalat Rumah', mosquito: 'Nyamuk', termite: 'Anai-anai', weevil: 'Kumbang Belalai', shrew: 'Cencurut', treefrog: 'Katak Pokok', gecko: 'Cicak', hummingbird: 'Burung Kolibri',
   grasshopper: 'Belalang', dragonfly: 'Pepatung', stagbeetle: 'Kumbang Rusa', mantis: 'Mentadak', cicada: 'Riang-riang', mouse: 'Mencit', sparrow: 'Burung Pipit', chameleon: 'Sesumpah', hermitcrab: 'Umang-umang', newt: 'Salamander Air',

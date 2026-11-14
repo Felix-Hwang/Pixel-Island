@@ -7,6 +7,7 @@ body {
   touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
 }
 [hidden] { display: none !important; }
+.switching #hud, .switching #side { visibility: hidden; } /* nothing floats over the black of a scene change */
 
 #stage { position: fixed; inset: 0; overflow: hidden; }
 canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edges; }
@@ -15,11 +16,16 @@ canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edge
 #hud .line { display: flex; align-items: baseline; gap: 8px; }
 #hud-level { font-weight: 800; font-size: 16px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 #hud-name { color: var(--muted); overflow-wrap: anywhere; }
-#hud-grade { margin-left: auto; align-self: center; min-width: 18px; padding: 0 4px; font-weight: 800; font-size: 12px; line-height: 16px; text-align: center; color: var(--paper); background: var(--muted); }
-#hud-grade[data-grade="S"] { background: #e23c34; }
-#hud-grade[data-grade="A"] { background: #e08a20; }
-#hud-grade[data-grade="B"] { background: #48a854; }
-#hud-grade[data-grade="C"] { background: #3e80e0; }
+.grade, #hud-grade { margin-left: auto; align-self: center; min-width: 18px; padding: 0 4px; font-weight: 800; font-size: 12px; line-height: 16px; text-align: center; color: var(--paper); background: var(--muted); }
+[data-grade="S"] { background: #e23c34; }
+[data-grade="A"] { background: #e08a20; }
+[data-grade="B"] { background: #48a854; }
+[data-grade="C"] { background: #3e80e0; }
+#hud-count { font-weight: 800; font-size: 13px; text-align: right; color: #e23c34; font-variant-numeric: tabular-nums; }
+#hud-status { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+#hud-status:empty { display: none; }
+#hud-status span { display: inline-flex; align-items: center; gap: 4px; padding: 0 5px 0 3px; font-size: 11px; font-weight: 700; line-height: 16px; border: 2px solid; }
+#hud-status img { width: 9px; height: 9px; image-rendering: pixelated; }
 #hud-pips { display: flex; gap: 3px; flex-wrap: wrap; justify-content: flex-end; }
 #hud-pips i { width: 9px; height: 9px; border: 2px solid var(--ink); background: var(--paper); }
 #hud-pips i.on { background: var(--ink); }
@@ -47,6 +53,7 @@ canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edge
 #screen.low { margin-bottom: max(18px, env(safe-area-inset-bottom)); }
 #screen.low::backdrop { background: transparent; }
 /* the main menu has no card: the name of the game and the buttons stand on the map */
+#screen.wide { width: min(560px, calc(100% - 24px)); }
 #screen.bare { padding: 0; background: transparent; border: 0; box-shadow: none; overflow: visible; }
 #screen.bare::backdrop { background: rgba(28, 27, 25, .4); }
 .panel.title { gap: 12px; }
@@ -54,8 +61,51 @@ canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edge
 .panel.title button { box-shadow: 3px 3px 0 var(--ink); }
 .panel.title .primary { min-height: 58px; font-size: 18px; color: var(--ink); background: var(--hint); }
 .panel.title .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.panel.title .row.two { grid-template-columns: 1fr 1fr; }
 .panel.title .row button { padding: 8px 4px; overflow-wrap: anywhere; }
 .panel h2 { margin: 6px 0 -6px; font-size: 14px; font-weight: 800; }
+/* Tabs stay on one row and scroll sideways when they do not fit. The selected one is styled from aria-selected. */
+.tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.tabs [role="tab"] { flex: 1 0 auto; min-width: 28px; min-height: 44px; padding: 4px 8px; font-weight: 400; border-color: var(--line); }
+.tabs [aria-selected="true"] { font-weight: 800; border-color: var(--ink); background: var(--hint); }
+.tabpanel { display: grid; gap: 8px; }
+.swatches { display: flex; gap: 6px; }
+.swatch { flex: 1; min-height: 40px; padding: 0; border-color: var(--line); }
+.swatch[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 3px var(--paper); }
+.entry { display: grid; grid-template-columns: 224px 1fr; gap: 12px; align-items: center; padding: 8px; border: 2px solid var(--line); }
+.art { image-rendering: pixelated; object-fit: contain; }
+.entry .art { width: 224px; height: 168px; background: #f3efe4; }
+.entry h3 { display: flex; align-items: center; gap: 6px; margin: 0 0 4px; font-size: 16px; }
+.panel .fact { margin-bottom: 6px; font-size: 13px; }
+.stats { display: grid; grid-template-columns: 1fr; gap: 2px; font-size: 12px; }
+.stat { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.stat .label, .fact .label { color: var(--muted); }
+.meter { display: inline-flex; gap: 2px; }
+.meter i { width: 7px; height: 7px; border: 1px solid var(--ink); }
+.meter i.on { background: var(--ink); }
+.panel .habit { margin-top: 6px; font-size: 12px; color: var(--muted); }
+.mapshot { width: 100%; height: auto; image-rendering: pixelated; border: 2px solid var(--ink); }
+.effects { display: grid; gap: 2px; margin: 0; }
+.effects dt { font-weight: 800; }
+.effects dd { margin: 0 0 6px; }
+.panel.report h1 { text-align: center; }
+.facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.facts .fact { display: grid; margin: 0; padding: 6px 8px; border: 2px solid var(--ink); }
+.facts .label { font-size: 11px; }
+.path { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.path li { display: grid; grid-template-columns: 40px 96px 1fr auto; gap: 8px; align-items: center; padding: 2px 4px; font-size: 13px; border-bottom: 1px solid var(--line); }
+.path .art { width: 96px; height: 72px; }
+.path .lv { font-weight: 800; }
+.path .time { font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* the credit is a link that looks like a button: two short lines in the height of one */
+.credit { display: grid; place-content: center; min-height: 48px; padding: 2px 14px; font-size: 11px; line-height: 1.4; text-align: center; text-decoration: none; color: var(--ink); background: var(--hint); border: 2px solid var(--ink); }
+.credit:focus-visible { outline: 3px solid #3e80e0; outline-offset: 2px; }
+@media (max-width: 520px) {
+  .entry { grid-template-columns: 1fr; justify-items: center; }
+  .entry .body { width: 100%; }
+  .path li { grid-template-columns: 34px 96px 1fr; }
+  .path .time { grid-column: 3; }
+}
 .setting { display: grid; gap: 5px; }
 .setting .label { font-weight: 700; }
 .setting .choices { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; }

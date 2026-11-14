@@ -1,114 +1,113 @@
 # Pixel Island
 
-자신보다 낮은 레벨의 개체를 먹고 진화하는 싱글 플레이 캐주얼 게임입니다. 1단계에서 시작해 10단계에서 먹이 게이지를 채우면 클리어합니다.
+Play: https://felix-hwang.github.io/Pixel-Island/
 
-플레이: https://felix-hwang.github.io/Pixel-Island/
+## Overview
 
-빌드 과정과 외부 의존성이 없고 이미지 파일도 쓰지 않습니다. 자체 래스터라이저가 구, 캡슐, 박스로 모든 그림을 직접 그립니다. 맵은 960×752픽셀이고, 카메라가 플레이어를 따라 이동하며 화면을 가득 채웁니다.
+Pixel Island is a single-player browser game. You start as a level 1 creature, eat creatures of a lower level, and evolve until you reach level 10. There are 100 species, ten per level.
 
-A single-player browser game. Eat lower-level creatures and evolve from level 1 to level 10. It has no build step, no dependencies and no image assets. Languages: Korean, English, Chinese, Malay.
+The game has no build step, no dependencies and no image files for its graphics. Its own software renderer draws every creature and map from balls, capsules and boxes. It runs from static files, so GitHub Pages serves it as it is. The interface is available in Korean, English, Chinese and Malay.
 
-## 규칙
+License: [MIT](LICENSE). Made by [Felix](https://github.com/Felix-Hwang).
 
-- 자신보다 레벨이 낮은 개체에 닿으면 먹습니다. 먹이 게이지가 차면 다음 레벨의 종 하나로 진화합니다.
-- 레벨이 높은 개체에 닿으면 게임 오버입니다. 진화 직후 1.5초는 무적입니다.
-- 같은 레벨끼리는 서로 밀어냅니다. AI 개체끼리는 먹지 않습니다.
-- 게임 오버가 되면 카메라가 플레이어를 먹은 개체를 따라갑니다.
-- 머리 위 별 3칸이 레벨입니다. 1~3단계는 초록 별, 4~6단계는 파랑 별, 7~9단계는 노랑 별이 1~3개 채워집니다. 10단계는 빨강 별 3개입니다.
-- 몸 색 7가지는 외형만 바꿉니다. 플레이어는 발밑에 흰 고리가 있습니다.
-- 1단계는 바닥의 열매를 먹고 자랍니다. 1단계에는 먹을 수 있는 하위 개체가 없기 때문입니다. 열매는 2단계까지 나오고, 플레이어 주변에 항상 몇 개가 있습니다.
-- 필요한 먹이 수는 (레벨 + 2)마리입니다.
-- 같은 레벨이라도 종마다 등급(S, A, B, C, D)이 다릅니다. 등급이 높을수록 빠르고 방향을 빨리 바꾸며, 추격자와의 속도 차이가 커집니다. S등급은 먹이가 1마리 덜, D등급은 1마리 더 필요합니다. 어떤 종으로 진화할지는 무작위입니다.
-- 상위 개체는 플레이어보다 항상 느리고, 10초 추격한 뒤 3초 쉽니다.
-- 개체는 항상 화면 밖에서 새로 나타납니다. 맵 가장자리에 닿으면 안쪽으로 조금 밀려납니다.
+## Rules
 
-## 조작
+- Touch a creature of a lower level to eat it. When the food gauge is full, you evolve into a random species of the next level.
+- Touch a creature of a higher level and the round is over. The camera then follows the creature that ate you.
+- Creatures of your own level only push you. AI creatures never eat each other.
+- At levels 1 and 2 you can also eat the berries on the ground, because level 1 has nothing lower to eat.
+- The food needed to leave a level is the level plus 2.
+- Thirty seconds after you reach level 10 the round ends in a win. Every other creature disappears, your creature rises into the sky, and a report lists the map, the play time and each species you played.
+- You cannot be hurt for a moment after you evolve.
+- The three stars above a creature show its level. Levels 1 to 3 light green stars, 4 to 6 blue, 7 to 9 yellow, and level 10 shows three red stars. Small icons above the stars show the effects it is under.
+- Body colour changes only the look.
 
-- 키보드는 방향키 또는 WASD를 씁니다. 두 키를 함께 누르면 대각선으로 움직입니다.
-- 터치와 마우스는 화면 어디든 누르고 끌면 됩니다. 누른 지점이 조이스틱 중심이 되고, 손을 떼면 멈춥니다.
+Species of one level differ in three ways. The field guide in the main menu lists all of them.
 
-## 맵
-
-판마다 코타키나발루의 다섯 곳 중 하나가 무작위로 나오고, 같은 맵이 연달아 나오지는 않습니다. 맵 전체를 걸어 다닐 수 있고, 맵마다 상호작용이 5종 있습니다. 실제 장소의 특징도 넣었습니다.
-
-| 맵 | 상호작용 | 장소의 특징 |
+| Trait | Values | Effect |
 | --- | --- | --- |
-| 탄중아루 해변 | 파도 밀림, 낙하 야자 열매, 파라솔 은신, 비치 바 음료, 조수 웅덩이 | 카수아리나(아루) 나무, 나무 잔교, 고깃배, 바다 위 노을 길 |
-| 가야 스트리트 | 길거리 음식 노점, 손수레, 좁은 골목, 바운스 천막, 호객 상인 | 아치 게이트, 붉은 등불, 덧문과 차양이 있는 상점 건물, 앳킨슨 시계탑 |
-| 툰쿠 압둘 라만 해양공원 | 해류, 조수 간만, 진주 조개, 해파리, 통통배 | 선착장 잔교, 초가 정자, 수영 구역 부표 |
-| 맹그로브 숲 | 반딧불이 수집, 진흙 구덩이, 썩은 뿌리 다리, 나무 위 쉼터, 미끄러운 진흙 | 등불이 달린 판자길, 니파야자, 강 유람선 |
-| 키나발루 산 | 구름 발판, 화강암 벽 반사, 안개 구간, 고산 구역, 정상 깃발 | 등산로 입구 게이트, 수목한계선의 산장, 정상 등산로 밧줄, 당나귀 귀 봉우리, 라플레시아 |
+| Grade | S, A, B, C, D | A better grade is faster, turns more quickly and has a wider speed margin over hunters and prey. S needs one food fewer and D one more. |
+| Detection | short, medium, wide | How far the species notices the player: 4, 5.5 or 7 units. A hunter also has to be on screen before it notices you. |
+| Temperament | passive, neutral, aggressive | How far it roams, how early it flees, and how long and how fast it chases. Each map sets its own numbers for the three. |
 
-주소 끝에 `?map=kinabalu`처럼 맵 id를 붙이면 그 맵으로 시작합니다. id는 `tanjung-aru`, `gaya-street`, `marine-park`, `mangrove`, `kinabalu`입니다.
+Hunters are always slower than the player. One chases for 10 seconds, then rests for 3. The settings can turn the chase off, and then a higher level kills only when you run into it.
 
-## 화면
+## Controls
 
-처음 실행하면 언어 선택, 게임 방법 안내, 처음 화면 순서로 나옵니다. 다음부터는 처음 화면이 바로 나옵니다. 처음 화면에는 게임 시작, 언어, 게임 방법, 설정 버튼이 있습니다. 설정에서는 화면 확대(가깝게, 보통, 멀리), 화면 흔들림, 먹이 알림을 바꿉니다.
+- Keyboard: the arrow keys or WASD. Hold two keys to move diagonally.
+- Touch or mouse: press anywhere and drag. The point you press becomes the centre of the stick, and letting go stops you.
 
-게임 중에는 왼쪽 위에 레벨, 종, 등급, 먹이 칸이 나오고, 오른쪽 위에 맵 이름과 알림이 나옵니다.
+The settings change the zoom, the enemy chase, screen shake, the amount of effects, eating notices, the touch stick and vibration.
 
-## 실행
+## Maps
 
-정적 파일 서버로 저장소 폴더를 열면 됩니다.
+Each round is played on one of five maps, picked at random. The same map never comes twice in a row. A map is 960 by 752 pixels and the camera follows the player. At the border you are pushed back in. The map guide in the main menu shows a picture of each map and explains its effects.
+
+| Map | Id | Terrain effects |
+| --- | --- | --- |
+| Wave Beach | `beach` | waves, falling coconuts, parasols to hide under, drink stands that speed you up, tide pools |
+| Market Street | `market` | food stalls, handcarts, a narrow alley, bouncy awnings, hawkers |
+| Current Isles | `islands` | a current, a tide, pearl clams, jellyfish, a ferry |
+| Firefly Swamp | `swamp` | fireflies, mud pits, rotten bridges, root shelters, slippery mud |
+| Cloud Mountain | `mountain` | clouds to ride, rock walls, fog, high ground, a summit flag |
+
+## Running
+
+Serve the folder with any static file server and open it in a browser.
 
 ```bash
 python -m http.server 5310
 ```
 
-그다음 http://localhost:5310/ 을 엽니다.
+Then open http://localhost:5310/.
 
-## 구조
+To publish, enable GitHub Pages for the repository with the source "Deploy from a branch", branch `main`, folder `/ (root)`.
 
-모든 파일은 일반 `<script>`이고 전역 `PI` 객체에 자신을 등록합니다. `index.html`이 불러오는 순서를 정하며, 모든 경로는 상대 경로입니다.
+Four parameters in the page address set up a test. Each works alone, and a parameter with no value picks at random.
+
+| Parameter | Value | Example |
+| --- | --- | --- |
+| `map` | a map id | `?map=swamp` |
+| `lv` | a starting level, 1 to 10 | `?lv=7` |
+| `species` | a species id from `data/species` | `?species=otter` |
+| `color` | red, orange, yellow, green, blue, indigo or violet | `?color=blue` |
+
+A species sets its own level, so `species` wins over `lv`. With `?species=` and `?lv=4` together you get a random level 4 species.
+
+`tools/silhouette-check.html` compares the outlines of all species, and `tools/i18n-check.html` checks that the four language files have the same keys.
+
+## Structure
+
+Every file is a plain script that adds to one global object, `PI`. `index.html` sets the load order, and all paths are relative.
 
 ```
-index.html              스크립트 로드 순서, 캔버스, 모달
+index.html              load order, canvas, status card, dialog
+icons/                  favicon and app icons
 src/
-  core/                 네임스페이스, 상수, 사용자 설정, 상태, 규칙, 입력, 프레임 루프, 효과(fx), 부팅
-  gfx/                  렌더러: 맵 버퍼와 화면 창, 카메라, 색 램프와 디더, 도형, 그림자, 윤곽선, 바람
-  creatures/            재질 팔레트, 보행 애니메이션(builder), 체형 템플릿 15개, 감지 규칙
-  behaviors/            행동 스타일 8개 (파일 1개당 1개)
-  world/                맵 굽기, 식물, 소품, 지역 랜드마크, 맵 5개, 상호작용 25개 (파일 1개당 1개)
-  i18n/                 현재 언어와 문구 조회, 한국어 조사 처리
-  ui/                   별, 알림, 상태 표시, 모달, 국기, 언어 선택, 처음 화면·안내·설정·종료 화면
+  core/                 namespace, constants, settings, state, rules, input, frame loop, effects, boot
+  gfx/                  renderer: buffers, camera, colour ramps, shapes, shadows, outlines, wind
+  creatures/            palette, animation, 15 body templates, senses
+  behaviors/            8 movement patterns, one per file
+  world/                map baking, plants, props, set pieces, 5 maps, 25 terrain effects (one per file)
+  i18n/                 current language, string lookup, Korean particles
+  ui/                   stars, notices, status card, dialog, flags, portraits, transitions, screens
 data/
-  species/              종 정의 100개 (레벨당 파일 1개)
-  speeds.js             종별 이동속도
-  grades.js             종별 등급
-  i18n/                 4개 언어의 화면 문구와 종 이름
-tools/
-  silhouette-check.html 종별 그림자 실루엣 비교, 걷기·달리기·8방향 미리보기
-  i18n-check.html       언어 파일의 키, 자리표시자, 종 이름 개수 검사
+  species/              100 species, one file per level
+  speeds.js             speed of every species
+  grades.js             grade of every species
+  senses.js             detection range of every species
+  styles.js             temperament of every species on every map
+  i18n/                 interface strings, species names and species facts in four languages
+tools/                  the two check pages
 ```
 
-## 고치는 곳
+Where to change things:
 
-| 바꾸고 싶은 것 | 파일 |
+| To change | Edit |
 | --- | --- |
-| 종의 모양과 무늬 | `data/species/lvNN.js`의 `sil` 값 |
-| 종의 속도 | `data/speeds.js` |
-| 종의 등급 | `data/grades.js`, 등급의 효과는 `src/core/config.js`의 `grades` |
-| 종의 이름 | `data/i18n/species/<언어>.js` |
-| 화면 문구 | `data/i18n/<언어>.js` |
-| 확대 정도, 개체 수, 무적 시간, 추격 속도와 시간, 효과의 세기 | `src/core/config.js` |
-| 맵의 배치와 상호작용 수치 | `src/world/maps/<맵>.js` |
-| 지역 랜드마크의 모양 | `src/world/landmarks.js` |
-| 새 체형, 행동, 상호작용 | 파일 하나를 추가하고 `index.html`에 `<script>` 한 줄 추가 |
-
-확대 정도는 `config.zoom`의 세 값으로 정합니다. 화면의 짧은 변에 보이는 게임 픽셀 수이며, 값이 작을수록 가깝게 보입니다. 플레이어는 설정 화면에서 셋 중 하나를 고릅니다.
-
-맵은 판을 시작할 때 한 번만 통째로 그려 둡니다. 그 뒤로는 매 프레임 화면에 보이는 부분만 복사하고, 화면 밖의 개체는 그리지 않습니다.
-
-## 배포
-
-GitHub Pages의 브랜치 배포를 씁니다. 저장소 Settings → Pages에서 Source를 "Deploy from a branch", 브랜치를 `main`, 폴더를 `/ (root)`로 지정합니다. 빌드가 없어서 `main`에 올린 파일이 그대로 게시됩니다.
-
-## 확인하지 못한 것
-
-- 중국어와 말레이어 문구, 종 이름은 원어민 검수를 거치지 않았습니다. 종 이름은 사전 지식으로 한 번 점검해 10개를 고쳤습니다.
-- 실제 휴대폰에서 프레임률과 터치 조작을 측정하지 않았습니다. 데스크톱 크롬에서는 한 프레임을 그리는 데 약 2~3ms가 걸렸습니다.
-- 사람이 처음부터 끝까지 플레이한 난이도 검증은 하지 않았습니다. 자동 플레이 봇으로 5개 맵의 진화와 클리어 흐름만 확인했습니다.
-
-## 라이선스
-
-[MIT License](LICENSE). 제작: [Felix](https://github.com/Felix-Hwang)
+| The shape and markings of a species | `sil` in `data/species/lvNN.js` |
+| Speed, grade, detection or temperament of a species | `data/speeds.js`, `data/grades.js`, `data/senses.js`, `data/styles.js` |
+| What a grade, a range or a temperament does | `src/core/config.js`, and `styles` in a map file |
+| Names, facts and interface text | `data/i18n/` |
+| Layout and effect numbers of a map | `src/world/maps/<id>.js` |
+| A new body, movement pattern or terrain effect | add one file and one `<script>` line in `index.html` |

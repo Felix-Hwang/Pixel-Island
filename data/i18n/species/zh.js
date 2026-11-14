@@ -1,5 +1,5 @@
 'use strict';
-// 物种名称，简体中文。共 100 个；id 与 data/species/lv01.js ~ lv10.js 一致。
+// Species names. 100 entries; ids match data/species/lv01.js .. lv10.js.
 PI.i18n.species.zh = {
   ant: '蚂蚁', ladybug: '瓢虫', housefly: '家蝇', mosquito: '蚊子', termite: '白蚁', weevil: '象鼻虫', shrew: '鼩鼱', treefrog: '树蛙', gecko: '壁虎', hummingbird: '蜂鸟',
   grasshopper: '蚱蜢', dragonfly: '蜻蜓', stagbeetle: '锹甲', mantis: '螳螂', cicada: '蝉', mouse: '小鼠', sparrow: '麻雀', chameleon: '变色龙', hermitcrab: '寄居蟹', newt: '蝾螈',

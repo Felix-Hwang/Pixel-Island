@@ -40,6 +40,8 @@
     const t = PI.i18n.species[lang] || {}, en = PI.i18n.species.en || {};
     return t[id] || en[id] || id;
   };
+  // one line about the real animal, for the field guide
+  PI.fact = id => (PI.i18n.facts[lang] || {})[id] || (PI.i18n.facts.en || {})[id] || '';
   PI.setLang = l => {
     if (!LANGS.includes(l)) l = 'en';
     lang = l;

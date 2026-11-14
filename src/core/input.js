@@ -18,7 +18,7 @@
   }
   function showStick(on) {
     if (!base) return;
-    base.hidden = knob.hidden = !on;
+    base.hidden = knob.hidden = !on || !PI.settings.on('stick');
   }
   function moveStick() {
     if (!base || !pointer) return;

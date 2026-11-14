@@ -15,9 +15,9 @@
       wanted = true;
       dialog.className = look;
       dialog.replaceChildren(panel);
-      dialog.scrollTop = 0;
       if (!dialog.open) dialog.showModal();
-      else { const first = panel.querySelector('[autofocus]'); if (first) first.focus(); }
+      else { const first = panel.querySelector('[autofocus]'); if (first) first.focus({ preventScroll: true }); }
+      dialog.scrollTop = 0; // focus goes to a button at the bottom of a long panel, but reading starts at the top
     },
     hide() {
       wanted = false;

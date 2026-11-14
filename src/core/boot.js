@@ -12,7 +12,7 @@
     let scale = Math.max(1, Math.round(Math.min(vw, vh) / short * dpr) / dpr);
     const least = Math.max(vw / G.MW, vh / G.MH);
     if (scale < least) scale = Math.ceil(least * dpr) / dpr;
-    G.setView(Math.ceil(vw / scale), Math.ceil(vh / scale));
+    G.setView(Math.ceil(vw / scale) + 1, Math.ceil(vh / scale) + 1); // one spare pixel for smooth scrolling
     canvas.style.width = G.VW * scale + 'px';
     canvas.style.height = G.VH * scale + 'px';
     G.scale = scale;
@@ -26,7 +26,7 @@
   document.addEventListener('pi:settings', e => { if (e.detail === 'zoom') fit(); });
   PI.state.phase = 'start';
   PI.loop.start();
-  // The first run goes: choose a language, read how to play, main menu. Later runs open the main menu at once.
+  // On the first run the player chooses a language, reads how to play, and reaches the main menu. Later runs open the menu at once.
   if (PI.lang()) PI.ui.screens.show('title');
   else PI.ui.language.open(() => PI.ui.screens.show('guide', { first: true }));
 })();

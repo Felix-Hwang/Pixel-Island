@@ -169,9 +169,9 @@
       diff = Math.atan2(Math.sin(diff), Math.cos(diff));
       if (Math.abs(diff) > STEP * .62) { c.face = Math.round(want / STEP) * STEP; c.sqv -= 1.2; } // snap to one of eight facings
     }
-    // squash and stretch is a damped spring: anything that hits the body gives sqv a kick and it rings out
+    // squash and stretch is a damped spring, so anything that hits the body gives sqv a kick and it rings out
     c.sqv += (-c.sq * 210 - c.sqv * 15) * dt;
-    c.sq = G.clamp(c.sq + c.sqv * dt, -.4, .5);
+    c.sq = G.clamp(c.sq + c.sqv * dt, -.5, .6);
     if (c.pop > 0) c.pop = Math.max(0, c.pop - dt * 3);
     if (c.morph) { c.morph.t += dt; if (c.morph.t >= PI.config.morph) c.morph = null; }
   };
@@ -186,7 +186,7 @@
     dim = !!opt.dim;
     mats = opt.flash ? pal.flash : dim ? pal.dim : pal.mats[c.color];
     ramps = mats.ramps || (mats.ramps = {});
-    shadow = opt.shadow !== false;
+    shadow = opt.shadow !== false && !(c.lift > 1);
     g.moving = !!c.moving; g.run = c.running ? 1 : 0; g.mix = c.runQ || 0; g.q = Math.min(1.2, c.gaitQ || 0);
     g.phase = (Math.floor((c.gaitPhase || 0) * FRAMES) + .5) / FRAMES;
     const hover = s.hover || 0, seed = c.seed || 0;
@@ -196,14 +196,14 @@
     lean = g.moving ? (tmpl.lean == null ? .12 : tmpl.lean) * g.mix : 0;
     sway = g.moving && !hover ? Math.sin(g.phase * TAU) * .022 * (1 - g.mix * .6) : 0; // weight shifts from side to side
     // stretch in the air and squash on landing while running, on top of the spring
-    const squash = G.clamp((c.sq || 0) + (g.moving ? (beat - .55) * .09 * g.mix * spring : 0), -.3, .38);
-    tall = 1 + squash * .55; wide = 1 - squash * .3;
-    baseZ = hover ? (hover + Math.round(Math.sin(Math.floor(time * 6) / 6 * 2.2 + seed) * 2) * .03) * k : 0;
+    const squash = G.clamp((c.sq || 0) + (g.moving ? (beat - .55) * .14 * g.mix * spring : 0), -.42, .5);
+    tall = 1 + squash * .8; wide = 1 - squash * .42;
+    baseZ = (hover ? (hover + Math.round(Math.sin(Math.floor(time * 6) / 6 * 2.2 + seed) * 2) * .03) * k : 0) + (c.lift || 0);
     const rate = !hover && !g.moving ? 0 : g.run ? 6 : g.moving ? 4.2 : 2.6; // wing beats per second
     R.flap = rate ? FLAP[Math.floor(time * rate * FLAP.length + seed) & 3] : .15;
     R.s = s; R.t = time;
     tmpl.build(R);
-    if (shadow && !hover) G.shadowBlob(px, py, 0, B.radius(c) * .7, 2); // contact shadow under the body
+    if (shadow && !hover && !c.lift) G.shadowBlob(px, py, 0, B.radius(c) * .7, 2); // contact shadow under the body
   };
   // how far above the ground the top of the creature is, for placing the stars
   B.headHeight = c => {

@@ -1,5 +1,5 @@
 'use strict';
-// 종 이름, 한국어. 100개. id는 data/species/lv01.js ~ lv10.js와 같다.
+// Species names. 100 entries; ids match data/species/lv01.js .. lv10.js.
 PI.i18n.species.ko = {
   ant: '개미', ladybug: '무당벌레', housefly: '집파리', mosquito: '모기', termite: '흰개미', weevil: '바구미', shrew: '땃쥐', treefrog: '청개구리', gecko: '도마뱀붙이', hummingbird: '벌새',
   grasshopper: '메뚜기', dragonfly: '잠자리', stagbeetle: '사슴벌레', mantis: '사마귀', cicada: '매미', mouse: '생쥐', sparrow: '참새', chameleon: '카멜레온', hermitcrab: '소라게', newt: '영원',

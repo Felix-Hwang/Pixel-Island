@@ -3,7 +3,7 @@
 (() => {
   const G = PI.gfx, S = G.STYLE, K = G.KIND;
   const F = PI.flora = {};
-  const BARK = [112, 88, 66], PALM = [74, 132, 76], PALM_DARK = [48, 96, 70];
+  const BARK = [112, 88, 66], PALM = [74, 132, 76], PALM_DARK = [48, 96, 70], PALM_LIGHT = [112, 168, 84];
 
   // h: trunk height. lean: how far the top drifts sideways. Returns the crown position (coconuts fall from it).
   F.palm = (x, y, h = 4.4, lean = .7, seed = 0, tint = null) => {
@@ -15,20 +15,33 @@
       G.shadowCapsule(px, y, pz, qx, y, qz, .26 - t * .1, .24 - t * .1);
       px = qx; pz = qz;
     }
-    const cx = x + lean, cz = h, fronds = 8;
+    // The crown: feathered fronds that arch up out of the top and bend down toward their tips. Each frond is a
+    // thin spine with pairs of leaflets hanging from it, longest in the middle. Older fronds hang lower.
+    const cx = x + lean, cz = h, fronds = 11;
+    const tones = tint ? [tint.leaf.map(v => v * .78), tint.leaf, tint.leaf.map(v => Math.min(255, v * 1.28 + 8))] : [PALM_DARK, PALM, PALM_LIGHT];
     for (let f = 0; f < fronds; f++) {
-      const a = f / fronds * Math.PI * 2 + seed, reach = 1.9 + G.rand2(seed * 7 + f, 3) * .5;
-      const dx = Math.cos(a), dy = Math.sin(a) * .9;
-      const ramp = G.ramp(tint ? tint.leaf : (f % 3 === 0 ? PALM_DARK : PALM));
-      const mx = cx + dx * reach * .55, my = y + dy * reach * .55, mz = cz + .35;
-      const tx = cx + dx * reach, ty = y + dy * reach, tz = cz - .75;
-      G.leaf(mx, my, mz, .5, () => {
-        G.capsule(cx, y, cz, mx, my, mz, .17, .15, ramp, S.DITHER, K.PROP);
-        G.capsule(mx, my, mz, tx, ty, tz, .15, .07, ramp, S.DITHER, K.PROP);
+      const a = f / fronds * Math.PI * 2 + seed + G.rand2(seed * 3 + f, 1) * .4, reach = 2.1 + G.rand2(seed * 7 + f, 3) * .7;
+      const droop = .5 + G.rand2(seed * 5 + f, 4) * 1.1;
+      const dx = Math.cos(a), dy = Math.sin(a) * .85, ax = -Math.sin(a), ay = Math.cos(a) * .85; // along and across the frond
+      const spine = G.ramp(tones[0]), blade = G.ramp(tones[1 + f % 2]);
+      const at = t => [cx + dx * reach * t, y + dy * reach * t, cz + .2 + Math.sin(t * Math.PI * .85) * .9 - t * t * droop];
+      const mid = at(.55);
+      G.leaf(mid[0], mid[1], mid[2], .5, () => {
+        for (let k = 0; k < 7; k++) {
+          const from = at(k / 7), to = at((k + 1) / 7), w = .38 * Math.sin(Math.min(1, (k + 1) / 7 * 1.25) * Math.PI) + .07;
+          G.capsule(from[0], from[1], from[2], to[0], to[1], to[2], .1, .08, spine, S.DITHER, K.PROP);
+          for (const side of [1, -1]) {
+            G.capsule(to[0], to[1], to[2], to[0] + ax * w * side - dx * .12, to[1] + ay * w * side - dy * .12, to[2] - w * .5, .14, .06, blade, S.DITHER, K.PROP);
+          }
+          G.ball(to[0], to[1], to[2] + .03, .1 + w * .3, blade, S.DITHER, K.PROP); // the body of the frond
+        }
       }, .8, false);
-      G.shadowCapsule(cx, y, cz, mx, my, mz, .2, .18); // the shadow of each frond is baked into the map
-      G.shadowCapsule(mx, my, mz, tx, ty, tz, .18, .1);
+      for (let k = 0; k < 3; k++) { // the shadow of each frond is baked into the map
+        const from = at(k / 3), to = at((k + 1) / 3);
+        G.shadowCapsule(from[0], from[1], from[2], to[0], to[1], to[2], .32, .2);
+      }
     }
+    G.ball(cx, y, cz + .12, .3, G.ramp(tones[1]), S.DITHER, K.PROP);
     G.ball(cx - .15, y + .12, cz - .2, .2, G.ramp([116, 84, 52]), S.GLOSS, K.PROP);
     G.ball(cx + .18, y + .1, cz - .28, .2, G.ramp([104, 76, 48]), S.GLOSS, K.PROP);
     return { x: cx, y, z: cz };
@@ -104,5 +117,61 @@
       const ox = (G.rand2(seed + n, 1) - .5) * .7, oy = (G.rand2(seed + n, 2) - .5) * .4, hh = h * (.7 + G.rand2(seed + n, 3) * .5);
       G.leaf(x + ox, y + oy, hh * .7, .1, () => G.capsule(x + ox, y + oy, 0, x + ox + .15, y + oy, hh, .09, .06, ramp, S.DITHER, K.PROP), .7, false);
     }
+  };
+  // ---------- small decoration: none of it is cover, and only logs, stumps and cairns are solid ----------
+  // a patch of small flowers
+  F.flowers = (x, y, rgb = [250, 220, 90], n = 6, seed = 0) => {
+    const bloom = G.ramp(rgb), stem = G.ramp([70, 130, 70]);
+    for (let k = 0; k < n; k++) {
+      const fx = x + (G.rand2(seed + k, 21) - .5) * 1.5, fy = y + (G.rand2(seed + k, 22) - .5) * 1, h = .16 + G.rand2(seed + k, 23) * .14;
+      G.capsule(fx, fy, 0, fx, fy, h, .05, .05, stem, S.FLAT, K.PROP);
+      G.ball(fx, fy, h + .06, .1, bloom, S.FLAT, K.PROP);
+    }
+  };
+  F.mushrooms = (x, y, rgb = [222, 86, 76], n = 3, seed = 0) => {
+    const cap = G.ramp(rgb), stem = G.ramp([236, 226, 204]);
+    for (let k = 0; k < n; k++) {
+      const mx = x + (G.rand2(seed + k, 31) - .5) * .9, my = y + (G.rand2(seed + k, 32) - .5) * .6, h = .16 + G.rand2(seed + k, 33) * .16;
+      G.capsule(mx, my, 0, mx, my, h, .07, .06, stem, S.FLAT, K.PROP);
+      G.ball(mx, my, h + .05, .17 + h * .3, cap, S.DITHER, K.PROP, .6);
+    }
+    G.shadowBlob(x, y, .1, .4, 1);
+  };
+  // a fallen log lying at yaw, with a pale cut end
+  F.log = (x, y, len = 2.4, yaw = .2, rgb = [118, 88, 68]) => {
+    const dx = Math.cos(yaw) * len / 2, dy = Math.sin(yaw) * len / 2;
+    G.capsule(x - dx, y - dy, .24, x + dx, y + dy, .24, .26, .23, G.ramp(rgb), S.ROUGH, K.PROP);
+    G.ball(x + dx * 1.04, y + dy * 1.04, .24, .19, G.ramp(rgb.map(v => v + 60)), S.FLAT, K.PROP);
+    G.shadowCapsule(x - dx, y - dy, .24, x + dx, y + dy, .24, .24, .22);
+    PI.island.addSolid({ x, y, z0: 0, z1: .5, hx: len / 2, hy: .24, yaw });
+  };
+  F.stump = (x, y, r = .34, rgb = [112, 86, 66]) => {
+    G.capsule(x, y, 0, x, y, .3, r, r * .92, G.ramp(rgb), S.ROUGH, K.PROP);
+    G.ball(x, y, .36, r * .8, G.ramp(rgb.map(v => v + 62)), S.DITHER, K.PROP, .35);
+    G.shadowBlob(x, y, .2, r, 1);
+    PI.island.addSolid({ x, y, r: r * .9 });
+  };
+  // a pile of balanced stones, as hikers leave on bare rock
+  F.cairn = (x, y, rgb = [156, 156, 166]) => {
+    const ramp = G.ramp(rgb);
+    for (const [z, r] of [[.22, .34], [.58, .25], [.86, .17]]) G.ball(x + (z > .5 ? .04 : 0), y, z, r, ramp, S.DITHER, K.PROP, .75);
+    G.shadowBlob(x, y, .3, .34, 1);
+    PI.island.addSolid({ x, y, r: .3 });
+  };
+  // shells and a starfish lying on sand
+  F.shells = (x, y, seed = 0) => {
+    const tones = [[250, 238, 224], [244, 176, 168], [236, 208, 150]];
+    for (let k = 0; k < 3; k++) G.ball(x + (G.rand2(seed + k, 41) - .5) * 1.2, y + (G.rand2(seed + k, 42) - .5) * .8, .05, .09, G.ramp(tones[(seed + k) % 3]), S.GLOSS, K.PROP, .6);
+    if (seed % 3 === 0) {
+      const star = G.ramp([240, 128, 70]);
+      for (let k = 0; k < 5; k++) G.ball(x + Math.cos(k * 1.257 + seed) * .16, y + .5 + Math.sin(k * 1.257 + seed) * .16, .04, .08, star, S.FLAT, K.PROP, .5);
+      G.ball(x, y + .5, .05, .09, star, S.FLAT, K.PROP, .6);
+    }
+  };
+  // a lily pad on water, sometimes with a flower
+  F.lily = (x, y, r = .5, seed = 0) => {
+    const pad = [G.pack(34, 92, 70), G.pack(48, 116, 82)];
+    G.groundDisc(x, y, r, r * .8, (i, wx, wy, t) => { if (t < .92) G.col[i] = pad[t < .55 ? 1 : 0]; });
+    if (seed % 2) G.ball(x + .1, y, .12, .13, G.ramp([244, 190, 214]), S.GLOSS, K.PROP);
   };
 })();

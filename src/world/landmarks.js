@@ -1,8 +1,7 @@
 'use strict';
-// Things that belong to the real places in Kota Kinabalu the maps are named after: the casuarina trees and
-// fishing jetty of Tanjung Aru, the arch, lanterns, shophouse fronts and Atkinson Clock Tower of Gaya Street,
-// the jetty, beach pavilions and swim buoys of the marine park, the boardwalk and nipah palms of the mangrove,
-// and the rest house, trail gate, summit rope and rafflesia of Mount Kinabalu. Map files call these while baking.
+// Set pieces that give each map its own character: needle trees and a jetty for the beach, an arch, lanterns,
+// shop fronts and a clock tower for the market, pavilions and swim floats for the islands, a boardwalk and
+// stemless palms for the swamp, and a rest house, a trail gate, a rope and a giant flower for the mountain.
 (() => {
   const G = PI.gfx, S = G.STYLE, K = G.KIND, I = PI.island, P = PI.props;
   const M = PI.landmarks = {};
@@ -32,7 +31,7 @@
     G.ball(x, y, h + .16, .2, G.ramp([255, 208, 120]), S.GLOSS, K.PROP);
   };
 
-  // Casuarina, the tree Tanjung Aru is named after (aru). A tall straight trunk with thin drooping needles.
+  // a tall straight trunk with thin drooping needles
   M.casuarina = (x, y, h = 6, seed = 0, colors = [[58, 78, 76], [80, 104, 88], [112, 130, 100]]) => {
     post(x, y, h, .22, [96, 72, 70]);
     for (let n = 0; n < 60; n++) {
@@ -56,7 +55,7 @@
     }
     I.addCover(x, y, 1.2 * scale);
   };
-  // Rafflesia, the giant flower of the Kinabalu foothills: five fat red petals with pale warts around a dark bowl.
+  // a giant forest flower: five fat red petals with pale warts around a dark bowl
   M.rafflesia = (x, y, r = .7) => {
     const petal = G.ramp([196, 64, 44]), bowl = G.ramp([104, 34, 40]), wart = G.ramp([240, 196, 160]);
     for (let p = 0; p < 5; p++) {
@@ -96,7 +95,7 @@
     }
     P.box({ x: h.x, y: front + .4, z0: h.z1 * .42, z1: h.z1 * .47, hx: h.hx, hy: .4, yaw: 0 }, awning, { grain: .5, seed: 2 });
   };
-  // Atkinson Clock Tower: a white timber tower with a clock face and a pointed grey roof.
+  // a white timber tower with a clock face and a pointed grey roof
   M.clockTower = (x, y) => {
     const white = [255, 250, 232], slate = [98, 106, 124];
     I.addSolid(P.box({ x, y, z0: 0, z1: 3.4, hx: .95, hy: .95, yaw: 0 }, white, { grain: .5, seed: 1 }));
@@ -150,7 +149,7 @@
       post(b[0], b[1], .55, .06, [150, 150, 160]); // an anchor stake at every bend
     }
   };
-  // two leaning rock horns side by side, like the Donkey's Ears peak
+  // two leaning rock horns side by side
   M.twinPeak = (x, y, h = 6) => {
     const rock = G.ramp([150, 150, 162]), dark = G.ramp([124, 124, 140]);
     G.capsule(x - .9, y, 0, x - 1.5, y, h, 1.2, .22, rock, S.DITHER, K.PROP);

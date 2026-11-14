@@ -24,6 +24,10 @@
 <script src="../data/i18n/species/en.js"></script>
 <script src="../data/i18n/species/zh.js"></script>
 <script src="../data/i18n/species/ms.js"></script>
+<script src="../data/i18n/facts/ko.js"></script>
+<script src="../data/i18n/facts/en.js"></script>
+<script src="../data/i18n/facts/zh.js"></script>
+<script src="../data/i18n/facts/ms.js"></script>
 <script src="../data/species/lv01.js"></script>
 <script src="../data/species/lv02.js"></script>
 <script src="../data/species/lv03.js"></script>
@@ -63,10 +67,13 @@
     for (const id of ids) if (!names[id]) problems.push(l + ': no name for species ' + id);
     for (const id of Object.keys(names)) if (!seen.has(id)) problems.push(l + ': name for unknown species ' + id);
     notes.push(l + ': ' + Object.keys(names).length + ' species names');
+    const facts = PI.i18n.facts[l] || {};
+    for (const id of ids) if (!facts[id]) problems.push(l + ': no fact for species ' + id);
+    notes.push(l + ': ' + Object.keys(facts).length + ' species facts');
   }
   for (const id of ids) if (!PI.speeds[id]) problems.push('no speed for species ' + id);
   for (const id of Object.keys(PI.speeds)) if (!seen.has(id)) problems.push('speed for unknown species ' + id);
-  for (const key of ['tanjung-aru', 'gaya-street', 'marine-park', 'mangrove', 'kinabalu']) if (!ref['map.' + key]) problems.push('en: no map name map.' + key);
+  for (const key of ['beach', 'market', 'islands', 'swamp', 'mountain']) if (!ref['map.' + key]) problems.push('en: no map name map.' + key);
 
   PI.tools.i18n = { problems, notes };
   document.getElementById('report').innerHTML =
