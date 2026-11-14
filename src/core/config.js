@@ -38,6 +38,11 @@ PI.config = {
   fleeFactor: .86,
   fleeCap: .92,            // prey never exceeds this share of the player's speed
   fleeRange: .7,           // prey reacts at this share of its detection range
+  fleeStamina: 3.5, winded: 2.5, windedPace: .5, // prey that has run this long is out of breath for a while, so a chase ends
+  earlyNotice: [0, .6, .8], // hunters notice a level-1 or level-2 player from a shorter distance
+  preyNear: 3,             // from level 3 on, at least this many edible creatures are on or beside the screen
+  giftShare: .5,           // food from terrain (stalls, clams, flags) fills at most this share of a level's gauge
+  guard: { range: 2.4, knock: 9, stun: .7 }, // when the safe moment after evolving ends, hunters this close are thrown back
   accel: 11,
   cameraFollow: 4.2,       // how quickly the camera catches up with the player; lower trails further behind
   eatReach: 1.15,          // the player eats from this share of the two radii; every other contact uses touchReach
@@ -49,6 +54,7 @@ PI.config = {
   edgeBounce: 5,
   stuck: { window: 1.2, moved: .35, escape: .9, giveUp: 3 }, // see unstick() in loop.js
   toastMs: 2500, eatToastMs: 1300,
+  hitStop: { eat: .05, over: .15 }, // seconds the world stands still on a bite (3 frames) and on a death
   overDelay: 1.6,          // seconds the camera follows the killer before the game-over panel opens
   morph: 1.2,              // seconds of the flash at the start of a round and on every evolution
   apexDelay: 30,           // seconds at level 10 before the ending

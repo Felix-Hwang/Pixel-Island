@@ -42,6 +42,15 @@
   };
   In.init = () => {
     base = document.getElementById('stick-base'); knob = document.getElementById('stick-knob');
+    // On a phone nothing but the stick should answer a finger on the game: no scrolling, no pinch zoom, no
+    // long-press menu. touch-action in the style sheet covers most of it; these cover the rest on iOS.
+    const stage = document.getElementById('stage');
+    stage.addEventListener('touchstart', e => { if (PI.state.phase === 'play') e.preventDefault(); }, { passive: false });
+    stage.addEventListener('contextmenu', e => e.preventDefault());
+    for (const type of ['gesturestart', 'gesturechange']) document.addEventListener(type, e => e.preventDefault());
+    // A swipe from the edge of the screen means "back" on a phone. During a round it lands on a spare history
+    // entry and the round goes on. Outside a round, back works as usual.
+    addEventListener('popstate', () => { if (PI.state.phase === 'play') history.pushState({ round: true }, ''); });
     addEventListener('keydown', e => {
       if (!KEYMAP[e.key] || e.metaKey || e.ctrlKey || e.altKey) return;
       if (PI.state.phase === 'play') e.preventDefault();
@@ -64,4 +73,6 @@
     document.addEventListener('pointercancel', end);
   };
   In.release = () => { pointer = null; showStick(false); };
+  // call when a round starts: leaves one history entry for a stray back gesture to use up
+  In.guardBack = () => { if (!(history.state && history.state.round)) history.pushState({ round: true }, ''); };
 })();

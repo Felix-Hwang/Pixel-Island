@@ -11,7 +11,7 @@
   const FLAP = [1, .15, -.9, .15];    // wing poses per beat
   const INK = G.pack(26, 24, 38), WHITE = G.pack(255, 255, 255);
   const frac = v => v - Math.floor(v);
-  let k = 1, px = 0, py = 0, cy = 1, sy = 0, lean = 0, bob = 0, sway = 0, tall = 1, wide = 1, baseZ = 0, mats = null, ramps = null, shadow = true, dim = false;
+  let k = 1, px = 0, py = 0, cy = 1, sy = 0, lean = 0, bob = 0, sway = 0, twist = 0, tall = 1, wide = 1, baseZ = 0, mats = null, ramps = null, shadow = true, dim = false;
   // gait.run is 1 while running; gait.mix runs 0..1 from a slow walk to a full run
   const R = { s: null, t: 0, gait: { phase: 0, run: 0, mix: 0, moving: false, q: 0 }, flap: 0 };
   const ease = t => t * t * (3 - 2 * t);
@@ -22,7 +22,7 @@
   };
   // tall and wide carry the squash and stretch: a stretched body is taller and thinner, a squashed one lower and wider
   function world(l) {
-    const f = (l[0] + (l[2] - .3) * lean) * k * wide, s = (l[1] + sway) * k * wide, u = (l[2] + bob) * k * tall + baseZ;
+    const f = (l[0] + (l[2] - .3) * lean) * k * wide, s = (l[1] + sway + l[0] * twist) * k * wide, u = (l[2] + bob) * k * tall + baseZ;
     return [px + f * cy - s * sy, py + f * sy + s * cy, u < 0 ? 0 : u];
   }
   function planted(l) { // feet stay on the ground, so they get no bob, no lean and no sway
@@ -195,6 +195,7 @@
     bob = g.moving ? beat * (.03 + .09 * g.mix * spring) : hover ? 0 : (Math.floor(time * 2.4 + seed * .37) & 1) * .014; // standing still, it breathes
     lean = g.moving ? (tmpl.lean == null ? .12 : tmpl.lean) * g.mix : 0;
     sway = g.moving && !hover ? Math.sin(g.phase * TAU) * .022 * (1 - g.mix * .6) : 0; // weight shifts from side to side
+    twist = g.moving && !hover ? Math.cos(g.phase * TAU) * .07 * (1 - g.mix * .4) : 0; // and the spine turns: the front swings one way as the back swings the other
     // stretch in the air and squash on landing while running, on top of the spring
     const squash = G.clamp((c.sq || 0) + (g.moving ? (beat - .55) * .14 * g.mix * spring : 0), -.42, .5);
     tall = 1 + squash * .8; wide = 1 - squash * .42;

@@ -1,6 +1,7 @@
 'use strict';
 // Mud pit. Deep mud pulls a creature toward its centre and cuts its speed.
 // cfg: pits [{ x, y, r }], pull (units/s toward the centre), speed (factor inside)
+// The pull is never more than 60% of what the creature can still walk, so anything can climb out.
 PI.registerInteraction('swamp', 'mud-pit', {
   bake(cfg) {
     const G = PI.gfx, mud = [[34, 34, 46], [44, 44, 54], [56, 54, 62]].map(c => G.pack(c[0], c[1], c[2])), shine = G.pack(96, 104, 122);
@@ -18,7 +19,8 @@ PI.registerInteraction('swamp', 'mud-pit', {
       const dx = p.x - c.x, dy = p.y - c.y, d = Math.hypot(dx, dy);
       if (d > p.r * .92) continue;
       m.speed *= cfg.speed;
-      if (d > .15) { m.driftX += dx / d * cfg.pull; m.driftY += dy / d * cfg.pull; }
+      const pull = Math.min(cfg.pull, c.speed * m.speed * .6);
+      if (d > .15) { m.driftX += dx / d * pull; m.driftY += dy / d * pull; }
       return;
     }
   },

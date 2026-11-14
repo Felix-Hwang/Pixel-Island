@@ -126,7 +126,7 @@
     for (const c of S.all()) {
       const m = Wd.mods(c);
       if (c.stun > 0) c.stun -= dt;
-      if (c.invuln > 0) c.invuln -= dt;
+      if (c.invuln > 0) { c.invuln -= dt; if (c.invuln <= 0 && c.isPlayer && playing) Gm().guard(c); }
       if (c.bounce > 0) c.bounce -= dt;
       if (c.ride) { B.tick(c, dt, 0, 0, 0); continue; } // it is being carried, and the interaction sets its position
       const top = c.speed * m.speed;
@@ -139,10 +139,10 @@
           const cap = Math.max(len, Math.min(1, Math.hypot(c.sepX, c.sepY)) * .55), now = Math.hypot(v.x, v.y);
           if (now > cap && now > 0) { v.x *= cap / now; v.y *= cap / now; } // a crowd spreads at a walk
           unstick(c, dt, v);
-          // It swims against the flow to hold its place, but not while it hunts. A hunter that ignored the
-          // current would outrun a player who cannot.
-          const hunting = S.time - (c.ai.chaseSeen == null ? -9 : c.ai.chaseSeen) < .3 || c.ai.dash > 0;
-          if (steady && top > 0 && !hunting) { v.x -= m.driftX / top * steady; v.y -= m.driftY / top * steady; }
+          // It swims against the flow to hold its place, but not while it chases or flees. One that ignored the
+          // current then would outrun a player who cannot.
+          const busy = S.time - (c.ai.busy == null ? -9 : c.ai.busy) < .3 || c.ai.dash > 0;
+          if (steady && top > 0 && !busy) { v.x -= m.driftX / top * steady; v.y -= m.driftY / top * steady; }
         }
       }
       const a = Math.min(1, cfg.accel * c.agile * m.accel * dt);
@@ -214,6 +214,9 @@
     const killer = S.phase === 'over' && S.killer && S.killer.body;
     if (p && !p.ride && !p.lift) {
       G.groundRing(p.x, p.y, p.r + .35, RING, 2, Math.floor(t * 8)); // a white ring on the ground marks the player
+      if (S.phase === 'play' && p.invuln > 0 && !p.morph) { // a gold ring closes in as the safe moment runs out
+        G.groundRing(p.x, p.y, p.r + .35 + Math.min(1, p.invuln / cfg.invincible) * 1.3, G.pack(GOLD[0], GOLD[1], GOLD[2]), 0, 0);
+      }
       const effect = S.phase === 'play' && PI.statusOf(p)[0];
       if (effect) { // and a second, coloured ring pulses while an effect is on
         const rgb = PI.statusColors[effect];

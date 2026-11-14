@@ -5,7 +5,7 @@
   // the map the next round will be played on
   C.upcoming = () => {
     const forced = PI.param('map'); // ?map=swamp plays one map; ?map= or no parameter picks at random
-    if (forced && PI.maps[forced]) return forced;
+    if (forced && PI.mapParts[forced]) return forced;
     const last = PI.store.get('map'), others = PI.mapOrder.filter(id => id !== last);
     return others[Math.random() * others.length | 0];
   };

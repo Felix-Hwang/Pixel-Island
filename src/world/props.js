@@ -62,7 +62,7 @@
     return top;
   };
 
-  P.crate = (x, y, size = .4, rgb = [150, 112, 70], yaw = .3, seed = 0) => P.box({ x, y, z0: 0, z1: size * 1.6, hx: size, hy: size, yaw }, rgb, { seed });
+  P.crate = (x, y, size = .4, rgb = [150, 112, 70], yaw = .3, seed = 0) => I_solid(P.box({ x, y, z0: 0, z1: size * 1.6, hx: size, hy: size, yaw }, rgb, { seed }));
 
   // a post with a small flag or sign plate on top
   P.post = (x, y, h, rgb, plate = null) => {
@@ -118,5 +118,6 @@
     G.ball(x, y, .3, .3, G.ramp(rgb), S.GLOSS, K.PROP);
     G.ball(x - .08, y + .1, .36, .16, G.ramp([250, 246, 236]), S.GLOSS, K.PROP);
     G.shadowBlob(x, y, .2, .28, 1);
+    PI.island.addSolid({ x, y, r: .26 });
   };
 })();

@@ -22,7 +22,10 @@
     return d < Math.min(cfg.senseMax, self.sense * self.mods.detect * range);
   };
   // a hunter only notices the player while the hunter itself is on screen
-  A.spots = (self, range = 1) => A.hunts() && G.visible(self.x, self.y, -4) && A.sees(self, range * PI.styleOf(self).notice);
+  A.spots = (self, range = 1) => {
+    const p = A.player(), early = p ? cfg.earlyNotice[p.lv] || 1 : 1; // a small player gets a little more room
+    return A.hunts() && G.visible(self.x, self.y, -4) && A.sees(self, range * PI.styleOf(self).notice * early);
+  };
   A.toward = (self, x, y, speed = 1) => {
     const dx = x - self.x, dy = y - self.y, l = Math.hypot(dx, dy) || 1;
     return { x: dx / l * speed, y: dy / l * speed };
@@ -65,14 +68,20 @@
     const p = A.player();
     if (!p) return null;
     const rel = A.relation(self), st = PI.styleOf(self), own = self.speed * self.mods.speed || 1, edge = cfg.grades[p.grade].edge;
+    const s = self.ai, now = S.time;
     if (rel === 'prey' && A.sees(self, (o.fear || 1) * st.fear * cfg.fleeRange)) {
-      return A.home(self, A.away(self, p.x, p.y, Math.min(cfg.fleeFactor, p.speed * (cfg.fleeCap - edge) / own)));
+      // Prey that has been running for config.fleeStamina seconds is out of breath and slows down, so a chase
+      // across the map always ends in a catch.
+      if (s.fleeAt == null || now - s.busy > .6) s.fleeAt = now;
+      s.busy = now;
+      if (now - s.fleeAt > cfg.fleeStamina) { s.windedUntil = now + cfg.winded; s.fleeAt = now + cfg.winded; }
+      const pace = now < (s.windedUntil || 0) ? cfg.windedPace : 1;
+      return A.home(self, A.away(self, p.x, p.y, Math.min(cfg.fleeFactor, p.speed * (cfg.fleeCap - edge) / own) * pace));
     }
     if (rel !== 'hunter') return null;
-    const s = self.ai, now = S.time;
     if (now < (s.restUntil || 0) || !A.spots(self, o.range || 1)) return null;
     if (s.chaseAt == null || now - s.chaseSeen > .6) s.chaseAt = now;
-    s.chaseSeen = now;
+    s.chaseSeen = now; s.busy = now;
     if (now - s.chaseAt > cfg.stamina * st.stamina) { s.restUntil = now + cfg.rest; s.chaseAt = null; return null; }
     const pace = (o.chase || 1) * st.chase;
     return A.toward(self, p.x, p.y, Math.min(cfg.chaseFactor * pace, p.speed * Math.min(.98, (cfg.chaseCap - edge) * pace) / own));

@@ -31,6 +31,7 @@ PI.registerInteraction('islands', 'boat-ride', {
         st.at = 1 - st.at;
         const d = cfg.docks[st.at];
         c.x = d.x; c.y = d.y; c.ride = null; st.rider = null;
+        c.invuln = Math.max(c.invuln, 1.2); // a moment to step off before anything waiting at the jetty can bite
         Wd.cooldown(c, 'boat', 3);
       }
       return;

@@ -19,7 +19,9 @@ License: [MIT](LICENSE). Made by [Felix](https://github.com/Felix-Hwang).
 - At levels 1 and 2 you can also eat the berries on the ground, because level 1 has nothing lower to eat.
 - The food needed to leave a level is the level plus 2.
 - Thirty seconds after you reach level 10 the round ends in a win. Every other creature disappears, your creature rises into the sky, and a report lists the map, the play time and each species you played.
-- You cannot be hurt for a moment after you evolve.
+- You cannot be hurt for a moment after you evolve. When that moment ends, any hunter standing on you is thrown back.
+- Food from terrain, such as food stalls, clams and the summit flag, fills at most half of a gauge. The rest has to be caught.
+- Prey that has fled for 3.5 seconds runs out of breath and slows down.
 - The three stars above a creature show its level. Levels 1 to 3 light green stars, 4 to 6 blue, 7 to 9 yellow, and level 10 shows three red stars. Small icons above the stars show the effects it is under.
 - Body colour changes only the look.
 
@@ -79,17 +81,17 @@ A species sets its own level, so `species` wins over `lv`. With `?species=` and 
 
 ## Structure
 
-Every file is a plain script that adds to one global object, `PI`. `index.html` sets the load order, and all paths are relative.
+Every file is a plain script that adds to one global object, `PI`. `index.html` sets the load order, and all paths are relative. The page loads the engine up front. `src/core/loader.js` fetches the chosen language, the map of the round and the field guide facts when they are needed.
 
 ```
 index.html              load order, canvas, status card, dialog
 icons/                  favicon and app icons
 src/
-  core/                 namespace, constants, settings, state, rules, input, frame loop, effects, boot
+  core/                 namespace, constants, loader, settings, state, rules, input, frame loop, effects, boot
   gfx/                  renderer: buffers, camera, colour ramps, shapes, shadows, outlines, wind
   creatures/            palette, animation, 15 body templates, senses
   behaviors/            8 movement patterns, one per file
-  world/                map baking, plants, props, set pieces, 5 maps, 25 terrain effects (one per file)
+  world/                map baking, plants, props, set pieces, the map list, 5 maps, 25 terrain effects (one per file)
   i18n/                 current language, string lookup, Korean particles
   ui/                   stars, notices, status card, dialog, flags, portraits, transitions, screens
 data/
@@ -111,4 +113,5 @@ Where to change things:
 | What a grade, a range or a temperament does | `src/core/config.js`, and `styles` in a map file |
 | Names, facts and interface text | `data/i18n/` |
 | Layout and effect numbers of a map | `src/world/maps/<id>.js` |
-| A new body, movement pattern or terrain effect | add one file and one `<script>` line in `index.html` |
+| A new body or movement pattern | add one file and one `<script>` line in `index.html` |
+| A new map or terrain effect | add the file and list it in `src/world/manifest.js` |

@@ -11,7 +11,8 @@ PI.registerInteraction('market', 'alley', {
     for (const end of [-1, 1]) PI.props.box({ x: z.x, y: z.y + end * (z.hy + .2), z0: 1.15, z1: 1.3, hx: z.hx, hy: .06, yaw: 0 }, [244, 190, 66], { grain: .3 });
   },
   blocks(cfg, st, c, x, y) {
-    const z = cfg.zone;
-    return c.lv > cfg.maxLevel && Math.abs(x - z.x) < z.hx + .3 && Math.abs(y - z.y) < z.hy + .4;
+    const z = cfg.zone, inside = (px, py) => Math.abs(px - z.x) < z.hx + .3 && Math.abs(py - z.y) < z.hy + .4;
+    // One that grew past the limit while inside may still walk out; it only cannot come back in.
+    return c.lv > cfg.maxLevel && inside(x, y) && !(c.x != null && inside(c.x, c.y));
   },
 });

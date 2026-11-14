@@ -11,6 +11,7 @@
     morsels: [],
     respawns: [],       // seconds until the next creature arrives
     gauge: 0, need: 0,
+    gifts: 0,           // food taken from terrain at this level, see config.giftShare
     killer: null,       // after a game over: { words, reached, body }; the camera follows body
     overAt: 0,
     apexAt: 0,          // the time at which a level-10 player ascends
@@ -21,7 +22,7 @@
   };
   S.all = () => S.player ? [S.player, ...S.creatures] : S.creatures;
   S.reset = () => {
-    S.time = 0; S.player = null; S.creatures = []; S.morsels = []; S.respawns = []; S.gauge = 0; S.need = 0;
+    S.time = 0; S.player = null; S.creatures = []; S.morsels = []; S.respawns = []; S.gauge = 0; S.need = 0; S.gifts = 0;
     S.killer = null; S.overAt = 0; S.apexAt = 0; S.finaleAt = 0; S.history = []; S.freeze = 0;
   };
 

@@ -108,6 +108,7 @@
     if (seed % 2) G.ball(x - r * .5, y + r * .3, r * .22, r * .45, ramp, S.DITHER, K.PROP, .7);
     G.shadowBlob(x, y, r * .5, r, 1);
     G.shadowBlob(x + r * .55, y + r * .2, r * .3, r * .6, 1);
+    PI.island.addSolid({ x: x + r * .15, y, r: r * .85 });
   };
 
   // a tuft of tall reeds or coral fingers: thin leaf blades that sway

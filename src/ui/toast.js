@@ -32,9 +32,9 @@
     }, PI.config.toastMs);
   }
   PI.ui.toast = {
-    show(text) { queue.push(text); pump(); },
+    show(text) { queue.push(text); if (queue.length > 2) queue.shift(); closeQuick(); pump(); },
     flash(text) {
-      if (!PI.settings.on('notice')) return;
+      if (!PI.settings.on('notice') || card) return; // a start or evolution card has the corner to itself
       closeQuick();
       quick = make(text, 'toast quick');
       box().append(quick);

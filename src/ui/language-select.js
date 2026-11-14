@@ -25,7 +25,10 @@
           b.append(english);
         }
         if (l === guess) { b.classList.add('hint'); b.autofocus = true; } // highlighted, but still the player's own choice
-        b.addEventListener('click', () => { PI.setLang(l); done(); });
+        b.addEventListener('click', () => { // the words of that language are fetched first
+          for (const other of list.children) other.disabled = true;
+          PI.needLang(l).then(() => { PI.setLang(l); done(); }, () => { for (const other of list.children) other.disabled = false; });
+        });
         list.append(b);
       }
       panel.append(title, list);

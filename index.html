@@ -25,24 +25,14 @@
 <div id="stick-base" hidden></div><div id="stick-knob" hidden></div>
 <dialog id="screen" closedby="none" aria-labelledby="screen-title"></dialog>
 
-<!-- Load order matters: every file is a plain script that adds to the global PI object. All paths are relative. -->
+<!-- Load order matters: every file is a plain script that adds to the global PI object. All paths are relative.
+     Language files and map files are not listed here. src/core/loader.js fetches the ones a visit needs. -->
 <script src="src/core/namespace.js"></script>
 <script src="src/core/config.js"></script>
+<script src="src/core/loader.js"></script>
 <script src="src/core/settings.js"></script>
 
-<!-- words -->
-<script src="data/i18n/ko.js"></script>
-<script src="data/i18n/en.js"></script>
-<script src="data/i18n/zh.js"></script>
-<script src="data/i18n/ms.js"></script>
-<script src="data/i18n/species/ko.js"></script>
-<script src="data/i18n/species/en.js"></script>
-<script src="data/i18n/species/zh.js"></script>
-<script src="data/i18n/species/ms.js"></script>
-<script src="data/i18n/facts/ko.js"></script>
-<script src="data/i18n/facts/en.js"></script>
-<script src="data/i18n/facts/zh.js"></script>
-<script src="data/i18n/facts/ms.js"></script>
+<!-- words: the strings themselves are loaded on demand -->
 <script src="src/i18n/i18n.js"></script>
 
 <!-- renderer -->
@@ -94,37 +84,8 @@
 <script src="src/world/props.js"></script>
 <script src="src/world/landmarks.js"></script>
 <script src="src/world/interactions.js"></script>
-<script src="src/world/maps/beach.js"></script>
-<script src="src/world/maps/market.js"></script>
-<script src="src/world/maps/islands.js"></script>
-<script src="src/world/maps/swamp.js"></script>
-<script src="src/world/maps/mountain.js"></script>
+<script src="src/world/manifest.js"></script>
 <script src="src/world/map-cycle.js"></script>
-<script src="src/world/interactions/beach/wave.js"></script>
-<script src="src/world/interactions/beach/coconut-fall.js"></script>
-<script src="src/world/interactions/beach/parasol.js"></script>
-<script src="src/world/interactions/beach/beach-bar.js"></script>
-<script src="src/world/interactions/beach/tide-pool.js"></script>
-<script src="src/world/interactions/market/food-stall.js"></script>
-<script src="src/world/interactions/market/handcart.js"></script>
-<script src="src/world/interactions/market/alley.js"></script>
-<script src="src/world/interactions/market/awning-bounce.js"></script>
-<script src="src/world/interactions/market/hawker.js"></script>
-<script src="src/world/interactions/islands/current.js"></script>
-<script src="src/world/interactions/islands/tide.js"></script>
-<script src="src/world/interactions/islands/pearl-clam.js"></script>
-<script src="src/world/interactions/islands/jellyfish.js"></script>
-<script src="src/world/interactions/islands/boat-ride.js"></script>
-<script src="src/world/interactions/swamp/firefly.js"></script>
-<script src="src/world/interactions/swamp/mud-pit.js"></script>
-<script src="src/world/interactions/swamp/rotten-bridge.js"></script>
-<script src="src/world/interactions/swamp/tree-rest.js"></script>
-<script src="src/world/interactions/swamp/slippery-mud.js"></script>
-<script src="src/world/interactions/mountain/cloud-platform.js"></script>
-<script src="src/world/interactions/mountain/granite-wall.js"></script>
-<script src="src/world/interactions/mountain/fog.js"></script>
-<script src="src/world/interactions/mountain/high-altitude.js"></script>
-<script src="src/world/interactions/mountain/summit-flag.js"></script>
 
 <!-- game -->
 <script src="src/core/state.js"></script>

@@ -13,19 +13,24 @@
   let tabCount = 0;
 
   // both leave the round through a transition, so the old map never jumps straight to the new one
+  // put a map on screen, fetching its files first; if they cannot be fetched, the map already loaded is used again
+  async function enter(id) {
+    try { await PI.needMap(id); } catch { id = PI.state.map.id; }
+    PI.game.loadMap(id);
+  }
   function nextRound() {
     Sc.hide();
-    PI.ui.transition(() => {
+    PI.ui.transition(async () => {
       PI.ui.toast.clear();
-      PI.game.loadMap(PI.mapCycle.upcoming());
+      await enter(PI.mapCycle.upcoming());
       PI.game.start();
     });
   }
   function toMenu(id) {
     Sc.hide();
-    PI.ui.transition(() => {
+    PI.ui.transition(async () => {
       PI.ui.toast.clear();
-      PI.game.loadMap(typeof id === 'string' ? id : PI.mapCycle.upcoming());
+      await enter(typeof id === 'string' ? id : PI.mapCycle.upcoming());
       PI.state.phase = 'start';
     }).then(() => Sc.show('title'));
   }
@@ -100,7 +105,7 @@
   function mapInfo(id) {
     const shot = el('img', 'mapshot'), effects = el('dl', 'effects');
     shot.src = PI.gfx.mapImage(3); shot.alt = '';
-    for (const key of Object.keys(PI.maps[id].interactions)) {
+    for (const key of PI.mapParts[id]) {
       effects.append(el('dt', null, PI.t('fx.' + id + '.' + key + '.n')), el('dd', null, PI.t('fx.' + id + '.' + key + '.d')));
     }
     return [shot, el('h2', null, PI.t('maps.look')), el('p', null, PI.t('mapinfo.' + id + '.look')),
@@ -191,9 +196,9 @@
     maps() {
       const ids = PI.mapOrder, first = PI.state.map.id, panel = el('div', 'panel maps');
       const t = tabs(ids.map(id => ({ text: PI.t('map.' + id) })), (n, into) => {
-        const id = ids[n], fill = () => into.replaceChildren(...mapInfo(id));
-        if (id === PI.state.map.id) fill();
-        else PI.ui.transition(() => { PI.game.loadMap(id); PI.state.phase = 'start'; fill(); });
+        const fill = () => into.replaceChildren(...mapInfo(PI.state.map.id));
+        if (ids[n] === PI.state.map.id) fill();
+        else PI.ui.transition(async () => { await enter(ids[n]); PI.state.phase = 'start'; fill(); });
       }, PI.t('maps.title'));
       panel.append(heading(PI.t('maps.title')), t.list, t.panel, backButton(() => (PI.state.map.id === first ? Sc.show('title') : toMenu(first))));
       t.select(ids.indexOf(first));
@@ -231,6 +236,11 @@
   };
   Sc.hide = () => { PI.ui.modal.hide(); Sc.current = null; };
   Sc.show = (kind, opt = {}) => {
+    if (kind === 'codex' && !PI.i18n.facts[PI.lang()]) { // the facts are only fetched when the field guide is opened
+      const open = () => { PI.i18n.facts[PI.lang()] = PI.i18n.facts[PI.lang()] || {}; Sc.show(kind, opt); };
+      PI.needFacts(PI.lang()).then(open, open);
+      return;
+    }
     Sc.current = kind;
     PI.ui.hud.update();
     const made = builders[kind](opt);

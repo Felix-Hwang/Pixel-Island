@@ -25,8 +25,9 @@
   const unseen = (x, y) => !G.visible(x, y, 30);
   // During a round a new creature always arrives outside the view. anywhere: used when a map is first filled.
   Gm.spawn = (lv = pickLevel(S.player ? S.player.lv : 1), anywhere = false) => {
-    const at = I.randomPoint((x, y) => I.edge(x, y) < .8 && (anywhere || unseen(x, y)), 120);
-    const c = PI.makeCreature(pick(PI.species['lv' + lv]), lv, at.x, at.y);
+    const c = PI.makeCreature(pick(PI.species['lv' + lv]), lv, 0, 0);
+    const at = I.randomPoint((x, y) => I.edge(x, y) < .8 && (anywhere || unseen(x, y)) && !PI.world.blocked(c, x, y), 120);
+    c.x = at.x; c.y = at.y; c.home = { x: at.x, y: at.y }; c.jam.x = at.x; c.jam.y = at.y;
     S.creatures.push(c);
     return c;
   };
@@ -97,7 +98,7 @@
     const p = PI.makeCreature(form.sp, form.lv, at.x, at.y, true);
     if (form.color) p.color = form.color;
     p.face = Math.PI / 4;
-    S.player = p; S.gauge = 0; S.need = Gm.need(p.lv, p.sp.id); S.killer = null; S.overAt = 0; S.history = [];
+    S.player = p; S.gauge = 0; S.gifts = 0; S.need = Gm.need(p.lv, p.sp.id); S.killer = null; S.overAt = 0; S.history = [];
     S.apexAt = p.lv >= 10 ? S.time + cfg.apexDelay : 0;
     record(p);
     for (const c of S.creatures) if (c.lv > p.lv && Math.hypot(c.x - p.x, c.y - p.y) < cfg.spawnMinDist) {
@@ -107,13 +108,22 @@
     p.morph = { t: cfg.morph * .4, from: null }; // it appears out of light
     p.invuln = cfg.morph + cfg.invincible;
     S.phase = 'play';
+    PI.input.guardBack();
     PI.loop.snapCamera();
     stockMorsels(true);
     PI.ui.toast.show(PI.t('card.start', PI.describe(p)));
     PI.ui.hud.update();
   };
-  Gm.addFood = n => {
+  // gift: the food comes from terrain and not from a catch. Terrain fills at most config.giftShare of a gauge,
+  // so standing at a food stall cannot replace hunting.
+  Gm.addFood = (n, gift = false) => {
     if (S.phase !== 'play' || S.player.lv >= 10) return;
+    if (gift) {
+      n = Math.min(n, Math.floor(S.need * cfg.giftShare) - S.gifts);
+      if (n <= 0) return;
+      S.gifts += n;
+      Fx.text(S.player.x, S.player.y, PI.builder.headHeight(S.player), '+' + n);
+    }
     S.gauge += n;
     if (S.gauge >= S.need) evolve();
     PI.ui.hud.update();
@@ -127,7 +137,7 @@
     PI.reshape(p, pick(PI.species['lv' + lv]), lv);
     record(p);
     p.invuln = cfg.morph + cfg.invincible;
-    S.gauge = 0; S.need = Gm.need(lv, p.sp.id);
+    S.gauge = 0; S.gifts = 0; S.need = Gm.need(lv, p.sp.id);
     Fx.shake(cfg.shake.evolve, .5);
     Fx.flash(.55, .3);
     Fx.buzz(40);
@@ -147,7 +157,7 @@
     Fx.flash(.5, .25);
     Fx.buzz(140);
     killer.sqv += 9; killer.pop = .45;
-    S.freeze = .16;
+    S.freeze = cfg.hitStop.over;
     S.player = null;
     S.phase = 'over';
     S.overAt = S.time + cfg.overDelay;
@@ -204,7 +214,7 @@
     p.sqv += big ? 10 : 6;
     p.pop = Math.max(p.pop, big ? .38 : .22);
     Fx.buzz(big ? 18 : 8);
-    if (big) { Fx.shake(cfg.shake.eat, .18); S.freeze = .06; }
+    if (big) { Fx.shake(cfg.shake.eat, .18); S.freeze = cfg.hitStop.eat; }
   }
   function eat(c) {
     const gain = 1 + S.player.mods.food;
@@ -245,6 +255,45 @@
       if (S.phase !== 'play') return;
     }
   };
+  // The safe moment after evolving has just ended. Hunters that stand on top of the player would kill it on the
+  // spot, so they are thrown back and dazed, and the player gets a fair start.
+  Gm.guard = p => {
+    let hit = false;
+    for (const c of S.creatures) {
+      const dx = c.x - p.x, dy = c.y - p.y, d = Math.hypot(dx, dy);
+      if (c.lv <= p.lv || d > cfg.guard.range + c.r) continue;
+      c.kx = (d ? dx / d : 1) * cfg.guard.knock; c.ky = (d ? dy / d : 0) * cfg.guard.knock;
+      c.stun = Math.max(c.stun, cfg.guard.stun); c.ai.restUntil = S.time + 1.5;
+      hit = true;
+    }
+    if (!hit) return;
+    Fx.ring(p.x, p.y, p.r, cfg.guard.range + 1, [255, 255, 255], .35);
+    Fx.shake(cfg.shake.bump, .15);
+  };
+  // From level 3 there are no berries. If too few edible creatures are on or beside the screen, the farthest one
+  // is moved to just outside the view, so the player never has to wander an empty map looking for food.
+  let preyCheck = 0;
+  function stockPrey(dt) {
+    const p = S.player;
+    preyCheck -= dt;
+    if (!p || S.phase !== 'play' || p.lv < 3 || p.lv >= 10 || preyCheck > 0) return;
+    preyCheck = 1.2;
+    let near = 0, far = null, farthest = 0;
+    for (const c of S.creatures) {
+      if (c.lv >= p.lv) continue;
+      if (G.visible(c.x, c.y, 110)) { near++; continue; }
+      const d = Math.hypot(c.x - p.x, c.y - p.y);
+      if (d > farthest) { farthest = d; far = c; }
+    }
+    if (near >= cfg.preyNear) return;
+    if (!far) { // nothing edible is left off screen, so one arrives in place of a creature nobody can see
+      const spare = S.creatures.find(c => c.lv >= p.lv && !G.visible(c.x, c.y, 60));
+      if (spare) S.creatures.splice(S.creatures.indexOf(spare), 1);
+      far = Gm.spawn(Math.max(1, p.lv - 1 - (Math.random() * 2 | 0)));
+    }
+    const at = I.randomPoint((x, y) => I.edge(x, y) < .8 && unseen(x, y) && G.visible(x, y, 110) && !PI.world.blocked(far, x, y), 160);
+    if (unseen(at.x, at.y)) { far.x = at.x; far.y = at.y; far.home = { x: at.x, y: at.y }; far.vx = 0; far.vy = 0; }
+  }
   let shownSecond = -1;
   Gm.tick = dt => {
     if (S.phase === 'finale') return finale(dt);
@@ -253,6 +302,7 @@
       if (S.respawns[n] <= 0) { S.respawns.splice(n, 1); if (S.creatures.length < cfg.population) Gm.spawn(); }
     }
     stockMorsels(false);
+    stockPrey(dt);
     // creatures outside the player's range of levels are swapped for fitting ones, off screen
     if (S.player) for (let n = 0; n < 2; n++) {
       const lv = S.player.lv, c = S.creatures[Math.random() * S.creatures.length | 0];

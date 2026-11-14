@@ -8,7 +8,7 @@
   PI.ui.hud = {
     update() {
       const hud = byId('hud'), S = PI.state, p = S.player;
-      byId('map-name').textContent = S.map ? PI.t('map.' + S.map.id) : '';
+      byId('map-name').textContent = S.map && PI.lang() ? PI.t('map.' + S.map.id) : '';
       if (!p || S.phase !== 'play') { hud.hidden = true; return; }
       hud.hidden = false;
       byId('hud-level').textContent = PI.t('hud.level', { lv: p.lv });

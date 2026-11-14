@@ -1,6 +1,7 @@
 'use strict';
-// This file loads last. It bakes the first map, sizes the view to fill the screen and opens the first screen.
-(() => {
+// This file loads last. It fetches the language and the first map, sizes the view to fill the screen and opens
+// the first screen.
+(async () => {
   const G = PI.gfx, canvas = document.getElementById('c');
   G.init(canvas);
   // The view fills the whole window. Its scale is a whole number of device pixels per game pixel, chosen so the
@@ -19,10 +20,15 @@
     document.documentElement.classList.toggle('portrait', vh > vw);
   }
   PI.input.init();
-  PI.game.loadMap(PI.mapCycle.upcoming());
+  const first = PI.mapCycle.upcoming();
+  // the language and the map come over the network together; a returning player has a language already
+  await Promise.all([PI.lang() ? PI.needLang(PI.lang()) : null, PI.needMap(first)]);
+  PI.game.loadMap(first);
   fit();
   G.toView();
+  // The window changes size when a phone turns or its address bar slides away.
   addEventListener('resize', fit);
+  if (window.visualViewport) visualViewport.addEventListener('resize', fit);
   document.addEventListener('pi:settings', e => { if (e.detail === 'zoom') fit(); });
   PI.state.phase = 'start';
   PI.loop.start();

@@ -14,18 +14,24 @@
     requestAnimationFrame(step);
     setTimeout(() => { over = true; each(1); done(); }, ms);
   });
-  // change() runs while the screen is black. The promise resolves when the new scene is fully open.
+  // change() runs while the screen is black and may be async (it may have to fetch a map). The curtain opens
+  // again even if change() fails, so an error can never leave the screen black.
   PI.ui.transition = async change => {
-    if (busy) { change(); return; }
+    if (busy) { await change(); return; }
     busy = true;
     const Fx = PI.fx, kind = PI.gfx.still() ? 'fade' : KINDS[Math.random() * KINDS.length | 0];
     document.body.classList.add('switching');
-    await run(CLOSE, u => Fx.curtain(kind, ease(u)));
-    change();
-    await run(HOLD, () => Fx.curtain(kind, 1));
-    await run(OPEN, u => Fx.curtain(kind, 1 - ease(u)));
-    Fx.curtain(kind, 0);
-    document.body.classList.remove('switching');
-    busy = false;
+    try {
+      await run(CLOSE, u => Fx.curtain(kind, ease(u)));
+      await change();
+      await run(HOLD, () => Fx.curtain(kind, 1));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      await run(OPEN, u => Fx.curtain(kind, 1 - ease(u)));
+      Fx.curtain(kind, 0);
+      document.body.classList.remove('switching');
+      busy = false;
+    }
   };
 })();

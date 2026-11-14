@@ -24,7 +24,7 @@ PI.registerMap = def => {
   const styles = {};
   for (const key of Object.keys(PI.config.styles)) styles[key] = { ...PI.config.styles[key], ...((def.styles || {})[key] || {}) };
   def.styles = styles;
-  PI.maps[def.id] = def; PI.mapOrder[def.order - 1] = def.id;
+  PI.maps[def.id] = def;
   return def;
 };
 PI.registerInteraction = (mapId, id, def) => { def.id = id; def.map = mapId; PI.interactions[mapId + '/' + id] = def; return def; };
@@ -33,9 +33,18 @@ PI.speciesById = id => PI.allSpecies().find(s => s.id === id);
 PI.levelOf = id => { for (let lv = 1; lv <= 10; lv++) if (PI.species['lv' + lv].some(s => s.id === id)) return lv; return 0; };
 // A test parameter from the page address. It is null when absent and '' when given without a value, which means random.
 PI.param = name => { try { const q = new URLSearchParams(location.search); return q.has(name) ? q.get(name) : null; } catch { return null; } };
+// Settings and the language are kept in localStorage. A browser may refuse storage (some private windows do), so
+// every value is also kept in memory and still holds for the rest of the visit.
+const kept = {};
 PI.store = {
-  get(key) { try { return localStorage.getItem('pixel-island.' + key); } catch { return null; } },
-  set(key, value) { try { localStorage.setItem('pixel-island.' + key, value); } catch {} },
+  get(key) {
+    if (key in kept) return kept[key];
+    try { return localStorage.getItem('pixel-island.' + key); } catch { return null; }
+  },
+  set(key, value) {
+    kept[key] = String(value);
+    try { localStorage.setItem('pixel-island.' + key, value); } catch {}
+  },
   session(key, value) {
     try {
       if (value === undefined) { const v = sessionStorage.getItem('pixel-island.' + key); sessionStorage.removeItem('pixel-island.' + key); return v; }
