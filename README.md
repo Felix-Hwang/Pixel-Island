@@ -1,4 +1,4 @@
-![icon](./icons/icon-192.png)
+![social-preview](./icons/social-preview.png)
 # Pixel Island
 
 Play: https://felix-hwang.github.io/Pixel-Island/
