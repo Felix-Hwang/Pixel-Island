@@ -35,7 +35,7 @@
   const clams = I.spread(16, 61, 9, (x, y) => { const s = sandAt(x, y); return s > .86 && s < 1.12; });
 
   const map = PI.registerMap({
-    id: 'islands', order: 3, seed: 37,
+    id: 'islands',
     scene: { shadowX: 1.2, shadowY: -.1, shadowTint: [.6, .62, .8] },
     start: { x: 0, y: -6 },
     centre: ISLES[0], bars: BARS, sandAt, barAt, terrain,

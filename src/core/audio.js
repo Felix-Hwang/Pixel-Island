@@ -4,27 +4,43 @@
 // A browser only lets a page make sound after the player has pressed something, so everything waits for that.
 // The files under assets/audio are made by tools/audio/build.js.
 (() => {
-  const DIR = 'assets/audio/', LOOP = 30, MUSIC = .5, SOUND = .85;
-  const EFFECTS = ('ui_click ui_back ui_select game_start transition spawn eat_berry eat_creature food_bonus evolve guard_burst alert chase_end ' +
-    'bump_edge push death gameover apex_start countdown_tick finale_pop ascend victory status_stun status_fast status_slow status_hidden ' +
-    'status_safe status_blind status_end splash wave coconut_drop drink food_stall handcart_hit awning_bounce hawker clam jellyfish_zap ' +
-    'boat_ride tide_change firefly light_grow mud bridge_break slip cloud_ride flag').split(' ').map(name => 'sfx_' + name);
+  const DIR = 'assets/audio/', LOOP = 30, MUSIC = .5, SOUND = .85, RETRY = 10000;
+  const effects = list => list.split(' ').map(name => 'sfx_' + name);
+  // Effects are fetched in three lots: these after the first press, a map's own when that map is put on screen,
+  // and the ending's when the player nears level 10. A sound outside these lists is fetched the first time it is asked for.
+  const COMMON = effects('ui_click ui_back ui_select game_start transition spawn eat_berry eat_creature food_bonus evolve guard_burst alert ' +
+    'chase_end bump_edge push death gameover status_stun status_fast status_slow status_hidden status_safe status_blind status_end');
+  const LOCAL = {
+    beach: effects('wave coconut_drop drink splash'),
+    market: effects('food_stall handcart_hit awning_bounce hawker'),
+    islands: effects('splash clam jellyfish_zap boat_ride tide_change'),
+    swamp: effects('splash firefly light_grow mud bridge_break slip'),
+    mountain: effects('cloud_ride flag'),
+  };
+  const ENDING = effects('apex_start countdown_tick finale_pop ascend victory');
   const Au = PI.audio = {};
-  const buffers = new Map(), last = {}; // name -> a decoded sound, or the promise of one; name -> when it last played
-  let ctx = null, musicOut = null, soundOut = null;
+  // name -> a decoded sound, or the promise of one; when it last played; when a failed fetch may be tried again
+  const buffers = new Map(), last = {}, retryAt = {};
+  let ctx = null, musicOut = null, soundOut = null, stocked = '';
   let track = null, chase = null, calmAt = 0, hushUntil = 0; // a playing track is { name, gain, src, level }
 
   const ready = name => { const b = buffers.get(name); return b && !b.then ? b : null; };
+  // The music is asked for on every frame until it arrives, so a file that fails is left alone for a while.
   function load(name) {
-    if (!ctx) return Promise.resolve(null);
+    if (!ctx || performance.now() < (retryAt[name] || 0)) return Promise.resolve(null);
     if (!buffers.has(name)) {
       buffers.set(name, fetch(DIR + (name.startsWith('bgm_') ? 'bgm/' : 'sfx/') + name + '.mp3')
         .then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
         .then(data => ctx.decodeAudioData(data))
         .then(buffer => { buffers.set(name, buffer); return buffer; })
-        .catch(() => { buffers.delete(name); return null; }));
+        .catch(() => { buffers.delete(name); retryAt[name] = performance.now() + RETRY; return null; }));
     }
     return Promise.resolve(buffers.get(name));
+  }
+  function loadCommon() { // a few at a time
+    if (!ctx || !PI.settings.on('sound')) return;
+    const queue = COMMON.filter(name => !buffers.has(name)), next = () => { const name = queue.shift(); if (name) load(name).then(next); };
+    for (let n = 0; n < 6; n++) next();
   }
   const levels = () => {
     if (!ctx) return;
@@ -39,15 +55,13 @@
       musicOut = ctx.createGain(); soundOut = ctx.createGain();
       musicOut.connect(ctx.destination); soundOut.connect(ctx.destination);
       levels();
-      // the effects are small, so all of them are fetched now, a few at a time
-      const queue = EFFECTS.slice(), next = () => { const name = queue.shift(); if (name) load(name).then(next); };
-      for (let n = 0; n < 6; n++) next();
+      loadCommon();
     }
     if (ctx.state !== 'running' && !document.hidden) ctx.resume();
   }
   for (const type of ['pointerdown', 'keydown', 'touchend']) addEventListener(type, unlock, { capture: true, passive: true });
   document.addEventListener('visibilitychange', () => { if (ctx) { if (document.hidden) ctx.suspend(); else ctx.resume(); } });
-  document.addEventListener('pi:settings', levels);
+  document.addEventListener('pi:settings', () => { levels(); loadCommon(); });
 
   // o.volume 0..1, o.rate (1 = as recorded, higher = higher and shorter), o.delay (s), o.gap (s): the same sound is
   // not started twice within this time, so a burst of events does not pile up into noise
@@ -113,10 +127,13 @@
       else if (playing) want = S.apexAt ? 'bgm_apex' : 'bgm_' + S.map.id;
       else if (S.phase === 'clear') want = 'bgm_ending';
     }
-    if (on && playing) { // what the round may need next is fetched ahead of time
-      load('bgm_chase');
-      if (S.player && S.player.lv >= 9) load('bgm_apex');
-      if (S.apexAt) load('bgm_ending');
+    const late = playing && S.player && S.player.lv >= 9;
+    // what the round may need next is fetched ahead of time
+    const ahead = on && playing ? ['bgm_chase', late && 'bgm_apex', S.apexAt && 'bgm_ending'].filter(Boolean) : [];
+    ahead.forEach(load);
+    if (PI.settings.on('sound')) {
+      if (S.map && S.map.id !== stocked) { stocked = S.map.id; LOCAL[stocked].forEach(load); }
+      if (late) ENDING.forEach(load);
     }
     const hunted = on && playing && !S.apexAt;
     if (hunted && PI.ai.chasing() > 0) calmAt = now + 1.2;
@@ -125,8 +142,8 @@
       if (track) { end(track, want ? .5 : .25); track = null; }
       if (want && ready(want)) {
         track = begin(want, want !== 'bgm_apex', danger && chase ? 0 : 1, .4);
-        // decoded music is large, so only this track and the chase stay in memory
-        for (const name of buffers.keys()) if (name.startsWith('bgm_') && name !== want && name !== 'bgm_chase' && ready(name)) buffers.delete(name);
+        // decoded music is large, so only this track, the chase and what was fetched ahead stay in memory
+        for (const name of buffers.keys()) if (name.startsWith('bgm_') && name !== want && name !== 'bgm_chase' && !ahead.includes(name) && ready(name)) buffers.delete(name);
       } else if (want) load(want);
     }
     if (danger && !chase && ready('bgm_chase')) chase = begin('bgm_chase', true, 1, .2);

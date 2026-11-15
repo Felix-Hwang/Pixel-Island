@@ -5,7 +5,7 @@
 (() => {
   const G = PI.gfx, { KIND } = G;
   const I = PI.island = { map: null, cover: [], solids: [] };
-  const WORLD = I.WORLD = { hx: 48, hy: 64 }; // half-size of a map in world units: 960 x 752 pixels on screen
+  const WORLD = { hx: 48, hy: 64 }; // half-size of a map in world units: 960 x 752 pixels on screen
   const bounds = () => (I.map && I.map.world) || WORLD;
 
   // How close a point is to the border of the map: 1 on the border, .92 where walking stops, 0 or less deep inside.

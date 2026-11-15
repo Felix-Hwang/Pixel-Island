@@ -9,15 +9,15 @@
   const button = (text, cls, onClick) => { const b = el('button', cls, text); b.type = 'button'; b.addEventListener('click', onClick); return b; };
   const heading = text => { const h = el('h1', null, text); h.id = 'screen-title'; return h; };
   const clock = s => PI.t('time.ms', { m: Math.floor(s / 60), s: Math.floor(s % 60) });
-  const Sc = PI.ui.screens = { current: null };
+  const Sc = PI.ui.screens = {};
   let tabCount = 0;
 
-  // both leave the round through a transition, so the old map never jumps straight to the new one
   // put a map on screen, fetching its files first; if they cannot be fetched, the map already loaded is used again
   async function enter(id) {
     try { await PI.needMap(id); } catch { id = PI.state.map.id; }
     PI.game.loadMap(id);
   }
+  // nextRound and toMenu change the map behind a transition, so the old map never jumps straight to the new one
   function nextRound() {
     Sc.hide();
     PI.ui.transition(async () => {
@@ -44,7 +44,7 @@
   }
   function backButton(onClick = () => Sc.show('title')) {
     const actions = el('div', 'buttons'), back = button(PI.t('menu.back'), 'primary', onClick);
-    back.autofocus = true; back.dataset.sound = 'back';
+    back.autofocus = true; back.dataset.sound = 'back'; back.dataset.back = '';
     actions.append(back);
     return actions;
   }
@@ -138,7 +138,7 @@
       panel.append(heading(PI.t('guide.title')));
       for (const key of GUIDE) panel.append(el('h2', null, PI.t('guide.' + key + '.h')), el('p', null, PI.t('guide.' + key + '.p')));
       const done = button(PI.t(opt.first ? 'menu.next' : 'menu.back'), 'primary', () => Sc.show('title'));
-      done.autofocus = true;
+      done.autofocus = true; done.dataset.back = '';
       if (!opt.first) done.dataset.sound = 'back';
       const actions = el('div', 'buttons');
       actions.append(done);
@@ -231,7 +231,7 @@
       return { panel, look: 'wide' };
     },
   };
-  Sc.hide = () => { PI.ui.modal.hide(); Sc.current = null; };
+  Sc.hide = () => PI.ui.modal.hide();
   // leave a round at once and go back to the main menu
   Sc.exit = () => { if (PI.state.phase === 'play' && !PI.ui.transition.busy()) toMenu(); };
   Sc.show = (kind, opt = {}) => {
@@ -240,7 +240,6 @@
       PI.needFacts(PI.lang()).then(open, open);
       return;
     }
-    Sc.current = kind;
     PI.ui.hud.update();
     const made = builders[kind](opt);
     PI.ui.modal.show(made.panel, made.look);

@@ -19,7 +19,6 @@
     finaleAt: 0,
     history: [],        // one entry per species the player has been this round: { lv, id, color, from, to }
     freeze: 0,          // seconds the world stands still on a hit
-    nextId: 1,
   };
   S.all = () => S.player ? [S.player, ...S.creatures] : S.creatures;
   S.reset = () => {
@@ -41,7 +40,7 @@
   // Every field of a creature is created here, so other files do not add fields.
   PI.makeCreature = (sp, lv, x, y, isPlayer = false) => {
     const c = {
-      id: S.nextId++, sp, lv, isPlayer, x, y,
+      sp, lv, isPlayer, x, y,
       grade: 'B', agile: 1, speed: 1, style: 'neutral', sense: 0,
       vx: 0, vy: 0,
       kx: 0, ky: 0,           // knock velocity, fades out

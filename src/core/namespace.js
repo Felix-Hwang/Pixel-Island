@@ -13,12 +13,11 @@ window.PI = {
   bodies: {},         // body templates (src/creatures/bodies)
   behaviors: {},      // steering styles (src/behaviors)
   maps: {},           // map definitions by id (src/world/maps)
-  mapOrder: [],       // play order of maps
+  mapOrder: [],       // map ids, in the order the map guide lists them
   interactions: {},   // interaction definitions by 'map/id' (src/world/interactions)
   ui: {},
-  tools: {},
+  tools: {},          // results of the check pages under tools/
 };
-PI.register = (group, id, def) => { PI[group][id] = def; return def; };
 // A map may list only the temperament numbers it changes; the rest come from config.styles.
 PI.registerMap = def => {
   const styles = {};
@@ -44,11 +43,5 @@ PI.store = {
   set(key, value) {
     kept[key] = String(value);
     try { localStorage.setItem('pixel-island.' + key, value); } catch {}
-  },
-  session(key, value) {
-    try {
-      if (value === undefined) { const v = sessionStorage.getItem('pixel-island.' + key); sessionStorage.removeItem('pixel-island.' + key); return v; }
-      sessionStorage.setItem('pixel-island.' + key, value);
-    } catch { return null; }
   },
 };

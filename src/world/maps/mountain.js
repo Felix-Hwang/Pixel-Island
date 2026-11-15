@@ -20,7 +20,7 @@
   const fogs = I.spread(5, 67, 24, (x, y) => y > treeline(x) + 8, 10).map((p, n) => ({ x: p.x, y: p.y, rx: 5.5 + (n % 2), ry: 3.6 + (n % 2) * .5 }));
 
   PI.registerMap({
-    id: 'mountain', order: 5, seed: 71,
+    id: 'mountain',
     scene: { shadowX: 1.1, shadowY: -.12 },
     start: { x: 0, y: 18 },
     grass: [84, 138, 70], grassDensity: .17,

@@ -65,11 +65,12 @@ PI.config = {
   levelShare: { lower: .5, same: .1, higher: .4 },
   higherShare: lv => Math.min(.4, .12 + lv * .07), // the dangerous share builds up over levels 1 to 4; equals fill the gap
   calm: 6,                 // seconds at the start of a round before hunters go after the player
+  calmGap: 6,              // during that time a hunter that comes this close turns away
   levelSteps: [.55, .3, .15],
   bubble: 62,              // creatures further than this from the player are replaced by ones just outside the screen
-  prowl: { passive: .1, neutral: .3, aggressive: .55 },
-  packLimit: lv => Math.min(5, 1 + Math.floor(lv / 2)),  // at most this many hunters chase the player at once
-  closeLimit: lv => 2 + Math.floor(lv / 2), // and no more set out toward the player while this many are already close // chance that a wandering hunter sets out toward the player
+  prowl: { passive: .1, neutral: .3, aggressive: .55 }, // chance that a wandering hunter sets out toward the player
+  packLimit: lv => Math.min(5, 1 + Math.floor(lv / 2)), // at most this many hunters chase the player at once
+  closeLimit: lv => 2 + Math.floor(lv / 2), // and no more set out toward the player while this many are already close
   lunge: { range: 3, pace: 1.05, time: .6, rest: 3 }, // a charging hunter's last sprint: briefly faster than the player
   leaveTime: 6,            // seconds the old neighbours get to walk off screen after the player evolves
 };

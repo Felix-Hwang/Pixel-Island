@@ -1,5 +1,5 @@
 'use strict';
-// Korean particles are written in both forms, such as 을(를) and (으)로; src/i18n/i18n.js picks one.
+// Particles that depend on the word before them are written in both forms. src/i18n/i18n.js picks one.
 PI.i18n.ko = {
   'card.start': 'Lv {lv} {color} {species}(으)로 시작합니다.',
   'card.evolve': 'Lv {lv} {color} {species}(으)로 진화했습니다.',
@@ -15,7 +15,7 @@ PI.i18n.ko = {
   'guide.goal.h': '목표',
   'guide.goal.p': '1단계 생물로 시작합니다. 먹이를 먹어 10단계까지 진화하세요. 10단계가 되고 30초가 지나면 최상위 포식자가 되어 게임이 끝납니다.',
   'guide.eat.h': '먹기와 진화',
-  'guide.eat.p': '자신보다 레벨이 낮은 생물에 닿으면 먹습니다. 1단계와 2단계에서는 바닥의 열매도 먹을 수 있습니다. 왼쪽 위 먹이 칸이 다 차면 다음 레벨의 생물 중 하나로 진화합니다.',
+  'guide.eat.p': '자신보다 레벨이 낮은 생물에 닿으면 먹습니다. 1단계와 2단계에서는 바닥의 열매도 먹을 수 있습니다. 왼쪽 위 먹이 칸이 다 차면 다음 레벨의 생물 중 하나로 진화합니다. 노점이나 조개 같은 지형에서 얻는 먹이는 먹이 칸의 절반까지만 채워집니다.',
   'guide.danger.h': '위험',
   'guide.danger.p': '레벨이 높은 생물에 닿으면 게임 오버입니다. 높은 레벨의 생물은 최대 10초 동안 쫓아오다가 잠시 쉽니다. 진화 직후 잠깐은 무적입니다. 같은 레벨끼리는 서로 밀어내기만 합니다. 설정에서 적 추적을 끄면 쫓아오지 않습니다.',
   'guide.stars.h': '별 읽는 법',
@@ -105,7 +105,7 @@ PI.i18n.ko = {
   'mapinfo.beach.look': '노을 지는 넓은 모래 해변입니다. 뒤쪽은 풀이 난 모래언덕이고, 앞쪽은 걸어 들어갈 수 있는 얕은 바다입니다.',
   'mapinfo.beach.things': '야자수와 침엽수, 파라솔, 음료 가판대, 잔교, 고깃배, 모래성, 서핑보드, 조수 웅덩이',
   'fx.beach.wave.n': '파도',
-  'fx.beach.wave.d': '몇 초마다 파도가 밀려와 물가의 생물을 해변 쪽으로 밀었다가 다시 끌고 갑니다.',
+  'fx.beach.wave.d': '몇 초마다 파도가 밀려와 물가의 생물을 해변 안쪽으로 밀어냅니다.',
   'fx.beach.coconut-fall.n': '떨어지는 코코넛',
   'fx.beach.coconut-fall.d': '야자수 아래에 그림자가 생긴 뒤 코코넛이 떨어집니다. 맞으면 잠깐 기절합니다.',
   'fx.beach.parasol.n': '파라솔',

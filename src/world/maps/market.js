@@ -34,7 +34,7 @@
   const inPark = (x, y) => y > 47 || (y < -47 && G.noise(x * .1 + 3, y * .1) > .45);
 
   const map = PI.registerMap({
-    id: 'market', order: 2, seed: 23,
+    id: 'market',
     scene: { shadowX: 1.15, shadowY: -.1 },
     start: { x: 2, y: 1 },
     grass: [120, 152, 80], grassDensity: .14,

@@ -2,9 +2,9 @@
 // The frame loop. update moves everything and draw paints one frame.
 // Behaviour files only return the direction a creature wants to go. Movement, collisions and terrain effects happen here.
 (() => {
-  const G = PI.gfx, S = PI.state, cfg = PI.config, I = PI.island, Wd = PI.world, B = PI.builder, Fx = PI.fx;
+  const G = PI.gfx, S = PI.state, cfg = PI.config, I = PI.island, Wd = PI.world, B = PI.builder, Fx = PI.fx, Gm = PI.game;
   const L = PI.loop = {};
-  const BERRY = PI.game.berryColors.map(c => G.ramp(c)), LEAF = G.ramp([84, 170, 80]);
+  const BERRY = Gm.berryColors.map(c => G.ramp(c)), LEAF = G.ramp([84, 170, 80]);
   const RING = G.pack(255, 255, 255), DANGER = G.pack(226, 60, 52), GOLD = [255, 220, 90];
 
   const canStand = (c, x, y) => I.walkable(x, y) && !Wd.blocked(c, x, y);
@@ -134,10 +134,11 @@
     crowd();
     PI.ai.census();
     const input = PI.input.read(), playing = S.phase === 'play', steady = S.map.steady || 0, v = { x: 0, y: 0 };
+    const p = S.player, calm = S.time < S.calmUntil;
     for (const c of S.all()) {
       const m = Wd.mods(c);
       if (c.stun > 0) c.stun -= dt;
-      if (c.invuln > 0) { c.invuln -= dt; if (c.invuln <= 0 && c.isPlayer && playing) Gm().guard(c); }
+      if (c.invuln > 0) { c.invuln -= dt; if (c.invuln <= 0 && c.isPlayer && playing) Gm.guard(c); }
       if (c.bounce > 0) c.bounce -= dt;
       if (c.alert > 0) c.alert -= dt;
       if (c.leaving && S.time > c.leaving) c.leaving = 0; // it did not get away in time, so it stays
@@ -147,8 +148,10 @@
       if (!(c.stun > 0) && !(c.bounce > 0)) {
         if (c.isPlayer) { if (playing) { v.x = input.x; v.y = input.y; } }
         else {
-          // one on its way out walks straight away from the player; everything else follows its behaviour
-          const away = c.leaving && S.player ? PI.ai.away(c, S.player.x, S.player.y, .85) : null;
+          // One on its way out walks straight away from the player, and so does a hunter that comes close during
+          // the calm at the start of a round. Everything else follows its behaviour.
+          const shy = p && (c.leaving || (calm && c.lv > p.lv && Math.hypot(c.x - p.x, c.y - p.y) < cfg.calmGap));
+          const away = shy ? PI.ai.away(c, p.x, p.y, .85) : null;
           const want = away ? PI.ai.home(c, away) : PI.behaviors[c.sp.behavior].steer(c, dt), len = Math.hypot(want.x, want.y);
           v.x = want.x + c.sepX * .8; v.y = want.y + c.sepY * .8;
           const cap = Math.max(len, Math.min(1, Math.hypot(c.sepX, c.sepY)) * .55), now = Math.hypot(v.x, v.y);
@@ -168,11 +171,10 @@
       c.kx *= fade; c.ky *= fade;
       B.tick(c, dt, c.vx, c.vy, Math.hypot(c.vx, c.vy) / c.speed);
     }
-    if (S.player && playing) playerEffects(S.player, dt);
-    Gm().collide();
-    Gm().tick(dt);
+    if (p && playing) playerEffects(p, dt);
+    Gm.collide();
+    Gm.tick(dt);
   };
-  const Gm = () => PI.game;
 
   // A creature that is changing shape is drawn first as its old body in white, then as light alone, then as the new body.
   function drawMorphing(c, t) {

@@ -223,7 +223,6 @@
     PI.audio.play('sfx_victory');
     PI.audio.hush(2.7);
   }
-  // feedback for one bite
   function bite(x, y, z, rgb, gain, big) {
     const p = S.player;
     Fx.burst(x, y, z, rgb, big ? 22 : 10, big ? 7 : 4.5);
@@ -275,8 +274,8 @@
       if (S.phase !== 'play') return;
     }
   };
-  // The safe moment after evolving has just ended. Hunters that stand on top of the player would kill it on the
-  // spot, so they are thrown back and dazed, and the player gets a fair start.
+  // A safe moment has just ended: the one after evolving, after a ferry ride, or in a root shelter. Hunters that
+  // stand on top of the player would kill it on the spot, so they are thrown back and dazed.
   Gm.guard = p => {
     let hit = false;
     for (const c of S.creatures) {

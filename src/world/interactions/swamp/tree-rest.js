@@ -1,6 +1,7 @@
 'use strict';
 // Tree shelter. A deck among the roots of a large mangrove. For a few seconds inside it nothing can eat you.
-// Then you have to stay away for a while before it works again.
+// Then you have to stay away for a while before it works again. When the time runs out, hunters standing on
+// the player are thrown back, as they are after an evolution.
 // cfg: spots [{ x, y, r }], safe (s of protection), cooldown (s)
 PI.registerInteraction('swamp', 'tree-rest', {
   bake(cfg) {
@@ -19,7 +20,9 @@ PI.registerInteraction('swamp', 'tree-rest', {
       if (Wd.cooling(c, 'rest', dt)) continue;
       if (!inside) { if (f.used > 0) { f.used = 0; Wd.cooldown(c, 'rest', cfg.cooldown); } continue; } // leaving early still uses it up
       f.used = (f.used || 0) + dt;
-      if (f.used >= cfg.safe) { f.used = 0; Wd.cooldown(c, 'rest', cfg.cooldown); } else f.safe = true;
+      if (f.used < cfg.safe) { f.safe = true; continue; }
+      f.used = 0; Wd.cooldown(c, 'rest', cfg.cooldown);
+      if (c.isPlayer) PI.game.guard(c);
     }
   },
   modify(cfg, st, c, m) { if (c.fx.rest && c.fx.rest.safe) m.safe = true; },

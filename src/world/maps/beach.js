@@ -25,7 +25,7 @@
   const pools = I.spread(11, 55, 7, (x, y) => y > shoreAt(x) - 8 && y < shoreAt(x) - 2.5 && clearOf(palms, 3)(x, y), 5);
 
   const map = PI.registerMap({
-    id: 'beach', order: 1, seed: 11,
+    id: 'beach',
     scene: { shadowX: 2.1, shadowY: -.28, shadowTint: [.62, .45, .64], deepTint: [.44, .3, .5] }, // the sun is low, so shadows are long
     start: { x: 0, y: -2 },
     grass: [150, 138, 80], grassDensity: .2,

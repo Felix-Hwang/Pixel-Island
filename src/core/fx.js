@@ -34,7 +34,6 @@
     }
   }
   Fx.reset = () => { parts = []; rings = []; texts = []; glows = []; beams = []; shakeFor = 0; flashFor = 0; };
-  Fx.rich = rich;
   // n pixels thrown out of (x, y, z); power is their speed in units per second
   Fx.burst = (x, y, z, rgb, n = 10, power = 5) => {
     if (!rich()) n = Math.ceil(n / 3);

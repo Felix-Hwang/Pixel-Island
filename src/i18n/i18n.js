@@ -14,8 +14,8 @@
     if (nav.startsWith('en')) return 'en';
     return null;
   }
-  // Korean particles depend on whether the word before them ends in a consonant. Strings write both forms,
-  // such as 을(를) and (으)로, and this picks one. (으)로 also takes 로 after a final ㄹ.
+  // Korean particles depend on whether the word before them ends in a consonant. Strings write both forms
+  // (the keys of PARTICLE) and this picks one. The last pair also takes its short form after a final rieul.
   const PARTICLE = { '을(를)': ['을', '를'], '이(가)': ['이', '가'], '은(는)': ['은', '는'], '(으)로': ['으로', '로'] };
   function particles(str) {
     return str.replace(/([가-힣])(을\(를\)|이\(가\)|은\(는\)|\(으\)로)/g, (m, ch, p) => {

@@ -25,14 +25,13 @@
   const slopes = I.spread(9, 87, 20, (x, y) => dry(x, y) && clearOf(shelters, 9)(x, y) && clearOf(pits, 8)(x, y), 7);
 
   PI.registerMap({
-    id: 'swamp', order: 4, seed: 53,
+    id: 'swamp',
     scene: { shadowX: .85, shadowY: -.05, shadowTint: [.6, .64, .86], deepTint: [.44, .48, .72] }, // short moon shadows
     start: { x: -12, y: 0 },
     grass: [50, 104, 78], grassDensity: .13,
     riverX, riverWidth, riverAt,
     inRiver: (x, y) => riverAt(x, y) < 0,
     styles: { passive: { notice: .45, fear: 1.2 }, neutral: { notice: .85 }, aggressive: { notice: 1.05, stamina: 1.3 } }, // it is dark
-
 
     ground(x, y, wx, wy, cell) {
       const r = riverAt(x, y);

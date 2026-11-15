@@ -33,7 +33,6 @@
       G.dep[i] = d; G.col[i] = ramp[t < 0 ? 0 : t > 4 ? 4 : t]; G.kind[i] = kind;
     }
   }
-  G.quad = quad;
 
   const corners = b => {
     const cos = Math.cos(b.yaw || 0), sin = Math.sin(b.yaw || 0);

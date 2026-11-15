@@ -57,7 +57,6 @@
     return a + (b - a) * fx + (c - a + (a - b + d - c) * fx) * fy;
   };
   G.clamp = (v, a, b) => v < a ? a : v > b ? b : v;
-  G.lerp = (a, b, t) => a + (b - a) * t;
   // pick one of a list of flat tones with dither between neighbours
   G.pick = (tones, v, px, py, spread = .7) => tones[G.clamp(Math.floor(v * tones.length + (G.dither(px, py) - .5) * spread), 0, tones.length - 1)];
 })();
