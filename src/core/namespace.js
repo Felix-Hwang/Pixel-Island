@@ -36,9 +36,9 @@ PI.param = name => { try { const q = new URLSearchParams(location.search); retur
 // every value is also kept in memory and still holds for the rest of the visit.
 const kept = {};
 PI.store = {
-  get(key) {
-    if (key in kept) return kept[key];
-    try { return localStorage.getItem('pixel-island.' + key); } catch { return null; }
+  get(key) { // read from storage once; the game asks for some settings many times a frame
+    if (!(key in kept)) { try { kept[key] = localStorage.getItem('pixel-island.' + key); } catch { kept[key] = null; } }
+    return kept[key];
   },
   set(key, value) {
     kept[key] = String(value);

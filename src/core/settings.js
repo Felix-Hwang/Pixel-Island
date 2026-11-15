@@ -3,9 +3,11 @@
 (() => {
   const CHOICES = {
     zoom: ['near', 'normal', 'far'],
-    chase: ['on', 'off'], // off: higher levels no longer come after the player, but touching one is still fatal
-    music: ['on', 'off'],
-    sound: ['on', 'off'],
+    // off: higher levels no longer come after the player, but touching one is still fatal.
+    // peace: they do not come after the player either, and touching one only pushes.
+    chase: ['peace', 'off', 'on'],
+    music: ['off', 'on'],
+    sound: ['off', 'on'],
   };
   const DEFAULT = { zoom: 'normal', chase: 'on', music: 'on', sound: 'on' };
   const St = PI.settings = {

@@ -243,9 +243,10 @@
     Gm.addFood(gain);
   }
   // The player eats a lower level from a little further away than anything else touches (config.eatReach
-  // against config.touchReach). A higher level ends the round, and creatures of the same level push each other apart.
+  // against config.touchReach). A higher level ends the round, unless the pursuit setting is 'peace', and
+  // everything else that touches pushes apart.
   Gm.collide = () => {
-    const list = S.all(), playing = S.phase === 'play';
+    const list = S.all(), playing = S.phase === 'play', deadly = PI.settings.get('chase') !== 'peace';
     for (let a = 0; a < list.length; a++) for (let b = a + 1; b < list.length; b++) {
       const p = list[a], q = list[b];
       if (p.ride || q.ride) continue;
@@ -256,7 +257,7 @@
       if (d >= reach) continue;
       if (bites) { eat(q); return Gm.collide(); }
       if (d >= min) continue;
-      if (playing && p.isPlayer && q.lv > p.lv && !(p.invuln > 0) && !p.mods.safe && !(q.stun > 0)) return over(q);
+      if (deadly && playing && p.isPlayer && q.lv > p.lv && !(p.invuln > 0) && !p.mods.safe && !(q.stun > 0)) return over(q);
       const nx = d ? dx / d : 1, ny = d ? dy / d : 0, push = (min - d) / 2;
       if (playing && p.isPlayer && push > .04) PI.audio.play('sfx_push', { gap: .5, volume: .6 });
       const pw = p.isPlayer ? .3 : 1, qw = q.isPlayer ? .3 : 1;

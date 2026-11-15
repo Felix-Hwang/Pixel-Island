@@ -36,7 +36,7 @@ Species of one level differ in three ways. The field guide in the main menu list
 | Detection | short, medium, wide | How far the species notices the player: 4, 5.5 or 7 units. A hunter also has to be on screen before it notices you. |
 | Temperament | passive, neutral, aggressive | How far it roams, how early it flees, and how long and how fast it chases. Each map sets its own numbers for the three. |
 
-Around a player, half of the creatures can be eaten, a tenth are equals and up to 40% are hunters. Every time you evolve, the creatures near you walk off and new ones arrive from outside the screen. Hunters are slower than the player, but they come looking for you, some lunge at close range, and a few chase at once. One chases for 10 seconds, then rests for 3. The settings can turn the pursuit off, and then a higher level kills only when you run into it.
+Around a player, half of the creatures can be eaten, a tenth are equals and up to 40% are hunters. Every time you evolve, the creatures near you walk off and new ones arrive from outside the screen. Hunters are slower than the player, but they come looking for you, some lunge at close range, and a few chase at once. One chases for 10 seconds, then rests for 3. The Enemy pursuit setting has three choices. On is the default. Off stops hunters from coming after you, and then a higher level kills only when you run into it. Peaceful also stops them, and touching one only pushes you, so a round cannot be lost.
 
 ## Controls
 
@@ -44,7 +44,7 @@ Around a player, half of the creatures can be eaten, a tenth are equals and up t
 - Touch or mouse: press anywhere and drag. The point you press becomes the centre of the stick, and letting go stops you.
 - Esc leaves a round and goes back to the main menu. So does the exit sign at the top right. In the guide, the settings, the field guide and the map guide, Esc is the Back button.
 
-The settings change the camera view and turn the enemy pursuit, the music and the sound effects on or off. On a small window two camera views would round to the same size, so Near and Far are always kept one step away from Normal.
+The settings change the camera view, set the enemy pursuit to Peaceful, Off or On, and turn the music and the sound effects off or on. On a small window two camera views would round to the same size, so Near and Far are always kept one step away from Normal.
 
 ## Maps
 
