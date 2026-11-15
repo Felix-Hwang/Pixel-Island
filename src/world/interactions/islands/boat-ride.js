@@ -1,7 +1,8 @@
 'use strict';
 // Boat ride. Wait on a jetty and the boat carries you to the other jetty. While aboard you cannot steer,
-// and nothing can touch you.
-// cfg: docks [{ x, y, out: [dx, dy] }] (jetty and the direction out to sea), via { x, y } (the route bends through here), wait (s), time (s)
+// and nothing can touch you. A jetty stands in the sea, but the current does not reach whoever is on it.
+// cfg: docks [{ x, y, out: [dx, dy] }] (jetty and the direction out to sea), reach (units around a jetty that count
+//      as standing on it), via { x, y } (the route bends through here), wait (s), time (s)
 PI.registerInteraction('islands', 'boat-ride', {
   init(cfg, st) { st.at = 0; st.t = 0; st.rider = null; },
   bake(cfg) {
@@ -32,24 +33,29 @@ PI.registerInteraction('islands', 'boat-ride', {
         const d = cfg.docks[st.at];
         c.x = d.x; c.y = d.y; c.ride = null; st.rider = null;
         c.invuln = Math.max(c.invuln, 1.2); // a moment to step off before anything waiting at the jetty can bite
-        Wd.cooldown(c, 'boat', 3);
+        Wd.fx(c, 'boat').landed = true;
       }
       return;
     }
     const dock = cfg.docks[st.at];
     for (const c of Wd.creatures()) {
-      if (Wd.cooling(c, 'boat', dt)) { Wd.fx(c, 'boat').dwell = 0; continue; }
-      if (Wd.dwell(c, 'boat', Math.hypot(c.x - dock.x, c.y - dock.y) < 1.7, dt) < cfg.wait) continue;
-      Wd.fx(c, 'boat').dwell = 0;
+      const f = Wd.fx(c, 'boat'), on = Math.hypot(c.x - dock.x, c.y - dock.y) < cfg.reach;
+      if (f.landed) { f.landed = on; f.dwell = 0; continue; } // it has to step off before it can ride back
+      if (Wd.dwell(c, 'boat', on, dt) < cfg.wait) continue;
+      f.dwell = 0;
       st.rider = c; st.t = 0; c.ride = st;
       if (c.isPlayer) PI.audio.play('sfx_boat_ride');
       return;
     }
   },
+  // boat-ride is listed after the current in the map file, so this takes the current's push off again
+  modify(cfg, st, c, m) {
+    if (cfg.docks.some(d => Math.hypot(c.x - d.x, c.y - d.y) < cfg.reach)) { m.driftX = 0; m.driftY = 0; m.ground = ''; }
+  },
   drawGround(cfg, st) {
     if (st.rider) return;
     const G = PI.gfx, d = cfg.docks[st.at], p = PI.state.player;
-    G.groundRing(d.x, d.y, 1.7, G.pack(255, 255, 255), p && p.fx.boat && p.fx.boat.dwell > 0 ? 0 : 2, Math.floor(PI.state.time * 4));
+    G.groundRing(d.x, d.y, cfg.reach, G.pack(255, 255, 255), p && p.fx.boat && p.fx.boat.dwell > 0 ? 0 : 2, Math.floor(PI.state.time * 4));
   },
   draw(cfg, st) {
     const at = this.place(cfg, st);

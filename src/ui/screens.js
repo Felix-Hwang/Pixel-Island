@@ -194,8 +194,10 @@
       const ids = PI.mapOrder, first = PI.state.map.id, panel = el('div', 'panel maps');
       const t = tabs(ids.map(id => ({ text: PI.t('map.' + id) })), (n, into) => {
         const fill = () => into.replaceChildren(...mapInfo(PI.state.map.id));
-        if (ids[n] === PI.state.map.id) fill();
-        else PI.ui.transition(async () => { await enter(ids[n]); PI.state.phase = 'start'; fill(); });
+        if (ids[n] === PI.state.map.id) return fill();
+        // a map that cannot be fetched leaves the old one on screen, and then the tab goes back to that one
+        PI.ui.transition(async () => { await enter(ids[n]); PI.state.phase = 'start'; fill(); })
+          .then(() => { if (PI.state.map.id !== ids[n]) t.select(ids.indexOf(PI.state.map.id)); });
       }, PI.t('maps.title'));
       panel.append(heading(PI.t('maps.title')), t.list, t.panel, backButton(() => (PI.state.map.id === first ? Sc.show('title') : toMenu(first))));
       t.select(ids.indexOf(first));

@@ -6,9 +6,11 @@
   const DEAD = 6, FULL = 42;
   const keys = new Set();
   let pointer = null, base = null, knob = null;
+  // Keys are read by position (event.code), not by the letter they type. The letter changes with Shift, Caps Lock
+  // and the input language, and a key released under another letter would stay held.
   const KEYMAP = {
     ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1],
-    a: [-1, 0], d: [1, 0], w: [0, -1], s: [0, 1], A: [-1, 0], D: [1, 0], W: [0, -1], S: [0, 1],
+    KeyA: [-1, 0], KeyD: [1, 0], KeyW: [0, -1], KeyS: [0, 1],
   };
   function fromKeys() {
     let x = 0, y = 0;
@@ -52,11 +54,11 @@
     // entry and the round goes on. Outside a round, back works as usual.
     addEventListener('popstate', () => { if (PI.state.phase === 'play') history.pushState({ round: true }, ''); });
     addEventListener('keydown', e => {
-      if (!KEYMAP[e.key] || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (!KEYMAP[e.code] || e.metaKey || e.ctrlKey || e.altKey) return;
       if (PI.state.phase === 'play') e.preventDefault();
-      keys.add(e.key);
+      keys.add(e.code);
     });
-    addEventListener('keyup', e => keys.delete(e.key));
+    addEventListener('keyup', e => keys.delete(e.code));
     addEventListener('blur', () => { keys.clear(); pointer = null; showStick(false); });
     document.addEventListener('pointerdown', e => {
       if (PI.state.phase !== 'play' || e.button !== 0 || pointer || (e.target.closest && e.target.closest('button, a'))) return; // primary button, one finger

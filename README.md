@@ -40,11 +40,11 @@ Around a player, half of the creatures can be eaten, a tenth are equals and up t
 
 ## Controls
 
-- Keyboard: the arrow keys or WASD. Hold two keys to move diagonally.
+- Keyboard: the arrow keys or WASD. Hold two keys to move diagonally. The letter keys are read by their position, so they work in any input language.
 - Touch or mouse: press anywhere and drag. The point you press becomes the centre of the stick, and letting go stops you.
 - Esc leaves a round and goes back to the main menu. So does the exit sign at the top right. In the guide, the settings, the field guide and the map guide, Esc is the Back button.
 
-The settings change the camera view and turn the enemy pursuit, the music and the sound effects on or off.
+The settings change the camera view and turn the enemy pursuit, the music and the sound effects on or off. On a small window two camera views would round to the same size, so Near and Far are always kept one step away from Normal.
 
 ## Maps
 
@@ -104,6 +104,8 @@ The page loads the engine and the species up front. The rest arrives when it is 
 | A map's own sound effects | when that map is put on screen |
 | The sounds of the ending | when the player reaches level 9 |
 | Music | one track at a time, plus the chase track during a round |
+
+A file that fails to arrive does not stop the game. The page keeps asking for the first map and language until they load. If a later map cannot be fetched, the round is played on the map already on screen. A sound is tried again after 10 seconds.
 
 ```
 index.html              load order, canvas, status card, dialog
