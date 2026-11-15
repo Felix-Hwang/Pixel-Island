@@ -1,7 +1,7 @@
 'use strict';
 // Four-legged plant-eating dinosaur: plates, tail spikes, a tail club or a duck bill decide the silhouette.
 // Pale belly, dark plates, ivory spikes, club and beak, dark toes.
-// sil: len, h, legLen, tail, neck, plates, spikes, club, wide, arch, frontLow, duckbill
+// sil: len, h, legLen, tail, neck, plates, spikes, club, wide, arch, frontLow, duckbill, backRidge, thumb
 PI.bodies.quaddino = {
   cadence: .9, bounce: .6, lean: .06,
   height: s => s.legLen + .5 + (s.plates ? .32 * s.plates : 0) + (s.arch ? .1 : 0) + (s.neck > .5 ? s.neck * .25 : 0),
@@ -13,6 +13,8 @@ PI.bodies.quaddino = {
     R.torso(mid, front, rb * .93, rb * .85);
     R.haunch(rear[0] + .06, hipZ, rb * .84, rb * .6);    // haunches
     R.haunch(front[0] - .05, shZ + .02, rb * .7, rb * .6); // shoulders
+    if (s.backRidge) for (const f of [-.26, -.14, -.02, .1, .2]) R.bone([f * L, 0, hipZ + rb * .7], [f * L, 0, hipZ + rb * .7 + .2 * s.backRidge * (1 - Math.abs(f + .03) * 1.6)], .1, .07, 'dark');
+    if (s.thumb) for (const side of [1, -1]) R.bone([L * .2, side * (rb + .05), h * .55], [L * .26, side * (rb + .12), h * .55 + .3 * s.thumb], .055, .03, 'bone');
     if (s.wide) for (const side of [1, -1]) R.bone([-L * .25, side * .14, h], [L * .15, side * .14, h], rb * .85, rb * .75); // broad armoured back
     const head = [front[0] + .15 + s.neck * .35, 0, shZ - .05 + s.neck * .35 - (s.plates ? .12 : 0)];
     R.bone(front, head, rb * .55, .12);

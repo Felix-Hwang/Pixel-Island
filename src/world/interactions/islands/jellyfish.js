@@ -26,10 +26,11 @@ PI.registerInteraction('islands', 'jellyfish', {
     const G = PI.gfx, S = G.STYLE, K = G.KIND.BODY, bell = G.ramp([238, 156, 206]), arm = G.ramp([200, 130, 196]);
     const t = Math.floor(PI.state.time * 5) / 5;
     for (const j of st.list) {
-      const pulse = Math.round(Math.sin(t * 2.4 + j.seed)) * .06, z = .75 + pulse;
-      for (const dx of [-.2, 0, .2]) G.capsule(j.x + dx, j.y, z - .1, j.x + dx + Math.sin(t * 3 + dx * 9 + j.seed) * .1, j.y, .12, .07, .06, arm, S.FLAT, K);
-      G.ball(j.x, j.y, z, .44, bell, S.FLAT, K, .75 - pulse);
-      G.shadowBlob(j.x, j.y, .5, .4, 1);
+      const pulse = Math.round(Math.sin(t * 2.4 + j.seed)) * .1, z = 1.35 + pulse;
+      for (const dx of [-.45, -.15, .15, .45]) G.capsule(j.x + dx, j.y, z - .2, j.x + dx + Math.sin(t * 3 + dx * 9 + j.seed) * .2, j.y, .15, .11, .08, arm, S.FLAT, K);
+      G.ball(j.x, j.y, z, .85, bell, S.DITHER, K, .75 - pulse);
+      G.ball(j.x - .25, j.y, z + .3, .22, G.ramp([255, 214, 236]), S.FLAT, K, .6);
+      G.shadowBlob(j.x, j.y, .9, .75, 1);
     }
   },
 });

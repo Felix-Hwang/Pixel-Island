@@ -122,23 +122,29 @@
     }
     Wd.update(dt);
     crowd();
+    PI.ai.census();
     const input = PI.input.read(), playing = S.phase === 'play', steady = S.map.steady || 0, v = { x: 0, y: 0 };
     for (const c of S.all()) {
       const m = Wd.mods(c);
       if (c.stun > 0) c.stun -= dt;
       if (c.invuln > 0) { c.invuln -= dt; if (c.invuln <= 0 && c.isPlayer && playing) Gm().guard(c); }
       if (c.bounce > 0) c.bounce -= dt;
+      if (c.alert > 0) c.alert -= dt;
+      if (c.leaving && S.time > c.leaving) c.leaving = 0; // it did not get away in time, so it stays
       if (c.ride) { B.tick(c, dt, 0, 0, 0); continue; } // it is being carried, and the interaction sets its position
       const top = c.speed * m.speed;
       v.x = 0; v.y = 0;
       if (!(c.stun > 0) && !(c.bounce > 0)) {
         if (c.isPlayer) { if (playing) { v.x = input.x; v.y = input.y; } }
         else {
-          const want = PI.behaviors[c.sp.behavior].steer(c, dt), len = Math.hypot(want.x, want.y);
+          // one on its way out walks straight away from the player; everything else follows its behaviour
+          const away = c.leaving && S.player ? PI.ai.away(c, S.player.x, S.player.y, .85) : null;
+          const want = away ? PI.ai.home(c, away) : PI.behaviors[c.sp.behavior].steer(c, dt), len = Math.hypot(want.x, want.y);
           v.x = want.x + c.sepX * .8; v.y = want.y + c.sepY * .8;
           const cap = Math.max(len, Math.min(1, Math.hypot(c.sepX, c.sepY)) * .55), now = Math.hypot(v.x, v.y);
           if (now > cap && now > 0) { v.x *= cap / now; v.y *= cap / now; } // a crowd spreads at a walk
           unstick(c, dt, v);
+          PI.motion.shape(c, v, dt, !!away || S.time - (c.ai.busy == null ? -9 : c.ai.busy) < .3 || c.ai.dash > 0 || S.time < c.jam.until);
           // It swims against the flow to hold its place, but not while it chases or flees. One that ignored the
           // current then would outrun a player who cannot.
           const busy = S.time - (c.ai.busy == null ? -9 : c.ai.busy) < .3 || c.ai.dash > 0;

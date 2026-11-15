@@ -9,7 +9,7 @@ PI.registerInteraction('islands', 'pearl-clam', {
     for (const clam of st.clams) {
       if (clam.shut > 0) { clam.shut -= dt; clam.open = false; continue; }
       clam.open = (t + clam.off) % cfg.cycle < cfg.cycle / 2;
-      if (clam.open && p && !p.ride && Math.hypot(p.x - clam.x, p.y - clam.y) < .55 + p.r * .5) {
+      if (clam.open && p && !p.ride && Math.hypot(p.x - clam.x, p.y - clam.y) < 1.05 + p.r * .5) {
         clam.shut = cfg.closed; clam.open = false;
         PI.world.feed(p, cfg.food);
       }
@@ -18,12 +18,12 @@ PI.registerInteraction('islands', 'pearl-clam', {
   draw(cfg, st) {
     const G = PI.gfx, S = G.STYLE, K = G.KIND.BODY, shell = G.ramp([226, 198, 214]), inner = G.ramp([250, 232, 236]), pearl = G.ramp([255, 255, 255]);
     for (const c of st.clams) {
-      G.ball(c.x, c.y, .14, .4, shell, S.FLAT, K, .45);
+      G.ball(c.x, c.y, .26, .8, shell, S.DITHER, K, .45);
       if (c.open) {
-        G.ball(c.x, c.y - .28, .5, .36, inner, S.FLAT, K, .9); // the lid stands up behind
-        G.ball(c.x, c.y + .02, .3, .15, pearl, S.GLOSS, K);
-      } else G.ball(c.x, c.y, .28, .38, shell, S.FLAT, K, .5);
-      G.shadowBlob(c.x, c.y, 0, .4, 2);
+        G.ball(c.x, c.y - .55, .95, .72, inner, S.FLAT, K, .9); // the lid stands up behind
+        G.ball(c.x, c.y + .04, .58, .3, pearl, S.GLOSS, K);
+      } else G.ball(c.x, c.y, .54, .76, shell, S.DITHER, K, .5);
+      G.shadowBlob(c.x, c.y, 0, .8, 2);
     }
   },
 });

@@ -10,8 +10,8 @@ PI.registerInteraction('market', 'hawker', {
       { shirt: [244, 190, 66], legs: [60, 80, 70], skin: [214, 164, 124], hair: [70, 50, 40], hat: [222, 196, 130] },
     ];
     cfg.spots.forEach((s, n) => {
-      PI.props.person(s.x, s.y, s.yaw, looks[n % looks.length], { wave: 1 });
-      PI.island.addSolid({ x: s.x, y: s.y, r: .25 });
+      PI.props.person(s.x, s.y, s.yaw, looks[n % looks.length], { wave: 1, scale: 1.4 });
+      PI.island.addSolid({ x: s.x, y: s.y, r: .4 });
     });
   },
   update(cfg, st, dt) {

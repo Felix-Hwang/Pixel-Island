@@ -12,7 +12,21 @@
     const p = A.player();
     return !p ? 'none' : p.lv > self.lv ? 'prey' : p.lv < self.lv ? 'hunter' : 'peer';
   };
-  A.hunts = () => PI.settings.on('chase');
+  A.hunts = () => PI.settings.on('chase') && S.time >= S.calmUntil;
+  // Counted once a frame: how many hunters are chasing the player right now, and how many are close by.
+  // Both are capped (config.packLimit, config.closeLimit), so danger comes from a few sides and not as a wall.
+  const pack = { chasing: 0, close: 0 };
+  A.mayJoin = p => pack.chasing < cfg.packLimit(p.lv) && (pack.chasing++, true);
+  A.census = () => {
+    const p = A.player();
+    pack.chasing = 0; pack.close = 0;
+    if (!p) return;
+    for (const c of S.creatures) {
+      if (c.lv <= p.lv) continue;
+      if (S.time - (c.ai.chaseSeen == null ? -9 : c.ai.chaseSeen) < .3) pack.chasing++;
+      if (Math.hypot(c.x - p.x, c.y - p.y) < 16) pack.close++;
+    }
+  };
   // range scales the creature's own detection distance. A hidden player is only noticed up close.
   A.sees = (self, range = 1) => {
     const p = A.player();
@@ -48,12 +62,16 @@
   };
   // Hold a random heading for a while, sometimes stop. One that has strayed past its roam distance heads home.
   A.wander = (self, dt, speed, minT = 1, maxT = 3, pause = .3) => {
-    const s = self.ai, st = PI.styleOf(self), pace = self.temper * st.pace;
+    const s = self.ai, st = PI.styleOf(self), pace = self.temper * st.pace, p = A.player();
     s.t = (s.t || 0) - dt;
     if (s.t <= 0 || s.wx == null) {
       s.t = (minT + Math.random() * (maxT - minT)) / self.temper;
       if (Math.random() < pause * (1.5 - self.temper * .5)) { s.wx = 0; s.wy = 0; }
-      else {
+      else if (p && self.lv > p.lv && A.hunts() && pack.close < cfg.closeLimit(p.lv) && Math.random() < cfg.prowl[self.style]) {
+        // a hunter on the prowl sets out toward the player, even from far outside the screen
+        const a = Math.atan2(p.y - self.y, p.x - self.x) + (Math.random() - .5) * .9;
+        s.wx = Math.cos(a) * 1.4; s.wy = Math.sin(a) * 1.4; s.t = 2 + Math.random() * 2;
+      } else {
         const hx = self.home.x - self.x, hy = self.home.y - self.y;
         const a = Math.hypot(hx, hy) > self.roam * st.roam ? Math.atan2(hy, hx) + (Math.random() - .5) * 1.8 : Math.random() * Math.PI * 2;
         s.wx = Math.cos(a); s.wy = Math.sin(a);
@@ -72,7 +90,7 @@
     if (rel === 'prey' && A.sees(self, (o.fear || 1) * st.fear * cfg.fleeRange)) {
       // Prey that has been running for config.fleeStamina seconds is out of breath and slows down, so a chase
       // across the map always ends in a catch.
-      if (s.fleeAt == null || now - s.busy > .6) s.fleeAt = now;
+      if (s.fleeAt == null || now - s.busy > .6) { s.fleeAt = now; self.sqv += 6; } // it starts
       s.busy = now;
       if (now - s.fleeAt > cfg.fleeStamina) { s.windedUntil = now + cfg.winded; s.fleeAt = now + cfg.winded; }
       const pace = now < (s.windedUntil || 0) ? cfg.windedPace : 1;
@@ -80,7 +98,10 @@
     }
     if (rel !== 'hunter') return null;
     if (now < (s.restUntil || 0) || !A.spots(self, o.range || 1)) return null;
-    if (s.chaseAt == null || now - s.chaseSeen > .6) s.chaseAt = now;
+    if (s.chaseAt == null || now - s.chaseSeen > .6) { // a new chase, unless enough others are on the player already
+      if (pack.chasing >= cfg.packLimit(p.lv)) return null;
+      s.chaseAt = now; self.alert = .8; self.sqv += 5; pack.chasing++;
+    }
     s.chaseSeen = now; s.busy = now;
     if (now - s.chaseAt > cfg.stamina * st.stamina) { s.restUntil = now + cfg.rest; s.chaseAt = null; return null; }
     const pace = (o.chase || 1) * st.chase;

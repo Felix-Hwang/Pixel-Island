@@ -6,6 +6,7 @@
   const KINDS = ['fade', 'iris', 'blinds'], CLOSE = 380, HOLD = 140, OPEN = 480;
   const ease = t => t * t * (3 - 2 * t);
   let busy = false;
+  const screen = document.getElementById('screen');
   // Frames drive the picture, but a timer ends the step, so a tab that is not being painted cannot stall a change of scene.
   const run = (ms, each) => new Promise(done => {
     const from = performance.now();
@@ -19,6 +20,7 @@
   PI.ui.transition = async change => {
     if (busy) { await change(); return; }
     busy = true;
+    screen.inert = true; // nothing can be pressed until the new scene is fully open
     const Fx = PI.fx, kind = PI.gfx.still() ? 'fade' : KINDS[Math.random() * KINDS.length | 0];
     document.body.classList.add('switching');
     try {
@@ -31,7 +33,9 @@
       await run(OPEN, u => Fx.curtain(kind, 1 - ease(u)));
       Fx.curtain(kind, 0);
       document.body.classList.remove('switching');
+      screen.inert = false;
       busy = false;
     }
   };
+  PI.ui.transition.busy = () => busy;
 })();

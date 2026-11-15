@@ -33,14 +33,14 @@ Species of one level differ in three ways. The field guide in the main menu list
 | Detection | short, medium, wide | How far the species notices the player: 4, 5.5 or 7 units. A hunter also has to be on screen before it notices you. |
 | Temperament | passive, neutral, aggressive | How far it roams, how early it flees, and how long and how fast it chases. Each map sets its own numbers for the three. |
 
-Hunters are always slower than the player. One chases for 10 seconds, then rests for 3. The settings can turn the chase off, and then a higher level kills only when you run into it.
+Around a player, half of the creatures can be eaten, a tenth are equals and up to 40% are hunters. Every time you evolve, the creatures near you walk off and new ones arrive from outside the screen. Hunters are slower than the player, but they come looking for you, some lunge at close range, and a few chase at once. One chases for 10 seconds, then rests for 3. The settings can turn the pursuit off, and then a higher level kills only when you run into it.
 
 ## Controls
 
 - Keyboard: the arrow keys or WASD. Hold two keys to move diagonally.
 - Touch or mouse: press anywhere and drag. The point you press becomes the centre of the stick, and letting go stops you.
 
-The settings change the zoom, the enemy chase, screen shake, the amount of effects, eating notices, the touch stick and vibration.
+The settings change the camera view and turn the enemy pursuit on or off. The exit sign at the top right, or the Esc key, leaves a round and goes back to the main menu.
 
 ## Maps
 
@@ -64,7 +64,7 @@ python -m http.server 5310
 
 Then open http://localhost:5310/.
 
-To publish, enable GitHub Pages for the repository with the source "Deploy from a branch", branch `main`, folder `/ (root)`.
+To publish, set the Pages source of the repository to "GitHub Actions". `.github/workflows/pages.yml` then deploys every push to `main`. `icons/social-preview.png` is the image for the repository's social preview.
 
 Four parameters in the page address set up a test. Each works alone, and a parameter with no value picks at random.
 

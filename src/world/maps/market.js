@@ -99,14 +99,14 @@
       handcart: { knock: 16, stop: .5, carts: [{ y: 0, from: -44, to: 44, speed: 3.4 }, { y: 36, from: 44, to: -44, speed: 2.8 }] },
       alley: { maxLevel: 4, zone: { x: 35.75, y: -19.5, hx: .75, hy: 4.5 } },
       'awning-bounce': { distance: 4, cooldown: .9, pads: [
-        { x: -34, y: 2.8, hx: 1.1, hy: .7 }, { x: -8, y: -2.9, hx: 1.1, hy: .7 }, { x: 10, y: 2.6, hx: 1.1, hy: .7 }, { x: 36, y: -2.6, hx: 1.1, hy: .7 },
-        { x: -20, y: -18, hx: .9, hy: .8 }, { x: -20, y: 20, hx: .9, hy: .8 }, { x: 22, y: -18, hx: .9, hy: .8 }, { x: 22, y: 22, hx: .9, hy: .8 },
-        { x: -32, y: -36, hx: 1.1, hy: .7 }, { x: 4, y: -36, hx: 1.1, hy: .7 }, { x: -6, y: 36, hx: 1.1, hy: .7 }, { x: 34, y: 36, hx: 1.1, hy: .7 }] },
-      hawker: { hold: 1, immune: 3, radius: 1.25, spots: [
-        { x: slots[5], y: rowY(streets[0]) + 1.9, yaw: 1.5 }, { x: slots[9], y: rowY(streets[0]) + 1.9, yaw: 1.6 }, { x: slots[13], y: rowY(streets[0]) + 1.9, yaw: 1.4 },
-        { x: slots[1], y: rowY(streets[1]) + 1.9, yaw: 1.5 }, { x: slots[12], y: rowY(streets[1]) + 1.9, yaw: 1.6 },
-        { x: slots[4], y: rowY(streets[2]) + 1.9, yaw: 1.5 }, { x: slots[8], y: rowY(streets[2]) + 1.9, yaw: 1.4 },
-        { x: -1.5, y: tableY(streets[0]) - 2, yaw: -1.5 }, { x: 30, y: tableY(streets[0]) - 2, yaw: -1.6 }, { x: -30, y: tableY(streets[1]) - 2, yaw: -1.5 }] },
+        { x: -34, y: 2.8, hx: 2, hy: 1.25 }, { x: -8, y: -2.9, hx: 2, hy: 1.25 }, { x: 10, y: 2.6, hx: 2, hy: 1.25 }, { x: 36, y: -2.6, hx: 2, hy: 1.25 },
+        { x: -20, y: -18, hx: 1.6, hy: 1.4 }, { x: -20, y: 20, hx: 1.6, hy: 1.4 }, { x: 22, y: -18, hx: 1.6, hy: 1.4 }, { x: 22, y: 22, hx: 1.6, hy: 1.4 },
+        { x: -32, y: -36, hx: 2, hy: 1.25 }, { x: 4, y: -36, hx: 2, hy: 1.25 }, { x: -6, y: 36, hx: 2, hy: 1.25 }, { x: 34, y: 36, hx: 2, hy: 1.25 }] },
+      hawker: { hold: 1, immune: 3, radius: 1.8, spots: [
+        { x: slots[5], y: rowY(streets[0]) + 2.3, yaw: 1.5 }, { x: slots[9], y: rowY(streets[0]) + 2.3, yaw: 1.6 }, { x: slots[13], y: rowY(streets[0]) + 2.3, yaw: 1.4 },
+        { x: slots[1], y: rowY(streets[1]) + 2.3, yaw: 1.5 }, { x: slots[12], y: rowY(streets[1]) + 2.3, yaw: 1.6 },
+        { x: slots[4], y: rowY(streets[2]) + 2.3, yaw: 1.5 }, { x: slots[8], y: rowY(streets[2]) + 2.3, yaw: 1.4 },
+        { x: -1.5, y: tableY(streets[0]) - 2.4, yaw: -1.5 }, { x: 30, y: tableY(streets[0]) - 2.4, yaw: -1.6 }, { x: -30, y: tableY(streets[1]) - 2.4, yaw: -1.5 }] },
     },
   });
 })();

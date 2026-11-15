@@ -73,8 +73,8 @@
 
     interactions: {
       'cloud-platform': { clouds: [
-        { y: -46, from: -38, to: 38, speed: 1.5, r: 2.2 }, { y: -30, from: 36, to: -36, speed: 1.3, r: 2.4 }, { y: -18, from: -30, to: 30, speed: 1.6, r: 2.1 },
-        { y: 4, from: 38, to: -38, speed: 1.2, r: 2.4 }, { y: 22, from: -36, to: 36, speed: 1.4, r: 2.2 }, { y: 40, from: 34, to: -34, speed: 1.3, r: 2.3 }, { y: 54, from: -30, to: 30, speed: 1.5, r: 2.1 }] },
+        { y: -46, from: -38, to: 38, speed: 1.5, r: 3.3 }, { y: -30, from: 36, to: -36, speed: 1.3, r: 3.6 }, { y: -18, from: -30, to: 30, speed: 1.6, r: 3.2 },
+        { y: 4, from: 38, to: -38, speed: 1.2, r: 3.6 }, { y: 22, from: -36, to: 36, speed: 1.4, r: 3.3 }, { y: 40, from: 34, to: -34, speed: 1.3, r: 3.4 }, { y: 54, from: -30, to: 30, speed: 1.5, r: 3.2 }] },
       'granite-wall': { walls },
       fog: { detect: .5, zones: fogs },
       'high-altitude': { speed: .75, food: 1 },

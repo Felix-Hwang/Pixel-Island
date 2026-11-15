@@ -5,11 +5,12 @@
 //      spots, saddle, socks, chest
 PI.bodies.quadlarge = {
   cadence: 1, bounce: 1, lean: .1,
-  height: s => s.legLen + .5 + (s.neck || 0) * .55 + (s.hump || 0) * .15 + (s.horn && !s.noseHorn ? s.horn * .25 : 0),
+  height: s => s.legLen + .5 + (s.rear || 0) * .55 + (s.neck || 0) * .55 + (s.hump || 0) * .15 + (s.horn && !s.noseHorn ? s.horn * .25 : 0),
   build(R) {
     const s = R.s, L = s.len, leg = s.legLen, bulk = s.bulky ? 1.2 : s.thin ? .7 : 1, rb = .24 * bulk;
     const h = leg + rb * .6;
-    const rear = [-L * .38, 0, h], shoulder = [L * .3, 0, h + (s.arms ? .12 : 0)];
+    const up = s.rear || 0; // 1: it sits back on its haunches with the chest raised
+    const rear = [-L * .38 + up * .12, 0, h], shoulder = [L * .3 - up * .16, 0, h + (s.arms ? .12 : 0) + up * .55];
     R.torso(rear, shoulder, rb, rb * 1.05);
     if (s.saddle) R.torso([-L * .3, 0, h + .01], [L * .02, 0, h + .02], rb * 1.04, rb * 1.06, .38, 'light'); // a pale band round the middle
     R.haunch(shoulder[0] - .04, shoulder[2] + rb * .1, rb * .82, rb * .62); // shoulders
@@ -45,6 +46,12 @@ PI.bodies.quadlarge = {
     const legs = [[L * .26, 1, 0, 0], [L * .26, -1, .5, .1], [-L * .32, 1, .5, .5], [-L * .32, -1, 0, .6]];
     for (const [f, side, ph, phRun] of legs) {
       const arm = f > 0 && s.arms;
+      if (arm && up) { // raised arms hang in front, ending in long claws
+        const sh = [shoulder[0], side * rb * .9, shoulder[2]], hand = [shoulder[0] + .3, side * (rb + .1), shoulder[2] - .42 * s.arms];
+        R.bone(sh, hand, lr * 1.2, lr, 'dark');
+        for (const dz of [0, .08]) R.bone(hand, [hand[0] + .16, hand[1], hand[2] - .26 - dz], .05, .025, 'bone');
+        continue;
+      }
       R.leg([f, side * rb * .95, h * .92], [f + (arm ? .12 : 0), side * (rb * 1.05 + (arm ? .12 * s.arms : .02))], {
         ph, phRun, r: lr * (arm ? 1.15 : 1), stride, knee: [f > 0 ? .03 : -.07, 0, .02],
         sock: s.socks ? 'light' : null, foot: arm ? 'bone' : 'ink', footR: lr * .95, // hooves, or claws on a long arm

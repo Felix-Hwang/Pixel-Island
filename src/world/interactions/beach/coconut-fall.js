@@ -25,9 +25,9 @@ PI.registerInteraction('beach', 'coconut-fall', {
   draw(cfg, st) {
     const G = PI.gfx, ramp = G.ramp([112, 78, 50]);
     for (const nut of st.nuts) {
-      if (nut.t < 0) { G.shadowBlob(nut.x, nut.y, 0, .22 + (1 + nut.t / cfg.warn) * .3, 2); continue; } // the warning shadow grows
-      G.ball(nut.x, nut.y, nut.z, .24, ramp, G.STYLE.GLOSS, G.KIND.BODY);
-      G.shadowBlob(nut.x, nut.y, 0, .3, 2);
+      if (nut.t < 0) { G.shadowBlob(nut.x, nut.y, 0, .4 + (1 + nut.t / cfg.warn) * .7, 2); continue; } // the warning shadow grows
+      G.ball(nut.x, nut.y, nut.z + .2, .46, ramp, G.STYLE.GLOSS, G.KIND.BODY);
+      G.shadowBlob(nut.x, nut.y, 0, .5, 2);
     }
   },
 });

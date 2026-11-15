@@ -1,6 +1,5 @@
 'use strict';
-// Effects that make a hit feel like a hit: bursts, sparks, rings, floating numbers, light, flashes, screen shake
-// and vibration. Nothing here changes the rules of the game.
+// Effects that make a hit feel like a hit: bursts, sparks, rings, floating numbers, light, flashes and screen shake. Nothing here changes the rules of the game.
 (() => {
   const G = PI.gfx, cfg = PI.config;
   const Fx = PI.fx = {};
@@ -14,7 +13,7 @@
   let parts = [], rings = [], texts = [], glows = [], beams = [];
   let shakeFor = 0, shakeLen = 1, shakeBy = 0, flashFor = 0, flashLen = 1, flashBy = 0;
   const calm = () => G.still();
-  const rich = () => !calm() && PI.settings.get('effects') === 'full';
+  const rich = () => !calm();
   const pack = rgb => G.pack(rgb[0], rgb[1], rgb[2]);
 
   // A screen transition covers the view in black: amount 0 shows everything and 1 covers it all.
@@ -71,13 +70,8 @@
   // the whole screen flashes white and fades
   Fx.flash = (amount, seconds = .25) => { if (rich()) { flashBy = amount; flashFor = flashLen = seconds; } };
   Fx.shake = (amount, seconds = .25) => {
-    if (!PI.settings.on('shake') || calm()) return;
+    if (calm()) return;
     if (amount >= shakeBy * (shakeFor / shakeLen || 0)) { shakeBy = amount; shakeFor = shakeLen = seconds; }
-  };
-  // browsers refuse to vibrate before the first tap, so do not ask until there has been one
-  Fx.buzz = ms => {
-    const tapped = !navigator.userActivation || navigator.userActivation.hasBeenActive;
-    if (tapped && navigator.vibrate && PI.settings.on('vibrate')) { try { navigator.vibrate(ms); } catch {} }
   };
   // the camera offset of this frame, in game pixels
   Fx.offset = () => {

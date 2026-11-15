@@ -7,8 +7,8 @@ PI.species.lv6 = [
   { id: 'cloudedleopard',    cls: 'animal', body: 'quadlarge', sil: { len: 1.2, h: .45, legLen: .4, neck: .3, tail: 1.1, sleek: 1, spots: 1 }, behavior: 'ambush' },
   { id: 'orangutan',         cls: 'animal', body: 'quadlarge', sil: { len: .9, h: .6, legLen: .4, neck: .2, arms: 1.3, hump: .3, tail: 0 }, behavior: 'wander' },
   { id: 'watermonitor',      cls: 'animal', body: 'reptile',  sil: { len: 1.3, h: .25, tail: 1.3, legLen: .35, snout: .5, spots: 1 }, behavior: 'lurk' },
-  { id: 'dilophosaurus',     cls: 'dino',   body: 'biped',    sil: { len: 1.3, h: .55, tail: 1.3, neck: .6, head: .6, arms: .3, crest: .9 }, behavior: 'charge' },
+  { id: 'dilophosaurus',     cls: 'dino',   body: 'biped',    sil: { len: 1.4, h: .55, tail: 1.5, neck: .75, head: .6, arms: .4, crest: 1.3, rings: 1 }, behavior: 'charge' },
   { id: 'gallimimus',        cls: 'dino',   body: 'biped',    sil: { len: 1.1, h: .65, tail: 1.2, neck: .9, head: .4, arms: .3, legLen: .7 }, behavior: 'flock' },
-  { id: 'pachycephalosaurus', cls: 'dino',  body: 'biped',    sil: { len: 1.2, h: .55, tail: 1.1, neck: .4, head: .8, arms: .3, dome: 1 }, behavior: 'charge' },
+  { id: 'pachycephalosaurus', cls: 'dino',  body: 'biped',    sil: { len: 1.1, h: .55, tail: .9, neck: .3, head: .9, arms: .25, dome: 1.2, belly: 1 }, behavior: 'charge' },
   { id: 'dimorphodon',       cls: 'dino',   body: 'pterosaur', sil: { wing: 1.3, head: .8, crest: 0, tail: .9, hover: .7 }, behavior: 'glide' },
 ];

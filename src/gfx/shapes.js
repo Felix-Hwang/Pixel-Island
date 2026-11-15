@@ -9,13 +9,20 @@
   let axial = false, ax = 0, ay = 0, az = 0; // inside a capsule: light the ball as a slice of a cylinder
   // G.under: when set to a ramp, the underside of every ball drawn is painted from it (a paler belly)
   G.under = null;
+  // While a slab is set, depth is taken as if the shape were squeezed toward the ground line y. A creature is
+  // drawn this way: its parts keep their order among themselves, but all of it sorts at its feet, the way a
+  // sprite would. Without this the back half of a large animal vanished into any wall it stood in front of.
+  let slabOn = false, slabY = 0, slabK = 1;
+  G.slab = (y, k = .15) => { slabOn = true; slabY = y; slabK = k; };
+  G.noSlab = () => { slabOn = false; };
+  G.bodyDepth = (y, z) => (slabOn ? slabY + (y - slabY) * slabK : y) * COS + z * SIN;
   G.record = () => { rec = []; };
   G.stopRecord = () => { const out = rec; rec = null; return out; };
 
   // squash < 1 flattens the ball vertically (domes, shells, clouds)
   G.ball = (x, y, z, r, ramp, style = STYLE.FLAT, kind = KIND.BODY, squash = 1) => {
     const W = G.W, H = G.H;
-    const cx = G.ox + x * U, cy = G.oy + (y * SIN - z * COS) * U, cd = y * COS + z * SIN;
+    const cx = G.ox + x * U, cy = G.oy + (y * SIN - z * COS) * U, cd = (slabOn ? slabY + (y - slabY) * slabK : y) * COS + z * SIN;
     const rx = Math.max(r * U, .8);
     const ry = squash === 1 ? rx : Math.max(rx * Math.sqrt(squash * squash * COS * COS + SIN * SIN), .8);
     const x0 = Math.max(0, Math.floor(cx - rx)), x1 = Math.min(W - 1, Math.ceil(cx + rx));

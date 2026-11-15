@@ -54,6 +54,7 @@
     list.setAttribute('aria-label', label);
     panel.setAttribute('role', 'tabpanel');
     const select = n => {
+      if (PI.ui.transition.busy()) return; // a scene change is still running
       [...list.children].forEach((tab, k) => { tab.setAttribute('aria-selected', k === n); tab.tabIndex = k === n ? 0 : -1; });
       panel.setAttribute('aria-labelledby', list.children[n].id);
       if (list.isConnected) list.children[n].scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -114,9 +115,10 @@
   }
 
   const builders = {
-    // the name of the game, a wide start button, a row of three small buttons, and a row of two
+    // the icon and the name of the game, a wide start button, a row of three small buttons, and a row of two
     title() {
-      const panel = el('div', 'panel title'), logo = heading(NAME), row = el('div', 'row'), books = el('div', 'row two');
+      const panel = el('div', 'panel title'), icon = el('img', 'icon'), logo = heading(NAME), row = el('div', 'row'), books = el('div', 'row two');
+      icon.src = 'icons/icon-192.png'; icon.alt = ''; icon.width = 96; icon.height = 96;
       logo.classList.add('logo'); logo.lang = 'en';
       const start = button(PI.t('menu.start'), 'primary', () => { Sc.hide(); PI.game.start(); });
       start.autofocus = true;
@@ -125,7 +127,7 @@
         button(PI.t('menu.guide'), null, () => Sc.show('guide')),
         button(PI.t('menu.settings'), null, () => Sc.show('settings')));
       books.append(button(PI.t('menu.codex'), null, () => Sc.show('codex')), button(PI.t('menu.maps'), null, () => Sc.show('maps')));
-      panel.append(logo, start, row, books);
+      panel.append(icon, logo, start, row, books);
       return { panel, look: 'bare' };
     },
     // opt.first: shown right after the first language choice, so its button leads on to the main menu
@@ -145,7 +147,7 @@
       panel.append(heading(PI.t('settings.title')));
       for (const key of PI.settings.keys()) {
         const row = el('div', 'setting'), choices = el('div', 'choices');
-        const named = key === 'zoom' || key === 'effects'; // these have named choices; the others are on or off
+        const named = key === 'zoom'; // zoom has named choices; the chase is on or off
         for (const value of PI.settings.choices(key)) {
           const b = button(PI.t(named ? 'settings.' + key + '.' + value : 'settings.' + value), null, () => {
             PI.settings.set(key, value);
@@ -155,15 +157,7 @@
           choices.append(b);
         }
         row.append(el('span', 'label', PI.t('settings.' + key)), choices);
-        if (key === 'chase') row.append(el('p', 'muted small', PI.t('settings.chase.note')));
         panel.append(row);
-      }
-      const root = document.documentElement;
-      if (root.requestFullscreen) {
-        panel.append(button(PI.t('settings.fullscreen'), null, () => {
-          const done = document.fullscreenElement ? document.exitFullscreen() : root.requestFullscreen();
-          if (done && done.catch) done.catch(() => {});
-        }));
       }
       panel.append(backButton());
       return { panel };
@@ -235,6 +229,8 @@
     },
   };
   Sc.hide = () => { PI.ui.modal.hide(); Sc.current = null; };
+  // leave a round at once and go back to the main menu
+  Sc.exit = () => { if (PI.state.phase === 'play' && !PI.ui.transition.busy()) toMenu(); };
   Sc.show = (kind, opt = {}) => {
     if (kind === 'codex' && !PI.i18n.facts[PI.lang()]) { // the facts are only fetched when the field guide is opened
       const open = () => { PI.i18n.facts[PI.lang()] = PI.i18n.facts[PI.lang()] || {}; Sc.show(kind, opt); };

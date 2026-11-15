@@ -8,26 +8,37 @@
   Gm.berryColors = BERRY;
 
   Gm.need = (lv, id) => lv >= 10 ? 0 : Math.max(cfg.minFood, cfg.foodBase(lv) + cfg.grades[PI.grades[id] || 'B'].food);
-  // weights that point below level 1 go to the player's own level, and weights above level 10 go one level down
+  // The level of a new arrival around a player of level p, by config.levelShare. Level 1 has nothing below it,
+  // so that share goes to its own level; level 10 has nothing above it, so that share goes to level 9.
   function pickLevel(p) {
-    const weight = {};
-    for (const key of Object.keys(cfg.levelWeights)) {
-      let lv = p + +key;
-      if (lv < 1) lv = p; else if (lv > 10) lv = p - 1;
-      weight[lv] = (weight[lv] || 0) + cfg.levelWeights[key] * (+key > 0 ? cfg.dangerScale(p) : 1);
-    }
-    let total = 0;
-    const bag = Object.keys(weight).map(lv => [+lv, total += weight[lv]]);
-    const roll = Math.random() * total;
-    return bag.find(b => roll <= b[1])[0];
+    const share = cfg.levelShare, roll = Math.random();
+    let step = 1, r = Math.random();
+    for (let n = 0; n < cfg.levelSteps.length; n++) { r -= cfg.levelSteps[n]; if (r <= 0) { step = n + 1; break; } }
+    if (roll < share.lower) return p === 1 ? 1 : Math.max(1, p - step);
+    if (roll < 1 - cfg.higherShare(p)) return p;
+    return p >= 10 ? 9 : Math.min(10, p + step);
   }
   const farFromPlayer = (x, y, min) => !S.player || Math.hypot(x - S.player.x, y - S.player.y) >= min;
   const unseen = (x, y) => !G.visible(x, y, 30);
-  // During a round a new creature always arrives outside the view. anywhere: used when a map is first filled.
+  // A new creature. During a round it arrives just outside the view, more often on the side the player is heading
+  // for, and walks in toward where the player is going. anywhere: used when a map is first filled.
   Gm.spawn = (lv = pickLevel(S.player ? S.player.lv : 1), anywhere = false) => {
-    const c = PI.makeCreature(pick(PI.species['lv' + lv]), lv, 0, 0);
-    const at = I.randomPoint((x, y) => I.edge(x, y) < .8 && (anywhere || unseen(x, y)) && !PI.world.blocked(c, x, y), 120);
-    c.x = at.x; c.y = at.y; c.home = { x: at.x, y: at.y }; c.jam.x = at.x; c.jam.y = at.y;
+    const c = PI.makeCreature(pick(PI.species['lv' + lv]), lv, 0, 0), p = S.player, open = (x, y) => I.edge(x, y) < .8 && !PI.world.blocked(c, x, y);
+    let at = null;
+    if (!anywhere && p) {
+      const near = Math.random() < .25; // a quarter arrive right beside the screen and walk in; the rest settle further out
+      const speed = Math.hypot(p.vx, p.vy), ahead = { x: p.x + (speed > 1 ? p.vx / speed * 6 : 0), y: p.y + (speed > 1 ? p.vy / speed * 6 : 0) };
+      at = I.randomPoint((x, y) => open(x, y) && unseen(x, y) && (near ? G.visible(x, y, 170) : Math.hypot(x - p.x, y - p.y) < cfg.bubble) && (Math.random() < .5 || Math.hypot(x - ahead.x, y - ahead.y) < Math.hypot(x - p.x, y - p.y)), 160);
+      if (!unseen(at.x, at.y)) at = null;
+      else if (!near) c.home = { x: at.x, y: at.y };
+      else { // it sets out for a place near where the player is going
+        const goal = { x: ahead.x + (Math.random() - .5) * 12, y: ahead.y + (Math.random() - .5) * 12 }, d = Math.hypot(goal.x - at.x, goal.y - at.y) || 1;
+        c.home = I.walkable(goal.x, goal.y) ? goal : { x: at.x, y: at.y };
+        c.ai.wx = (goal.x - at.x) / d; c.ai.wy = (goal.y - at.y) / d; c.ai.t = 2 + Math.random() * 2.5;
+      }
+    }
+    if (!at) { at = I.randomPoint((x, y) => open(x, y) && (anywhere || unseen(x, y)), 120); c.home = { x: at.x, y: at.y }; }
+    c.x = at.x; c.y = at.y; c.jam.x = at.x; c.jam.y = at.y;
     S.creatures.push(c);
     return c;
   };
@@ -108,6 +119,7 @@
     p.morph = { t: cfg.morph * .4, from: null }; // it appears out of light
     p.invuln = cfg.morph + cfg.invincible;
     S.phase = 'play';
+    S.calmUntil = S.time + cfg.calm;
     PI.input.guardBack();
     PI.loop.snapCamera();
     stockMorsels(true);
@@ -140,7 +152,7 @@
     S.gauge = 0; S.gifts = 0; S.need = Gm.need(lv, p.sp.id);
     Fx.shake(cfg.shake.evolve, .5);
     Fx.flash(.55, .3);
-    Fx.buzz(40);
+    for (const c of S.creatures) c.leaving = S.time + cfg.leaveTime; // the neighbourhood changes with every level
     PI.ui.toast.show(PI.t('card.evolve', PI.describe(p)));
     if (lv >= 10) { S.apexAt = S.time + cfg.apexDelay; PI.ui.toast.show(PI.t('card.apex', { s: cfg.apexDelay })); }
   }
@@ -155,7 +167,6 @@
     Fx.ring(p.x, p.y, .3, 6, [255, 255, 255], .7);
     Fx.shake(cfg.shake.over, .6);
     Fx.flash(.5, .25);
-    Fx.buzz(140);
     killer.sqv += 9; killer.pop = .45;
     S.freeze = cfg.hitStop.over;
     S.player = null;
@@ -175,7 +186,6 @@
     for (const c of S.creatures) c.doom = S.time + .25 + Math.min(1.7, Math.hypot(c.x - p.x, c.y - p.y) * .07);
     Fx.shake(cfg.shake.finale, .7);
     Fx.flash(.7, .4);
-    Fx.buzz(200);
     PI.input.release();
     PI.ui.toast.clear();
     PI.ui.hud.update();
@@ -213,7 +223,6 @@
     if (p.lv < 10) Fx.text(p.x, p.y, PI.builder.headHeight(p), '+' + gain);
     p.sqv += big ? 10 : 6;
     p.pop = Math.max(p.pop, big ? .38 : .22);
-    Fx.buzz(big ? 18 : 8);
     if (big) { Fx.shake(cfg.shake.eat, .18); S.freeze = cfg.hitStop.eat; }
   }
   function eat(c) {
@@ -303,10 +312,13 @@
     }
     stockMorsels(false);
     stockPrey(dt);
-    // creatures outside the player's range of levels are swapped for fitting ones, off screen
-    if (S.player) for (let n = 0; n < 2; n++) {
-      const lv = S.player.lv, c = S.creatures[Math.random() * S.creatures.length | 0];
-      if (!c || (c.lv >= lv - 3 && c.lv <= lv + 3) || G.visible(c.x, c.y, 60)) continue;
+    // Out of sight, a creature is swapped for a new arrival beside the screen when it is on its way out after an
+    // evolution, when it has fallen outside the player's range of levels, or when it is far away. This keeps the
+    // whole population around the player. A few are checked every frame.
+    if (S.player && S.phase === 'play') for (let n = 0; n < 4; n++) {
+      const p = S.player, c = S.creatures[Math.random() * S.creatures.length | 0];
+      if (!c || G.visible(c.x, c.y, 60)) continue;
+      if (!(c.leaving > 0) && c.lv >= p.lv - 3 && c.lv <= p.lv + 3 && Math.hypot(c.x - p.x, c.y - p.y) < cfg.bubble) continue;
       S.creatures.splice(S.creatures.indexOf(c), 1);
       Gm.spawn();
     }

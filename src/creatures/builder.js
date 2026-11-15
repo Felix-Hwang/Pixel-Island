@@ -139,7 +139,7 @@
     for (const side of [1, -1]) {
       const w = world([head[0] + r * .5, head[1] + side * r * .72, head[2] + r * .3]);
       const i = G.index(w[0], w[1], w[2]);
-      if (i < 0 || G.kind[i] !== G.KIND.BODY || G.dep[i] - G.depthOf(w[1], w[2]) > Math.max(.06, r * k * .6)) continue;
+      if (i < 0 || G.kind[i] !== G.KIND.BODY || G.dep[i] - G.bodyDepth(w[1], w[2]) > Math.max(.06, r * k * .6)) continue;
       if (big && !dim) {
         const j = i - ahead; // the white sits behind the pupil
         if (ahead && G.kind[j] === G.KIND.BODY) G.col[j] = WHITE; else if (!ahead && G.kind[i - G.W] === G.KIND.BODY) G.col[i - G.W] = WHITE;
@@ -164,7 +164,7 @@
     if (c.moving) {
       const cadence = (2 + 1.1 * c.runQ) * (tmpl.cadence || 1); // steps per second rise with the run
       c.gaitPhase = frac(c.gaitPhase + dt * cadence);
-      const want = Math.atan2(vy, vx);
+      const want = Math.atan2(vy, vx) + (c.isPlayer || !PI.motion ? 0 : PI.motion.faceOffset(c));
       let diff = want - c.face;
       diff = Math.atan2(Math.sin(diff), Math.cos(diff));
       if (Math.abs(diff) > STEP * .62) { c.face = Math.round(want / STEP) * STEP; c.sqv -= 1.2; } // snap to one of eight facings
@@ -203,7 +203,9 @@
     const rate = !hover && !g.moving ? 0 : g.run ? 6 : g.moving ? 4.2 : 2.6; // wing beats per second
     R.flap = rate ? FLAP[Math.floor(time * rate * FLAP.length + seed) & 3] : .15;
     R.s = s; R.t = time;
+    G.slab(py);
     tmpl.build(R);
+    G.noSlab();
     if (shadow && !hover && !c.lift) G.shadowBlob(px, py, 0, B.radius(c) * .7, 2); // contact shadow under the body
   };
   // how far above the ground the top of the creature is, for placing the stars

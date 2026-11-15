@@ -17,7 +17,7 @@ PI.registerInteraction('swamp', 'firefly', {
     for (const f of st.flies) {
       if (f.wait > 0) { f.wait -= dt; continue; }
       f.x += Math.cos(t * .7 + f.seed) * .5 * dt; f.y += Math.sin(t * .9 + f.seed * 2) * .4 * dt;
-      if (!p || Math.hypot(p.x - f.x, p.y - f.y) > .7 + p.r * .5) continue;
+      if (!p || Math.hypot(p.x - f.x, p.y - f.y) > 1.3 + p.r * .5) continue;
       const at = I.randomPoint((x, y) => I.edge(x, y) < .8 && Math.hypot(x - p.x, y - p.y) > 6);
       f.x = at.x; f.y = at.y; f.wait = 3; // it is caught, and a new one appears elsewhere 3 seconds later
       if (++st.have >= cfg.need) { st.have = 0; st.bright = cfg.time; }
@@ -44,7 +44,7 @@ PI.registerInteraction('swamp', 'firefly', {
     for (const f of st.flies) {
       if (f.wait > 0 || !G.visible(f.x, f.y, 6)) continue;
       const on = Math.sin(t * 5 + f.seed * 3) > -.3, z = 1 + Math.sin(t * 1.3 + f.seed) * .3;
-      G.stamp(on ? ['.X.', 'XoX', '.X.'] : ['X'], G.sx(f.x) - (on ? 1 : 0), G.sy(f.y, z) - (on ? 1 : 0), { X: glow, o: core }, false);
+      G.stamp(on ? ['..X..', '.XoX.', 'XoooX', '.XoX.', '..X..'] : ['.X.', 'XoX', '.X.'], G.sx(f.x) - (on ? 2 : 1), G.sy(f.y, z) - (on ? 2 : 1), { X: glow, o: core }, false);
     }
     if (p) for (let k = 0; k < st.have; k++) { // one pixel above the player for each firefly collected
       G.stamp(['X'], G.sx(p.x) - st.have + k * 2, G.sy(p.y, PI.builder.headHeight(p)) - 12, { X: core }, false);

@@ -7,13 +7,15 @@
 
   P.box = (b, rgb, opt) => { G.box(b, G.ramp(rgb), opt); G.boxShadow(b); return b; };
 
-  // a standing person about two units tall. pal: { shirt, legs, skin, hair, hat }. kind lets a mover be drawn live.
+  // A standing person, two units tall at scale 1. pal: { shirt, legs, skin, hair, hat }.
+  // pose: step (-1..1, a walking stride), wave (0..1, one arm raised), push (both arms out to a handle), scale.
+  // kind lets a mover be drawn live.
   P.person = (x, y, yaw, pal, pose = {}, kind = K.PROP, shadow = true) => {
-    const fx = Math.cos(yaw), fy = Math.sin(yaw), sx = -fy, sy = fx;
-    const at = (f, s, u) => [x + fx * f + sx * s, y + fy * f + sy * s, u];
+    const fx = Math.cos(yaw), fy = Math.sin(yaw), sx = -fy, sy = fx, k = pose.scale || 1;
+    const at = (f, s, u) => [x + (fx * f + sx * s) * k, y + (fy * f + sy * s) * k, u * k];
     const bone = (a, b, ra, rb, rgb) => {
-      G.capsule(a[0], a[1], a[2], b[0], b[1], b[2], ra, rb, G.ramp(rgb), S.FLAT, kind);
-      if (shadow) G.shadowCapsule(a[0], a[1], a[2], b[0], b[1], b[2], ra, rb);
+      G.capsule(a[0], a[1], a[2], b[0], b[1], b[2], ra * k, rb * k, G.ramp(rgb), S.FLAT, kind);
+      if (shadow) G.shadowCapsule(a[0], a[1], a[2], b[0], b[1], b[2], ra * k, rb * k);
     };
     const step = pose.step || 0, wave = pose.wave || 0;
     bone(at(0, .15, .95), at(step * .25, .16, .1), .15, .11, pal.legs);
@@ -24,21 +26,24 @@
     const top = at(0, 0, 2.08);
     bone(top, top, .19, .19, pal.hair);
     if (pal.hat) { // a wide conical hat
-      G.ball(top[0], top[1], top[2] + .06, .42, G.ramp(pal.hat), S.FLAT, kind, .35);
-      if (shadow) G.shadowBlob(top[0], top[1], top[2], .4, 1);
+      G.ball(top[0], top[1], top[2] + .06 * k, .42 * k, G.ramp(pal.hat), S.FLAT, kind, .35);
+      if (shadow) G.shadowBlob(top[0], top[1], top[2], .4 * k, 1);
     }
-    bone(at(0, .32, 1.55), at(.1 + wave * .3, .38, 1.1 + wave * .8), .11, .09, wave ? pal.skin : pal.shirt);
-    bone(at(0, -.32, 1.55), at(.1, -.38, 1.05), .11, .09, pal.shirt);
+    // each arm is a sleeve that ends in a hand
+    const arm = (side, hand) => { bone(at(0, side, 1.55), hand, .11, .09, pal.shirt); bone(hand, hand, .1, .1, pal.skin); };
+    if (pose.push) { arm(.3, at(.62, .3, 1.12)); arm(-.3, at(.62, -.3, 1.12)); }
+    else { arm(.32, at(.1 + wave * .3, .38, 1.1 + wave * .8)); arm(-.32, at(.1, -.38, 1.05)); }
   };
 
   // a beach parasol: pole, a flattened dome and a second-colour cap
   P.parasol = (x, y, rgbA, rgbB, r = 1.5) => {
-    const pole = G.ramp([226, 222, 212]);
-    G.capsule(x, y, 0, x, y, 2.1, .07, .07, pole, S.FLAT, K.PROP);
-    G.shadowCapsule(x, y, 0, x, y, 2, .08, .08);
-    G.ball(x, y, 2.05, r, G.ramp(rgbA), S.DITHER, K.PROP, .42);
-    G.ball(x, y, 2.3, r * .55, G.ramp(rgbB), S.DITHER, K.PROP, .42);
-    G.shadowBlob(x, y, 2, r * .95, 1);
+    const pole = G.ramp([226, 222, 212]), h = r * 1.4;
+    G.capsule(x, y, 0, x, y, h, .09, .09, pole, S.FLAT, K.PROP);
+    G.shadowCapsule(x, y, 0, x, y, h, .09, .09);
+    G.ball(x, y, h - .05, r, G.ramp(rgbA), S.DITHER, K.PROP, .42);
+    G.ball(x, y, h + r * .17, r * .55, G.ramp(rgbB), S.DITHER, K.PROP, .42);
+    G.ball(x, y, h + r * .42, .12, pole, S.FLAT, K.PROP);
+    G.shadowBlob(x, y, h, r * .95, 1);
   };
 
   // a market stall: counter, four posts and a cloth roof. Returns the footprint box for collisions.
@@ -72,10 +77,11 @@
   };
 
   // a small open boat. kind lets the ferry be redrawn every frame while it moves.
-  P.boat = (x, y, yaw, rgb, kind = K.PROP, shadow = true) => {
-    const hull = { x, y, z0: 0, z1: .45, hx: 1.1, hy: .5, yaw };
+  P.boat = (x, y, yaw, rgb, kind = K.PROP, shadow = true, k = 1) => {
+    const hull = { x, y, z0: 0, z1: .45 * k, hx: 1.1 * k, hy: .5 * k, yaw };
     G.box(hull, G.ramp(rgb), { kind, grain: .8, seed: 5 });
-    G.box({ x, y, z0: .45, z1: .55, hx: .85, hy: .3, yaw }, G.ramp([92, 74, 60]), { kind, grain: .5, seed: 9 });
+    G.box({ x, y, z0: .45 * k, z1: .55 * k, hx: .85 * k, hy: .3 * k, yaw }, G.ramp([92, 74, 60]), { kind, grain: .5, seed: 9 });
+    G.box({ x, y, z0: .55 * k, z1: .72 * k, hx: .12 * k, hy: .42 * k, yaw }, G.ramp([150, 118, 84]), { kind, grain: .4, seed: 2 }); // a bench across the middle
     if (shadow) G.boxShadow(hull);
     return hull;
   };

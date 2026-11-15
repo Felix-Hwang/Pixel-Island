@@ -98,7 +98,7 @@
       current: { strength: .4, turn: 1 },
       tide: { period: 15, slow: .5 },
       'pearl-clam': { cycle: 4, closed: 12, food: 1, clams },
-      jellyfish: { count: 18, speed: .9, stun: 1.5, radius: .7 },
+      jellyfish: { count: 14, speed: .9, stun: 1.5, radius: 1.2 },
       'boat-ride': { wait: 1, time: 4, docks: [{ x: 22.6, y: -10, out: [1, 0] }, { x: 33, y: -33.2, out: [0, 1] }], via: { x: 42, y: -18 } },
     },
   });

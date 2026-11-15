@@ -13,7 +13,7 @@ PI.registerInteraction('mountain', 'summit-flag', {
       if (map.high(at.x, at.y)) st.flag = { x: at.x, y: at.y, rgb: PI.palette.rgb[PI.palette.random()] };
       return;
     }
-    if (!p || Math.hypot(p.x - st.flag.x, p.y - st.flag.y) > .6 + p.r * .5) return;
+    if (!p || Math.hypot(p.x - st.flag.x, p.y - st.flag.y) > 1.1 + p.r * .5) return;
     st.flag = null; st.wait = cfg.respawn;
     PI.world.feed(p, cfg.food);
   },
@@ -21,10 +21,11 @@ PI.registerInteraction('mountain', 'summit-flag', {
     const f = st.flag, G = PI.gfx;
     if (!f || !G.visible(f.x, f.y, 30)) return;
     const K = G.KIND.BODY, flap = Math.floor(PI.state.time * 6) % 2 ? .08 : 0;
-    G.capsule(f.x, f.y, 0, f.x, f.y, 1.9, .07, .07, G.ramp([230, 226, 216]), G.STYLE.FLAT, K);
-    G.shadowCapsule(f.x, f.y, 0, f.x, f.y, 1.9, .08, .08);
-    const cloth = { x: f.x + .45, y: f.y, z0: 1.35 + flap, z1: 1.9 + flap, hx: .42, hy: .05, yaw: 0 };
+    G.capsule(f.x, f.y, 0, f.x, f.y, 3.6, .11, .1, G.ramp([230, 226, 216]), G.STYLE.FLAT, K);
+    G.ball(f.x, f.y, 3.72, .16, G.ramp([250, 214, 90]), G.STYLE.GLOSS, K);
+    G.shadowCapsule(f.x, f.y, 0, f.x, f.y, 3.6, .11, .1);
+    const cloth = { x: f.x + .9, y: f.y, z0: 2.5 + flap, z1: 3.55 + flap, hx: .82, hy: .06, yaw: 0 };
     G.box(cloth, G.ramp(f.rgb), { kind: K, grain: .3 });
-    G.shadowBlob(f.x + .45, f.y, 1.6, .35, 1);
+    G.shadowBlob(f.x + .9, f.y, 3, .7, 1);
   },
 });

@@ -9,6 +9,8 @@
     update() {
       const hud = byId('hud'), S = PI.state, p = S.player;
       byId('map-name').textContent = S.map && PI.lang() ? PI.t('map.' + S.map.id) : '';
+      byId('exit').hidden = S.phase !== 'play';
+      if (PI.lang()) byId('exit').setAttribute('aria-label', PI.t('hud.exit'));
       if (!p || S.phase !== 'play') { hud.hidden = true; return; }
       hud.hidden = false;
       byId('hud-level').textContent = PI.t('hud.level', { lv: p.lv });
@@ -36,6 +38,8 @@
       byId('hud-status').replaceChildren(...chips);
     },
   };
+  byId('exit').addEventListener('click', () => PI.ui.screens.exit());
+  addEventListener('keydown', e => { if (e.key === 'Escape') PI.ui.screens.exit(); });
   document.addEventListener('pi:lang', () => PI.ui.hud.update());
   document.addEventListener('pi:map', () => PI.ui.hud.update());
 })();

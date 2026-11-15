@@ -50,7 +50,7 @@
     },
 
     props() {
-      const open = (x, y) => riverAt(x, y) > 1.8 && offWalk(x, y) && clearOf(shelters, 4.5)(x, y) && clearOf(pits, 3.5)(x, y) && clearOf(slopes, 4)(x, y);
+      const open = (x, y) => riverAt(x, y) > 1.8 && offWalk(x, y) && clearOf(shelters, 6)(x, y) && clearOf(pits, 4.6)(x, y) && clearOf(slopes, 5.6)(x, y);
       for (const w of WALKS) {
         M.planks(w.x, w.y, w.hx, .9, [98, 90, 96], true);
         for (let x = w.x - w.hx + 1; x < w.x + w.hx; x += 6.3) M.lamp(x, w.y - 1.1, 1.7);
@@ -75,10 +75,10 @@
 
     interactions: {
       firefly: { count: 30, need: 5, radius: 5.5, bright: 9.5, time: 8 },
-      'mud-pit': { pull: 1.1, speed: .3, pits: pits.map((p, n) => ({ x: p.x, y: p.y, r: 1.7 + (n % 3) * .15 })) },
+      'mud-pit': { pull: 1.1, speed: .3, pits: pits.map((p, n) => ({ x: p.x, y: p.y, r: 2.6 + (n % 3) * .2 })) },
       'rotten-bridge': { river: .4, hold: 2, soak: 3, slow: .4, restore: 10, bridges: [-51, -34, -17, 0, 17, 34, 51].map(y => ({ y })) },
-      'tree-rest': { safe: 3, cooldown: 20, spots: shelters.map(p => ({ x: p.x, y: p.y, r: 1.3 })) },
-      'slippery-mud': { accel: .12, zones: slopes.map((p, n) => ({ x: p.x, y: p.y, rx: 3 + (n % 3) * .3, ry: 1.9 + (n % 2) * .2 })) },
+      'tree-rest': { safe: 3, cooldown: 20, spots: shelters.map(p => ({ x: p.x, y: p.y, r: 2.2 })) },
+      'slippery-mud': { accel: .12, zones: slopes.map((p, n) => ({ x: p.x, y: p.y, rx: 4.4 + (n % 3) * .4, ry: 2.8 + (n % 2) * .3 })) },
     },
   });
 })();

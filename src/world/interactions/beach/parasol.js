@@ -4,7 +4,7 @@
 PI.registerInteraction('beach', 'parasol', {
   bake(cfg) {
     for (const s of cfg.spots) {
-      s.r = 1.5;
+      s.r = 2.6;
       PI.props.parasol(s.x, s.y, s.a, s.b, s.r);
       PI.island.addCover(s.x, s.y, 1);
     }

@@ -21,7 +21,7 @@
   // the layout: bars first, then palms, parasols and tide pools around them
   const bars = [{ x: -31, y: -31 }, { x: 6, y: -37 }, { x: 34, y: -24 }];
   const palms = I.spread(28, 31, 9, (x, y) => y < shoreAt(x) - 6 && clearOf(bars, 6)(x, y));
-  const parasols = I.spread(15, 77, 10, (x, y) => y > -40 && y < shoreAt(x) - 9 && clearOf(bars, 6)(x, y) && clearOf(palms, 3)(x, y));
+  const parasols = I.spread(15, 77, 10, (x, y) => y > -40 && y < shoreAt(x) - 9 && clearOf(bars, 7)(x, y) && clearOf(palms, 4)(x, y));
   const pools = I.spread(11, 55, 7, (x, y) => y > shoreAt(x) - 8 && y < shoreAt(x) - 2.5 && clearOf(palms, 3)(x, y), 5);
 
   const map = PI.registerMap({
@@ -88,10 +88,10 @@
     // The numbers for the five interactions of this map. Change them here.
     interactions: {
       wave: { period: 6, reach: 10, push: 3, runUp: .9, runBack: 1.3 },
-      'coconut-fall': { every: [.7, 1.6], warn: .8, stun: 1.5, radius: .9 },
+      'coconut-fall': { every: [.7, 1.6], warn: .8, stun: 1.5, radius: 1.4 },
       parasol: { reveal: 2.5, spots: parasols.map((p, n) => ({ x: p.x, y: p.y, a: CLOTH[n % CLOTH.length], b: n % 3 ? CREAM : CLOTH[(n + 2) % CLOTH.length] })) },
       'beach-bar': { wait: 1.5, boost: 1.3, time: 5, cooldown: 20, bars },
-      'tide-pool': { speed: .6, sea: .75, pools: pools.map((p, n) => ({ x: p.x, y: p.y, rx: 2 + (n % 3) * .35, ry: 1.3 + (n % 2) * .25 })) },
+      'tide-pool': { speed: .6, sea: .75, pools: pools.map((p, n) => ({ x: p.x, y: p.y, rx: 3 + (n % 3) * .4, ry: 2 + (n % 2) * .3 })) },
     },
   });
 })();

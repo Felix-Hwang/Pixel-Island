@@ -11,7 +11,7 @@ PI.behaviors.ambush = {
         const burst = Math.min(1.25, p.speed * 1.12 / (self.speed * self.mods.speed || 1)); // briefly faster than the player
         return A.home(self, { x: s.dx * burst, y: s.dy * burst });
       }
-      if (A.spots(self, .6)) {
+      if (A.spots(self, .6) && A.mayJoin(p)) {
         const v = A.toward(self, p.x, p.y);
         s.dx = v.x; s.dy = v.y; s.dash = .9;
         return v;

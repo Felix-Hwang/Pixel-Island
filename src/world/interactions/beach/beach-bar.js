@@ -2,13 +2,13 @@
 // Beach bar. Wait in front of a bar for a drink and run faster for a few seconds. Then the bars are closed to you for a while.
 // cfg: bars [{ x, y }], wait (s), boost (speed factor), time (s), cooldown (s)
 PI.registerInteraction('beach', 'beach-bar', {
-  init(cfg) { for (const b of cfg.bars) b.zone = { x: b.x, y: b.y + 1.9, r: 1.3 }; }, // the waiting spot in front of the counter
+  init(cfg) { for (const b of cfg.bars) b.zone = { x: b.x, y: b.y + 2.9, r: 2 }; }, // the waiting spot in front of the counter
   bake(cfg) {
     const G = PI.gfx, P = PI.props, bottle = [[90, 160, 120], [226, 150, 60], [200, 80, 90]];
     cfg.bars.forEach((b, n) => {
-      PI.island.addSolid(P.stall(b.x, b.y, 1.6, .7, [150, 104, 70], [[236, 110, 84], [84, 160, 170], [240, 180, 80]][n % 3], 0, 4 + n));
-      P.crate(b.x + 2.3, b.y + .3, .35, [140, 100, 66], .4, 2 + n);
-      for (let k = 0; k < 3; k++) G.capsule(b.x - .9 + k * .9, b.y + .3, .95, b.x - .9 + k * .9, b.y + .3, 1.3, .1, .06, G.ramp(bottle[k]), G.STYLE.GLOSS, G.KIND.PROP);
+      PI.island.addSolid(P.stall(b.x, b.y, 2.4, 1, [150, 104, 70], [[236, 110, 84], [84, 160, 170], [240, 180, 80]][n % 3], 0, 4 + n));
+      P.crate(b.x + 3.3, b.y + .3, .45, [140, 100, 66], .4, 2 + n);
+      for (let k = 0; k < 4; k++) G.capsule(b.x - 1.5 + k * 1, b.y + .4, .95, b.x - 1.5 + k * 1, b.y + .4, 1.5, .16, .08, G.ramp(bottle[k % bottle.length]), G.STYLE.GLOSS, G.KIND.PROP);
     });
   },
   update(cfg, st, dt) {
