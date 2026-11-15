@@ -11,7 +11,8 @@
   const FLAP = [1, .15, -.9, .15];    // wing poses per beat
   const INK = G.pack(26, 24, 38), WHITE = G.pack(255, 255, 255);
   const frac = v => v - Math.floor(v);
-  let k = 1, px = 0, py = 0, cy = 1, sy = 0, lean = 0, bob = 0, sway = 0, twist = 0, tall = 1, wide = 1, baseZ = 0, mats = null, ramps = null, shadow = true, dim = false;
+  let k = 1, px = 0, py = 0, faceCos = 1, faceSin = 0, lean = 0, bob = 0, sway = 0, twist = 0, tall = 1, wide = 1, baseZ = 0, mats = null, ramps = null, shadow = true, dim = false;
+  // k: the creature's size. px, py: where it stands. faceCos, faceSin: the way it faces.
   // gait.run is 1 while running; gait.mix runs 0..1 from a slow walk to a full run
   const R = { s: null, t: 0, gait: { phase: 0, run: 0, mix: 0, moving: false, q: 0 }, flap: 0 };
   const ease = t => t * t * (3 - 2 * t);
@@ -23,11 +24,11 @@
   // tall and wide carry the squash and stretch: a stretched body is taller and thinner, a squashed one lower and wider
   function world(l) {
     const f = (l[0] + (l[2] - .3) * lean) * k * wide, s = (l[1] + sway + l[0] * twist) * k * wide, u = (l[2] + bob) * k * tall + baseZ;
-    return [px + f * cy - s * sy, py + f * sy + s * cy, u < 0 ? 0 : u];
+    return [px + f * faceCos - s * faceSin, py + f * faceSin + s * faceCos, u < 0 ? 0 : u];
   }
   function planted(l) { // feet stay on the ground, so they get no bob, no lean and no sway
     const f = l[0] * k * wide, s = l[1] * k * wide;
-    return [px + f * cy - s * sy, py + f * sy + s * cy, Math.max(0, l[2] * k) + baseZ];
+    return [px + f * faceCos - s * faceSin, py + f * faceSin + s * faceCos, Math.max(0, l[2] * k) + baseZ];
   }
   function seg(a, b, ra, rb, mat) {
     ra = Math.max(ra * k, MIN_R); rb = Math.max(rb * k, MIN_R);
@@ -94,7 +95,7 @@
       seg(mid, end, r * 1.1, o.r1 || r, o.sock);
     } else seg(top, end, o.r0 || r * 1.2, o.r1 || r, mat);
     if (o.foot) { // the foot points the way the animal faces
-      const fr = (o.footR || r * 1.15) * k, toe = [end[0] + cy * fr * .9, end[1] + sy * fr * .9, Math.max(fr * .7, end[2])];
+      const fr = (o.footR || r * 1.15) * k, toe = [end[0] + faceCos * fr * .9, end[1] + faceSin * fr * .9, Math.max(fr * .7, end[2])];
       G.capsule(end[0], end[1], Math.max(fr * .7, end[2]), toe[0], toe[1], toe[2], Math.max(fr, MIN_R), Math.max(fr * .8, MIN_R), rampOf(o.foot), G.STYLE.FLAT, G.KIND.BODY);
     }
     return end;
@@ -135,7 +136,7 @@
   // Eyes, only where the head surface is actually visible. A big enough head gets a white of the eye with the
   // pupil on the side the animal is facing; a small head gets a single dark pixel.
   R.eyes = (head, r) => {
-    const big = r * k * G.U >= 2.3, ahead = cy > .35 ? 1 : cy < -.35 ? -1 : 0;
+    const big = r * k * G.U >= 2.3, ahead = faceCos > .35 ? 1 : faceCos < -.35 ? -1 : 0;
     for (const side of [1, -1]) {
       const w = world([head[0] + r * .5, head[1] + side * r * .72, head[2] + r * .3]);
       const i = G.index(w[0], w[1], w[2]);
@@ -148,7 +149,7 @@
     }
   };
   // true when the animal faces more toward the viewer than away: lets a template add face detail only when it shows
-  R.front = () => sy > -.3;
+  R.front = () => faceSin > -.3;
 
   const B = PI.builder = {};
   B.radius = c => c.k * G.clamp((c.sp.sil.len || c.sp.sil.wing || 1) * .34, .3, .62);
@@ -182,7 +183,7 @@
     k = c.k * (1 + (c.pop || 0) * .3);
     // Draw at whole pixels. A body drawn at fractional positions changes shape from frame to frame as it moves.
     px = Math.round(c.x * G.U) / G.U; py = Math.round(c.y * G.U * G.SIN) / (G.U * G.SIN);
-    cy = Math.cos(c.face); sy = Math.sin(c.face);
+    faceCos = Math.cos(c.face); faceSin = Math.sin(c.face);
     dim = !!opt.dim;
     mats = opt.flash ? pal.flash : dim ? pal.dim : pal.mats[c.color];
     ramps = mats.ramps || (mats.ramps = {});

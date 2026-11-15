@@ -27,16 +27,17 @@
     return s;
   };
   I.clearSolids = () => { I.solids.length = 0; grid.clear(); };
-  // pad (at most 1.6) grows every solid by that much
-  I.hitsSolid = (x, y, pad = .25) => {
+  // the solid at a point, or null. pad (at most 1.6) grows every solid by that much
+  I.solidAt = (x, y, pad = .25) => {
     const near = grid.get(cellKey(Math.floor(x / CELL), Math.floor(y / CELL)));
-    if (!near) return false;
+    if (!near) return null;
     for (const s of near) {
-      if (s.r != null) { if (Math.hypot(x - s.x, y - s.y) < s.r + pad) return true; }
-      else if (G.inBox(s, x, y, pad)) return true;
+      if (s.r != null) { if (Math.hypot(x - s.x, y - s.y) < s.r + pad) return s; }
+      else if (G.inBox(s, x, y, pad)) return s;
     }
-    return false;
+    return null;
   };
+  I.hitsSolid = (x, y, pad) => !!I.solidAt(x, y, pad);
   // where a creature may stand: inside the map and not inside something solid
   I.walkable = (x, y) => I.edge(x, y) < .92 && !(I.map.solid && I.map.solid(x, y)) && !I.hitsSolid(x, y);
   I.randomPoint = (test, tries = 80) => {

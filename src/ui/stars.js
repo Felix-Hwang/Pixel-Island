@@ -19,6 +19,9 @@
   };
   const TIERS = [[72, 176, 88], [66, 136, 232], [246, 200, 44], [230, 64, 56]], EMPTY = [86, 84, 92];
   const INK = G.pack(26, 24, 34);
+  // Effects that come from the ground and hold for everyone standing on it. Over a wide zone they would hang
+  // above every head and bury the stars, so only the player's are drawn.
+  const FROM_GROUND = ['slow', 'feast', 'slip', 'drift'];
   const tones = rgb => [G.pack(rgb[0], rgb[1], rgb[2]), G.pack(rgb[0] + (255 - rgb[0]) * .55, rgb[1] + (255 - rgb[1]) * .55, rgb[2] + (255 - rgb[2]) * .55), G.pack(rgb[0] * .68, rgb[1] * .66, rgb[2] * .74)];
   // A bitmap as a list of [x, y, tone]: tone 3 is the outline, 1 the lit upper left, 2 the shaded lower right.
   function sprite(rows) {
@@ -46,7 +49,7 @@
     const cx = Math.round(G.sx(c.x)), top = Math.round(G.sy(c.y, PI.builder.headHeight(c))) - 11;
     const n = St.filled(c.lv), lit = tierTones[St.tier(c.lv)];
     for (let i = 2; i >= 0; i--) paint(star, cx - 11 + i * 8, top, i < n ? lit : emptyTones); // right to left, so lit stars overlap empty ones
-    const status = PI.statusOf(c).slice(0, 2), beat = Math.floor(PI.state.time * 5) % 2;
+    const status = PI.statusOf(c).filter(key => c.isPlayer || !FROM_GROUND.includes(key)).slice(0, 2), beat = Math.floor(PI.state.time * 5) % 2;
     status.forEach((key, i) => {
       const three = iconTones[key] || (iconTones[key] = tones(PI.statusColors[key]));
       paint(icons[key], cx - status.length * 5 + i * 10 + 1, top - 10 - (c.isPlayer ? beat : 0), three);

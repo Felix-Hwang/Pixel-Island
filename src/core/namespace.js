@@ -15,6 +15,7 @@ window.PI = {
   maps: {},           // map definitions by id (src/world/maps)
   mapOrder: [],       // map ids, in the order the map guide lists them
   interactions: {},   // interaction definitions by 'map/id' (src/world/interactions)
+  game: {},           // the rules of a round (src/core/population.js, src/core/rules.js)
   ui: {},
   tools: {},          // results of the check pages under tools/
 };
@@ -27,6 +28,7 @@ PI.registerMap = def => {
   return def;
 };
 PI.registerInteraction = (mapId, id, def) => { def.id = id; def.map = mapId; PI.interactions[mapId + '/' + id] = def; return def; };
+PI.pick = list => list[Math.random() * list.length | 0];
 PI.allSpecies = () => Object.keys(PI.species).sort().flatMap(k => PI.species[k]);
 PI.speciesById = id => PI.allSpecies().find(s => s.id === id);
 PI.levelOf = id => { for (let lv = 1; lv <= 10; lv++) if (PI.species['lv' + lv].some(s => s.id === id)) return lv; return 0; };

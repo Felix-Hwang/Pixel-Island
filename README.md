@@ -9,7 +9,7 @@ Pixel Island is a single-player browser game. You start as a level 1 creature, e
 
 The game has no build step and no dependencies. Its own software renderer draws every creature and map from balls, capsules and boxes, so the only image files are the icons. The music and the sound effects are synthesized by a script in `tools/audio` and stored as MP3. Everything is a static file, and GitHub Pages serves the repository as it is.
 
-The interface is available in Korean, English, Chinese and Malay. It runs on a phone and on a desktop, in portrait and in landscape.
+The interface is available in Korean, English, Chinese and Malay. It runs on a phone and on a desktop, in portrait and in landscape. On a phone it can be added to the home screen, and it then opens without the browser's bars.
 
 License: [MIT](LICENSE). Made by [Felix](https://github.com/Felix-Hwang).
 
@@ -23,10 +23,13 @@ License: [MIT](LICENSE). Made by [Felix](https://github.com/Felix-Hwang).
 - Thirty seconds after you reach level 10 the round ends in a win. Every other creature disappears, your creature rises into the sky, and a report lists the map, the play time and each species you played.
 - Hunters leave you alone for the first 6 seconds of a round and turn away if they come close.
 - You cannot be hurt for a moment after you evolve. When that moment ends, any hunter standing on you is thrown back. The same happens when a root shelter stops protecting you and when you step off the ferry.
-- Food from terrain, such as food stalls, clams and the summit flag, fills at most half of a gauge. The rest has to be caught.
+- Food from terrain, such as food stalls, clams and the summit flag, fills at most half of a gauge. The rest has to be caught. A food stall stops serving you, and hides its waiting ring, once you have had that half.
 - Prey that has fled for 3.5 seconds runs out of breath and slows down.
-- The three stars above a creature show its level. Levels 1 to 3 light green stars, 4 to 6 blue, 7 to 9 yellow, and level 10 shows three red stars. Small icons above the stars show the effects it is under.
+- The three stars above a creature show its level. Levels 1 to 3 light green stars, 4 to 6 blue, 7 to 9 yellow, and level 10 shows three red stars. Small icons above the stars show the effects it is under. Effects that come from the ground, such as slow water or high ground, are shown only above your own creature.
 - Body colour changes only the look.
+- Bites within 2 seconds of each other raise the pitch of the eating sound, one note of a scale per bite.
+- The game keeps your highest level and your longest round. The game-over card shows both and marks a new record. A round played in Peaceful, or started with the `lv` or `species` test parameter, does not count.
+- In your first round two notices say how to move and what to eat. They are shown once.
 
 Species of one level differ in three ways. The field guide in the main menu lists all of them.
 
@@ -42,6 +45,7 @@ Around a player, half of the creatures can be eaten, a tenth are equals and up t
 
 - Keyboard: the arrow keys or WASD. Hold two keys to move diagonally. The letter keys are read by their position, so they work in any input language.
 - Touch or mouse: press anywhere and drag. The point you press becomes the centre of the stick, and letting go stops you.
+- Run straight into a trunk, a post or a rock and you step around it without losing speed. Walls stop you.
 - Esc leaves a round and goes back to the main menu. So does the exit sign at the top right. In the guide, the settings, the field guide and the map guide, Esc is the Back button.
 
 The settings change the camera view, set the enemy pursuit to Peaceful, Off or On, and turn the music and the sound effects off or on. On a small window two camera views would round to the same size, so Near and Far are always kept one step away from Normal.
@@ -68,7 +72,9 @@ python -m http.server 5310
 
 Then open http://localhost:5310/.
 
-To publish, set the Pages source of the repository to "GitHub Actions". `.github/workflows/pages.yml` then deploys every push to `main`. `icons/social-preview.png` is the image for the repository's social preview.
+Three squares show in the middle of the screen until the game has loaded.
+
+To publish, set the Pages source of the repository to "GitHub Actions". `.github/workflows/pages.yml` then deploys every push to `main`. `icons/social-preview.png` is the image for the repository's social preview and for the card that chat and social apps show for a link. The two `og:` addresses in `index.html` are absolute, so a copy served from another address has to change them. `manifest.webmanifest` is what lets a phone add the game to its home screen.
 
 Four parameters in the page address set up a test. Each works alone, and a parameter with no value picks at random.
 
@@ -108,17 +114,19 @@ The page loads the engine and the species up front. The rest arrives when it is 
 A file that fails to arrive does not stop the game. The page keeps asking for the first map and language until they load. If a later map cannot be fetched, the round is played on the map already on screen. A sound is tried again after 10 seconds.
 
 ```
-index.html              load order, canvas, status card, dialog
+index.html              load order, link preview tags, canvas, loading mark, status card, dialog
+manifest.webmanifest    name, colours and icons for a home-screen install
 icons/                  favicon and app icons
 assets/audio/           9 music tracks and 48 sound effects, as MP3
 src/
-  core/                 namespace, constants, loader, settings, sound, state, rules, input, frame loop, effects, boot
+  core/                 namespace, constants, loader, settings, sound, state, records, population, rules, input,
+                        movement, frame loop, effects, boot
   gfx/                  renderer: buffers, camera, colour ramps, shapes, shadows, outlines, wind
   creatures/            palette, animation, 15 body templates, senses
   behaviors/            8 movement patterns, one per file
   world/                map baking, plants, props, set pieces, the map list, 5 maps, 25 terrain effects (one per file)
   i18n/                 current language, string lookup, Korean particles
-  ui/                   stars, notices, status card, dialog, flags, portraits, transitions, screens
+  ui/                   stars, notices, first-round hints, status card, dialog, flags, portraits, transitions, screens
 data/
   species/              100 species, one file per level
   speeds.js             speed of every species

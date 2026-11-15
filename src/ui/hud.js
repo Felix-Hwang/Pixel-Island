@@ -25,7 +25,12 @@
       else {
         pips.setAttribute('aria-label', PI.t('hud.food', { have: Math.min(S.gauge, S.need), need: S.need }));
         if (pips.children.length !== S.need) pips.innerHTML = '<i></i>'.repeat(S.need);
-        [...pips.children].forEach((el, k) => el.classList.toggle('on', k < S.gauge));
+        [...pips.children].forEach((pip, k) => { // a pip jumps as it fills
+          const filled = k < S.gauge;
+          if (filled && !pip.classList.contains('on') && !PI.gfx.still()) pip.animate([{ transform: 'scale(2.2)' }, { transform: 'none' }], { duration: 240, easing: 'steps(4)' });
+          pip.classList.toggle('on', filled);
+        });
+        pips.classList.toggle('last', S.gauge === S.need - 1); // the last empty pip blinks
       }
       const chips = PI.statusOf(p).map(key => {
         const chip = document.createElement('span'), icon = document.createElement('img');

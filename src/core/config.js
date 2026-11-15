@@ -52,8 +52,9 @@ PI.config = {
   crowd: 2.6,              // AI creatures closer than this drift apart
   roam: [9, 22],
   edgeBounce: 5,
-  stuck: { window: 1.2, moved: .35, escape: .9, giveUp: 3 }, // see unstick() in loop.js
-  toastMs: 2500, eatToastMs: 1300,
+  stuck: { window: 1.2, moved: .35, escape: .9, giveUp: 3 }, // see unstick() in movement.js
+  toastMs: 2500, eatToastMs: 1300, hintMs: 4000,
+  comboGap: 2,             // bites closer together than this many seconds raise the pitch of the eating sound
   hitStop: { eat: .05, over: .15 }, // seconds the world stands still on a bite (3 frames) and on a death
   overDelay: 1.6,          // seconds the camera follows the killer before the game-over panel opens
   morph: 1.2,              // seconds of the flash at the start of a round and on every evolution

@@ -24,15 +24,16 @@
   }
   function pump() {
     if (card || !queue.length) return;
-    card = make(queue.shift(), 'toast');
+    const next = queue.shift();
+    card = make(next.text, 'toast');
     box().prepend(card);
     timer = setTimeout(() => {
       card.classList.add('out');
       timer = setTimeout(() => { close(); pump(); }, 220);
-    }, PI.config.toastMs);
+    }, next.ms);
   }
   PI.ui.toast = {
-    show(text) { queue.push(text); if (queue.length > 2) queue.shift(); closeQuick(); pump(); },
+    show(text, ms = PI.config.toastMs) { queue.push({ text, ms }); if (queue.length > 2) queue.shift(); closeQuick(); pump(); },
     flash(text) {
       if (card) return; // a start or evolution card has the corner to itself
       closeQuick();

@@ -3,15 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#1c1b19">
 <meta name="description" content="Pixel Island: eat lower-level creatures and evolve from level 1 to level 10.">
 <title>Pixel Island</title>
+<!-- The card a chat or a social app shows for a link. The image address has to be absolute, so a copy of the
+     game served from another address needs these two addresses changed. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Pixel Island">
+<meta property="og:description" content="Eat lower-level creatures and evolve from level 1 to level 10. A pixel-art game that runs in the browser.">
+<meta property="og:url" content="https://felix-hwang.github.io/Pixel-Island/">
+<meta property="og:image" content="https://felix-hwang.github.io/Pixel-Island/icons/social-preview.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="stylesheet" href="src/ui/style.css">
 </head>
 <body>
 <div id="stage"><canvas id="c" aria-label="Pixel Island"></canvas></div>
+<progress id="loading" aria-label="Loading"></progress>
 <div id="hud" hidden>
   <div class="line"><span id="hud-level"></span><span id="hud-name"></span><span id="hud-grade"></span></div>
   <div id="hud-pips" role="img"></div>
@@ -110,10 +123,14 @@
 <script src="src/behaviors/lurk.js"></script>
 <script src="src/core/input.js"></script>
 <script src="src/core/fx.js"></script>
+<script src="src/core/records.js"></script>
+<script src="src/core/population.js"></script>
 <script src="src/core/rules.js"></script>
+<script src="src/core/movement.js"></script>
 <script src="src/core/loop.js"></script>
 <script src="src/ui/stars.js"></script>
 <script src="src/ui/toast.js"></script>
+<script src="src/ui/hints.js"></script>
 <script src="src/ui/hud.js"></script>
 <script src="src/ui/modal.js"></script>
 <script src="src/ui/flags.js"></script>

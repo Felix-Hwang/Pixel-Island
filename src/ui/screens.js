@@ -199,9 +199,16 @@
     },
     // the camera is following the killer, so this card sits low and leaves the middle of the screen free
     over() {
-      const panel = el('div', 'panel over'), killer = PI.state.killer;
+      const panel = el('div', 'panel over'), killer = PI.state.killer, result = PI.state.result, best = PI.records.best();
+      const score = (text, isRecord) => { const s = el('span', null, text); if (isRecord) s.append(' ', el('b', 'record', PI.t('screen.record'))); return s; };
       panel.append(heading(PI.t('screen.gameover')));
-      if (killer) panel.append(el('p', null, PI.t('screen.eatenBy', killer.words)), el('p', 'muted', PI.t('screen.reached', { lv: killer.reached })));
+      if (killer) panel.append(el('p', null, PI.t('screen.eatenBy', killer.words)));
+      if (killer && result) { // the level and the time share a row where there is room
+        const scores = el('p', 'muted scores');
+        scores.append(score(PI.t('screen.reached', { lv: killer.reached }), result.beat && result.beat.lv), score(PI.t('screen.survived', { time: clock(result.time) }), result.beat && result.beat.time));
+        panel.append(scores);
+      }
+      if (best.lv) panel.append(el('p', 'muted small', PI.t('screen.best', { lv: best.lv, time: clock(best.time) })));
       panel.append(endButtons());
       return { panel, look: 'low' };
     },

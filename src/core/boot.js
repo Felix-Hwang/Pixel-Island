@@ -25,8 +25,8 @@
   const first = PI.mapCycle.upcoming();
   // The language and the map come over the network together; a returning player has a language already.
   // Nothing can be shown without them, so a file that fails to arrive is asked for again until it does.
-  const need = async fetchIt => { for (;;) { try { return await fetchIt(); } catch { await new Promise(done => setTimeout(done, 1500)); } } };
-  await Promise.all([PI.lang() ? need(() => PI.needLang(PI.lang())) : null, need(() => PI.needMap(first))]);
+  const untilLoaded = async fetchIt => { for (;;) { try { return await fetchIt(); } catch { await new Promise(done => setTimeout(done, 1500)); } } };
+  await Promise.all([PI.lang() ? untilLoaded(() => PI.needLang(PI.lang())) : null, untilLoaded(() => PI.needMap(first))]);
   PI.game.loadMap(first);
   fit();
   G.toView();
@@ -36,6 +36,7 @@
   document.addEventListener('pi:settings', e => { if (e.detail === 'zoom') fit(); });
   PI.state.phase = 'start';
   PI.loop.start();
+  document.getElementById('loading').remove();
   // On the first run the player chooses a language and then reaches the main menu. Later runs open the menu at once.
   if (PI.lang()) PI.ui.screens.show('title');
   else PI.ui.language.open(() => PI.ui.screens.show('title'));

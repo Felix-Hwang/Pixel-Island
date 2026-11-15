@@ -1,5 +1,6 @@
 'use strict';
 // Street-food stall. Wait in front of one and get fed. Then the cooks need time before they serve you again.
+// A player who has had all the terrain food this level allows is not served, and sees no waiting ring.
 // cfg: stalls [{ x, y }], wait (s), food (gauge gained), cooldown (s)
 PI.registerInteraction('market', 'food-stall', {
   init(cfg) { for (const s of cfg.stalls) s.zone = { x: s.x, y: s.y + 2.9, r: 2 }; }, // the waiting spot in front of the counter
@@ -16,19 +17,19 @@ PI.registerInteraction('market', 'food-stall', {
     const Wd = PI.world;
     for (const c of Wd.creatures()) {
       const f = Wd.fx(c, 'food');
-      if (Wd.cooling(c, 'food', dt)) { f.dwell = 0; continue; }
+      if (Wd.cooling(c, 'food', dt) || (c.isPlayer && !PI.game.giftLeft())) { f.dwell = 0; continue; }
       if (Wd.dwell(c, 'food', cfg.stalls.some(s => Wd.inCircle(c, s.zone)), dt) >= cfg.wait) { f.dwell = 0; Wd.cooldown(c, 'food', cfg.cooldown); Wd.feed(c, cfg.food); if (c.isPlayer) PI.audio.play('sfx_food_stall'); }
     }
   },
   drawGround(cfg) {
     const p = PI.state.player, G = PI.gfx, f = p && p.fx.food;
-    if (f && f.cool > 0) return; // still cooking
+    if (p && (f && f.cool > 0 || !PI.game.giftLeft())) return; // still cooking, or the player has had its share
     for (const s of cfg.stalls) G.groundRing(s.zone.x, s.zone.y, s.zone.r, 0xffffffff, f && f.dwell > 0 ? 0 : 2, Math.floor(PI.state.time * 4));
   },
   // steam rises from the pots while a portion is ready
   drawOver(cfg) {
     const p = PI.state.player, G = PI.gfx;
-    if (p && p.fx.food && p.fx.food.cool > 0) return;
+    if (p && (p.fx.food && p.fx.food.cool > 0 || !PI.game.giftLeft())) return;
     const t = Math.floor(PI.state.time * 6);
     for (const s of cfg.stalls) {
       const x = G.sx(s.x - .9), y = G.sy(s.y - .1, 1.8);

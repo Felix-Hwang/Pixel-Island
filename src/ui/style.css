@@ -11,6 +11,16 @@ body {
 .switching #screen { pointer-events: none; } /* nothing floats over the black of a scene change */
 
 #stage { position: fixed; inset: 0; overflow: hidden; }
+/* Shown until the game can start: three squares, with a bright one stepping along them. boot.js removes it.
+   It is a <progress> with no value, which assistive technology announces as busy. */
+#loading { position: fixed; inset: 0; margin: auto; width: 44px; height: 12px; border: 0; appearance: none; -webkit-appearance: none; z-index: 1;
+  --lit: var(--paper); --unlit: var(--muted);
+  background: linear-gradient(var(--lit) 0 0) 0 0 / 12px 12px no-repeat, repeating-linear-gradient(90deg, var(--unlit) 0 12px, transparent 12px 16px);
+  animation: loading 0.9s steps(1) infinite; }
+#loading::-webkit-progress-bar, #loading::-webkit-progress-value { display: none; }
+#loading::-moz-progress-bar { background: none; }
+@keyframes loading { 33% { background-position: 16px 0, 0 0; } 66% { background-position: 32px 0, 0 0; } }
+@media (forced-colors: active) { #loading { forced-color-adjust: none; --lit: CanvasText; --unlit: GrayText; } }
 canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edges; }
 
 #hud { position: fixed; top: max(10px, env(safe-area-inset-top)); left: max(10px, env(safe-area-inset-left)); display: grid; gap: 5px; padding: 6px 9px 7px; background: var(--paper); border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); pointer-events: none; z-index: 2; max-width: min(46vw, 260px); max-width: min(46dvw, 260px); }
@@ -30,6 +40,8 @@ canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edge
 #hud-pips { display: flex; gap: 2px; flex-wrap: wrap; justify-content: flex-end; }
 #hud-pips i { width: 8px; height: 8px; border: 2px solid var(--ink); background: var(--paper); }
 #hud-pips i.on { background: var(--ink); }
+#hud-pips.last i:not(.on) { animation: pip-wait .5s steps(1) infinite; }
+@keyframes pip-wait { 50% { background: var(--hint); } }
 
 /* The right column: the name of the map at the very top, and the notices directly under it. It is at most half the
    screen wide, so it never reaches the status card on the left. */
@@ -128,6 +140,8 @@ canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edge
 :lang(ko) .panel :is(h1, h2, h3, p, dd), :lang(ko) .toast { word-break: keep-all; overflow-wrap: break-word; }
 .panel .muted { color: var(--muted); }
 .panel .small { font-size: 12px; }
+.scores { display: flex; flex-wrap: wrap; gap: 2px 16px; }
+.record { padding: 0 5px; font-size: 11px; color: var(--ink); background: var(--hint); border: 2px solid var(--ink); white-space: nowrap; }
 .buttons { display: grid; gap: 8px; margin-top: 6px; }
 button { font: inherit; font-weight: 700; min-height: 48px; padding: 8px 14px; color: var(--ink); background: var(--paper); border: 2px solid var(--ink); border-radius: 0; cursor: pointer; touch-action: manipulation; }
 button:active { transform: translate(2px, 2px); }
@@ -141,4 +155,4 @@ button:focus-visible { outline: 3px solid #3e80e0; outline-offset: 2px; }
 .panel.lang .flag svg { display: block; }
 .panel.lang .english { margin-left: auto; font-weight: 400; font-size: 13px; color: var(--muted); }
 
-@media (prefers-reduced-motion: reduce) { .toast { animation: none; } .toast.out { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .toast { animation: none; } .toast.out { transition: none; } #hud-pips.last i:not(.on) { animation: none; } #loading { animation-duration: 3.6s; } }
