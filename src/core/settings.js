@@ -4,8 +4,10 @@
   const CHOICES = {
     zoom: ['near', 'normal', 'far'],
     chase: ['on', 'off'], // off: higher levels no longer come after the player, but touching one is still fatal
+    music: ['on', 'off'],
+    sound: ['on', 'off'],
   };
-  const DEFAULT = { zoom: 'normal', chase: 'on' };
+  const DEFAULT = { zoom: 'normal', chase: 'on', music: 'on', sound: 'on' };
   const St = PI.settings = {
     keys: () => Object.keys(CHOICES),
     choices: key => CHOICES[key].slice(),

@@ -16,6 +16,7 @@
   // Counted once a frame: how many hunters are chasing the player right now, and how many are close by.
   // Both are capped (config.packLimit, config.closeLimit), so danger comes from a few sides and not as a wall.
   const pack = { chasing: 0, close: 0 };
+  A.chasing = () => pack.chasing;
   A.mayJoin = p => pack.chasing < cfg.packLimit(p.lv) && (pack.chasing++, true);
   A.census = () => {
     const p = A.player();
@@ -101,6 +102,7 @@
     if (s.chaseAt == null || now - s.chaseSeen > .6) { // a new chase, unless enough others are on the player already
       if (pack.chasing >= cfg.packLimit(p.lv)) return null;
       s.chaseAt = now; self.alert = .8; self.sqv += 5; pack.chasing++;
+      PI.audio.play('sfx_alert', { gap: .4 });
     }
     s.chaseSeen = now; s.busy = now;
     if (now - s.chaseAt > cfg.stamina * st.stamina) { s.restUntil = now + cfg.rest; s.chaseAt = null; return null; }

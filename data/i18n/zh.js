@@ -55,6 +55,8 @@ PI.i18n.zh = {
   'card.apex': '到达10级！{s}秒后成为顶级掠食者。',
   'menu.codex': '图鉴',
   'settings.chase': '敌人追踪',
+  'settings.music': '音乐',
+  'settings.sound': '音效',
   'codex.title': '图鉴',
   'codex.intro': '点击等级数字查看该等级的10个物种。评级S最好，D最低。性格因地图而异，下面显示的是当前地图（{map}）的性格。',
   'codex.speed': '速度',

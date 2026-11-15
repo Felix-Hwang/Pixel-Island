@@ -55,6 +55,8 @@ PI.i18n.en = {
   'card.apex': 'Level 10! You become the apex predator in {s} seconds.',
   'menu.codex': 'Field guide',
   'settings.chase': 'Enemy pursuit',
+  'settings.music': 'Music',
+  'settings.sound': 'Sound effects',
   'codex.title': 'Field guide',
   'codex.intro': 'Tap a level number to see its ten species. Grade S is the best and D the lowest. Temperament differs by map; the ones below are for the current map ({map}).',
   'codex.speed': 'Speed',

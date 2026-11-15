@@ -19,6 +19,7 @@ PI.registerInteraction('islands', 'jellyfish', {
       if (Wd.cooling(c, 'jelly', dt)) continue;
       if (!st.list.some(j => Math.hypot(c.x - j.x, c.y - j.y) < cfg.radius + c.r * .4)) continue;
       Wd.stun(c, cfg.stun);
+      PI.audio.on(c, 'sfx_jellyfish_zap');
       Wd.cooldown(c, 'jelly', cfg.stun + 1.5);
     }
   },

@@ -42,6 +42,7 @@ PI.registerInteraction('islands', 'boat-ride', {
       if (Wd.dwell(c, 'boat', Math.hypot(c.x - dock.x, c.y - dock.y) < 1.7, dt) < cfg.wait) continue;
       Wd.fx(c, 'boat').dwell = 0;
       st.rider = c; st.t = 0; c.ride = st;
+      if (c.isPlayer) PI.audio.play('sfx_boat_ride');
       return;
     }
   },

@@ -17,7 +17,10 @@ PI.registerInteraction('beach', 'beach-bar', {
       const f = Wd.fx(c, 'bar');
       if (f.boost > 0) f.boost -= dt;
       if (Wd.cooling(c, 'bar', dt)) { f.dwell = 0; continue; }
-      if (Wd.dwell(c, 'bar', cfg.bars.some(b => Wd.inCircle(c, b.zone)), dt) >= cfg.wait) { f.boost = cfg.time; f.dwell = 0; Wd.cooldown(c, 'bar', cfg.cooldown); }
+      if (Wd.dwell(c, 'bar', cfg.bars.some(b => Wd.inCircle(c, b.zone)), dt) >= cfg.wait) {
+        f.boost = cfg.time; f.dwell = 0; Wd.cooldown(c, 'bar', cfg.cooldown);
+        if (c.isPlayer) PI.audio.play('sfx_drink');
+      }
     }
   },
   modify(cfg, st, c, m) { if (c.fx.bar && c.fx.bar.boost > 0) m.speed *= cfg.boost; },

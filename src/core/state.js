@@ -59,7 +59,7 @@
       mo: {},                 // how its body moves, see src/creatures/motion.js
       home: { x, y }, roam: cfg.roam[0] + Math.random() * (cfg.roam[1] - cfg.roam[0]), temper: .75 + Math.random() * .5,
       jam: { t: 0, x, y, want: 0, n: 0, until: 0, ax: 0, ay: 0 }, // see unstick() in loop.js
-      mods: { speed: 1, accel: 1, detect: 1, hidden: false, reveal: 2.5, safe: false, food: 0, driftX: 0, driftY: 0 },
+      mods: { speed: 1, accel: 1, detect: 1, hidden: false, reveal: 2.5, safe: false, food: 0, driftX: 0, driftY: 0, ground: '' },
       fx: {},                 // per-interaction scratch space
       ai: {},                 // per-behaviour scratch space
     };

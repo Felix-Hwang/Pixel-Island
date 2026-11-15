@@ -20,6 +20,7 @@ PI.registerInteraction('market', 'hawker', {
       if (Wd.cooling(c, 'hawker', dt)) continue;
       if (!cfg.spots.some(s => Math.hypot(c.x - s.x, c.y - s.y) < cfg.radius + c.r * .4)) continue;
       Wd.stun(c, cfg.hold);
+      if (c.isPlayer) PI.audio.play('sfx_hawker');
       c.vx = 0; c.vy = 0;
       Wd.cooldown(c, 'hawker', cfg.hold + cfg.immune);
     }

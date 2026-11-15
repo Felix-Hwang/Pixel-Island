@@ -13,10 +13,10 @@ PI.registerInteraction('beach', 'tide-pool', {
     }
   },
   modify(cfg, st, c, m) {
-    if (c.y > PI.world.map.shoreAt(c.x) + .4) { m.speed *= cfg.sea; return; }
+    if (c.y > PI.world.map.shoreAt(c.x) + .4) { m.speed *= cfg.sea; m.ground = 'water'; return; }
     for (const p of cfg.pools) {
       const dx = (c.x - p.x) / p.rx, dy = (c.y - p.y) / p.ry;
-      if (dx * dx + dy * dy < .8) { m.speed *= cfg.speed; return; }
+      if (dx * dx + dy * dy < .8) { m.speed *= cfg.speed; m.ground = 'water'; return; }
     }
   },
 });

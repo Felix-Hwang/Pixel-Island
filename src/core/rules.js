@@ -124,6 +124,7 @@
     PI.loop.snapCamera();
     stockMorsels(true);
     PI.ui.toast.show(PI.t('card.start', PI.describe(p)));
+    PI.audio.play('sfx_spawn');
     PI.ui.hud.update();
   };
   // gift: the food comes from terrain and not from a catch. Terrain fills at most config.giftShare of a gauge,
@@ -135,6 +136,7 @@
       if (n <= 0) return;
       S.gifts += n;
       Fx.text(S.player.x, S.player.y, PI.builder.headHeight(S.player), '+' + n);
+      PI.audio.play('sfx_food_bonus');
     }
     S.gauge += n;
     if (S.gauge >= S.need) evolve();
@@ -152,6 +154,7 @@
     S.gauge = 0; S.gifts = 0; S.need = Gm.need(lv, p.sp.id);
     Fx.shake(cfg.shake.evolve, .5);
     Fx.flash(.55, .3);
+    PI.audio.play(lv >= 10 ? 'sfx_apex_start' : 'sfx_evolve');
     for (const c of S.creatures) c.leaving = S.time + cfg.leaveTime; // the neighbourhood changes with every level
     PI.ui.toast.show(PI.t('card.evolve', PI.describe(p)));
     if (lv >= 10) { S.apexAt = S.time + cfg.apexDelay; PI.ui.toast.show(PI.t('card.apex', { s: cfg.apexDelay })); }
@@ -167,6 +170,7 @@
     Fx.ring(p.x, p.y, .3, 6, [255, 255, 255], .7);
     Fx.shake(cfg.shake.over, .6);
     Fx.flash(.5, .25);
+    PI.audio.play('sfx_death');
     killer.sqv += 9; killer.pop = .45;
     S.freeze = cfg.hitStop.over;
     S.player = null;
@@ -186,6 +190,8 @@
     for (const c of S.creatures) c.doom = S.time + .25 + Math.min(1.7, Math.hypot(c.x - p.x, c.y - p.y) * .07);
     Fx.shake(cfg.shake.finale, .7);
     Fx.flash(.7, .4);
+    PI.audio.play('sfx_guard_burst');
+    PI.audio.play('sfx_ascend', { delay: cfg.finale - 2.45 }); // its burst lands on the last flash
     PI.input.release();
     PI.ui.toast.clear();
     PI.ui.hud.update();
@@ -200,6 +206,7 @@
       Fx.burst(c.x, c.y, c.r, PI.palette.rgb[c.color], 16, 6.5);
       Fx.ring(c.x, c.y, .3, c.r + 2.4, [255, 255, 255], .4);
       Fx.shake(2.5, .12);
+      PI.audio.play('sfx_finale_pop', { gap: .07, rate: .85 + Math.random() * .4, volume: .7 });
     }
     p.face += dt * (5 + 30 * u * u);                       // it spins faster and faster
     if (u > .3) p.lift += dt * (.6 + (u - .3) * (u - .3) * 60); // and leaves the ground
@@ -213,6 +220,8 @@
     S.phase = 'clear';
     Fx.flash(1, .7);
     PI.ui.screens.show('report');
+    PI.audio.play('sfx_victory');
+    PI.audio.hush(2.7);
   }
   // feedback for one bite
   function bite(x, y, z, rgb, gain, big) {
@@ -224,6 +233,7 @@
     p.sqv += big ? 10 : 6;
     p.pop = Math.max(p.pop, big ? .38 : .22);
     if (big) { Fx.shake(cfg.shake.eat, .18); S.freeze = cfg.hitStop.eat; }
+    PI.audio.play(big ? 'sfx_eat_creature' : 'sfx_eat_berry', { rate: .94 + Math.random() * .12, gap: 0 });
   }
   function eat(c) {
     const gain = 1 + S.player.mods.food;
@@ -249,6 +259,7 @@
       if (d >= min) continue;
       if (playing && p.isPlayer && q.lv > p.lv && !(p.invuln > 0) && !p.mods.safe && !(q.stun > 0)) return over(q);
       const nx = d ? dx / d : 1, ny = d ? dy / d : 0, push = (min - d) / 2;
+      if (playing && p.isPlayer && push > .04) PI.audio.play('sfx_push', { gap: .5, volume: .6 });
       const pw = p.isPlayer ? .3 : 1, qw = q.isPlayer ? .3 : 1;
       if (I.walkable(p.x - nx * push * pw, p.y - ny * push * pw)) { p.x -= nx * push * pw; p.y -= ny * push * pw; }
       if (I.walkable(q.x + nx * push * qw, q.y + ny * push * qw)) { q.x += nx * push * qw; q.y += ny * push * qw; }
@@ -278,6 +289,7 @@
     if (!hit) return;
     Fx.ring(p.x, p.y, p.r, cfg.guard.range + 1, [255, 255, 255], .35);
     Fx.shake(cfg.shake.bump, .15);
+    PI.audio.play('sfx_guard_burst');
   };
   // From level 3 there are no berries. If too few edible creatures are on or beside the screen, the farthest one
   // is moved to just outside the view, so the player never has to wander an empty map looking for food.
@@ -325,8 +337,11 @@
     if (S.phase === 'play' && S.apexAt) {
       const left = Math.ceil(S.apexAt - S.time);
       if (left <= 0) ascend();
-      else if (left !== shownSecond) { shownSecond = left; PI.ui.hud.update(); }
+      else if (left !== shownSecond) {
+        shownSecond = left; PI.ui.hud.update();
+        if (left <= 10) PI.audio.play('sfx_countdown_tick', { volume: .7, rate: left <= 3 ? 1.5 : 1 });
+      }
     }
-    if (S.phase === 'over' && S.overAt && S.time >= S.overAt) { S.overAt = 0; PI.ui.screens.show('over'); }
+    if (S.phase === 'over' && S.overAt && S.time >= S.overAt) { S.overAt = 0; PI.ui.screens.show('over'); PI.audio.play('sfx_gameover'); }
   };
 })();

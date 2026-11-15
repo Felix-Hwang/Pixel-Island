@@ -9,7 +9,7 @@ PI.registerInteraction('beach', 'wave', {
     let reach = 0;
     if (p < cfg.runUp) { const k = 1 - p / cfg.runUp; reach = cfg.reach * (1 - k * k); }
     else if (p < cfg.runUp + cfg.runBack) reach = cfg.reach * (1 - (p - cfg.runUp) / cfg.runBack);
-    if (reach > 0 && was === 0) st.id++;
+    if (reach > 0 && was === 0) { st.id++; PI.audio.at('sfx_wave', PI.loop.cam.x, map.shoreAt(PI.loop.cam.x), { volume: .8 }); }
     st.reach = reach;
     if (reach <= was) return; // only the advancing water pushes
     for (const c of Wd.creatures()) {

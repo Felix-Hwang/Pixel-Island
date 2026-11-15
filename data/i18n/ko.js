@@ -56,6 +56,8 @@ PI.i18n.ko = {
   'card.apex': '10단계 도달! {s}초 뒤 최상위 포식자가 됩니다.',
   'menu.codex': '도감',
   'settings.chase': '적 추적',
+  'settings.music': '배경음악',
+  'settings.sound': '효과음',
   'codex.title': '도감',
   'codex.intro': '레벨 숫자를 눌러 그 레벨의 종 10가지를 봅니다. 등급은 S가 가장 좋고 D가 가장 낮습니다. 성향은 맵마다 다르며, 아래는 지금 맵({map}) 기준입니다.',
   'codex.speed': '속도',

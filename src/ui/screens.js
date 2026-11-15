@@ -36,13 +36,15 @@
   }
   function endButtons() {
     const actions = el('div', 'buttons'), again = button(PI.t('screen.again'), 'primary', nextRound);
-    again.autofocus = true;
-    actions.append(again, button(PI.t('screen.home'), 'quiet', toMenu));
+    again.autofocus = true; again.dataset.sound = 'sfx_game_start';
+    const home = button(PI.t('screen.home'), 'quiet', toMenu);
+    home.dataset.sound = 'back';
+    actions.append(again, home);
     return actions;
   }
   function backButton(onClick = () => Sc.show('title')) {
     const actions = el('div', 'buttons'), back = button(PI.t('menu.back'), 'primary', onClick);
-    back.autofocus = true;
+    back.autofocus = true; back.dataset.sound = 'back';
     actions.append(back);
     return actions;
   }
@@ -121,7 +123,7 @@
       icon.src = 'icons/icon-192.png'; icon.alt = ''; icon.width = 96; icon.height = 96;
       logo.classList.add('logo'); logo.lang = 'en';
       const start = button(PI.t('menu.start'), 'primary', () => { Sc.hide(); PI.game.start(); });
-      start.autofocus = true;
+      start.autofocus = true; start.dataset.sound = 'sfx_game_start';
       row.append(
         button(PI.t('menu.language'), null, () => PI.ui.language.open(() => Sc.show('title'))),
         button(PI.t('menu.guide'), null, () => Sc.show('guide')),
@@ -137,6 +139,7 @@
       for (const key of GUIDE) panel.append(el('h2', null, PI.t('guide.' + key + '.h')), el('p', null, PI.t('guide.' + key + '.p')));
       const done = button(PI.t(opt.first ? 'menu.next' : 'menu.back'), 'primary', () => Sc.show('title'));
       done.autofocus = true;
+      if (!opt.first) done.dataset.sound = 'back';
       const actions = el('div', 'buttons');
       actions.append(done);
       panel.append(actions);
@@ -147,7 +150,7 @@
       panel.append(heading(PI.t('settings.title')));
       for (const key of PI.settings.keys()) {
         const row = el('div', 'setting'), choices = el('div', 'choices');
-        const named = key === 'zoom'; // zoom has named choices; the chase is on or off
+        const named = key === 'zoom'; // zoom has named choices; the others are on or off
         for (const value of PI.settings.choices(key)) {
           const b = button(PI.t(named ? 'settings.' + key + '.' + value : 'settings.' + value), null, () => {
             PI.settings.set(key, value);

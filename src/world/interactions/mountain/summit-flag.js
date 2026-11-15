@@ -16,6 +16,7 @@ PI.registerInteraction('mountain', 'summit-flag', {
     if (!p || Math.hypot(p.x - st.flag.x, p.y - st.flag.y) > 1.1 + p.r * .5) return;
     st.flag = null; st.wait = cfg.respawn;
     PI.world.feed(p, cfg.food);
+    PI.audio.play('sfx_flag');
   },
   draw(cfg, st) {
     const f = st.flag, G = PI.gfx;

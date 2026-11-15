@@ -25,6 +25,7 @@ PI.registerInteraction('mountain', 'granite-wall', {
         if (sideHit) { c.kx = -vx; c.vx = 0; if (c.ai.wx) c.ai.wx = -c.ai.wx; }
         else { c.ky = -vy; c.vy = 0; if (c.ai.wy) c.ai.wy = -c.ai.wy; }
         c.pop = Math.max(c.pop, .3);
+        if (c.isPlayer) PI.audio.play('sfx_bump_edge', { gap: .3 });
         break;
       }
     }

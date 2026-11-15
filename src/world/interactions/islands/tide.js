@@ -3,7 +3,7 @@
 // At high tide they are under water and wading across is slow.
 // cfg: period (s for a full cycle), slow (speed factor on a flooded bar)
 PI.registerInteraction('islands', 'tide', {
-  init(cfg, st) { st.t = 0; st.level = 0; st.pixels = []; },
+  init(cfg, st) { st.t = 0; st.level = 0; st.high = false; st.pixels = []; },
   // remember which map pixels belong to a sandbar, and how close each is to its edge
   bake(cfg, st) {
     const G = PI.gfx, map = PI.world.map;
@@ -23,9 +23,13 @@ PI.registerInteraction('islands', 'tide', {
   update(cfg, st, dt) {
     st.t += dt;
     st.level = .5 - .5 * Math.cos(st.t / cfg.period * Math.PI * 2); // 0 = low tide, 1 = high tide
+    if (st.level > .55 !== st.high) { // the bars flood or fall dry
+      st.high = !st.high;
+      if (PI.state.phase === 'play') PI.audio.play('sfx_tide_change', { volume: .7 });
+    }
   },
   modify(cfg, st, c, m) {
-    if (st.level > .55 && PI.world.map.terrain(c.x, c.y) === 'bar') m.speed *= cfg.slow;
+    if (st.level > .55 && PI.world.map.terrain(c.x, c.y) === 'bar') { m.speed *= cfg.slow; m.ground = 'water'; }
   },
   // the water covers each bar from its edges inward
   drawGround(cfg, st) {

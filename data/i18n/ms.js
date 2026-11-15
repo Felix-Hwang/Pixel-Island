@@ -55,6 +55,8 @@ PI.i18n.ms = {
   'card.apex': 'Tahap 10! Anda menjadi pemangsa puncak dalam {s} saat.',
   'menu.codex': 'Panduan spesies',
   'settings.chase': 'Kejaran musuh',
+  'settings.music': 'Muzik',
+  'settings.sound': 'Kesan bunyi',
   'codex.title': 'Panduan spesies',
   'codex.intro': 'Ketik nombor tahap untuk melihat sepuluh spesiesnya. Gred S paling baik dan D paling rendah. Perangai berbeza mengikut peta; yang di bawah adalah untuk peta semasa ({map}).',
   'codex.speed': 'Kelajuan',

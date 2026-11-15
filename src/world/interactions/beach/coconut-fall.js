@@ -9,11 +9,12 @@ PI.registerInteraction('beach', 'coconut-fall', {
     if (st.next <= 0 && crowns.length) {
       st.next = cfg.every[0] + Math.random() * (cfg.every[1] - cfg.every[0]);
       const c = crowns[Math.random() * crowns.length | 0];
-      st.nuts.push({ x: c.x + (Math.random() - .5) * 1.6, y: c.y + .5 + Math.random() * 1.2, z: c.z - .3, vz: 0, t: -cfg.warn, done: 0 });
+      st.nuts.push({ x: c.x + (Math.random() - .5) * 1.6, y: c.y + .5 + Math.random() * 1.2, z: c.z - .3, vz: 0, t: -cfg.warn, done: 0, fall: Math.sqrt(Math.max(0, c.z - .52) / 11), rang: false });
     }
     for (let n = st.nuts.length - 1; n >= 0; n--) {
       const nut = st.nuts[n];
       nut.t += dt;
+      if (!nut.rang && nut.t >= nut.fall - .56) { nut.rang = true; PI.audio.at('sfx_coconut_drop', nut.x, nut.y); } // its thud comes .56 s in
       if (nut.t < 0) continue;       // still only a shadow
       if (nut.done) { nut.done += dt; if (nut.done > 1.2) st.nuts.splice(n, 1); continue; }
       nut.vz -= 22 * dt; nut.z += nut.vz * dt;

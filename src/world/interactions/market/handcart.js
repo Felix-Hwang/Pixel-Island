@@ -16,6 +16,7 @@ PI.registerInteraction('market', 'handcart', {
         if (c.fx.cart.cool > 0 || Math.abs(c.x - cart.x) > 1.8 + c.r * .5 || Math.abs(c.y - cart.y) > 1.05 + c.r * .5) continue;
         Wd.knock(c, cart.dir * 5, (c.y >= cart.y ? 1 : -1) * cfg.knock); // thrown to the side of the lane it is on
         Wd.stun(c, cfg.stop);
+        PI.audio.on(c, 'sfx_handcart_hit');
         Wd.cooldown(c, 'cart', .9);
       }
     }

@@ -17,7 +17,7 @@ PI.registerInteraction('market', 'food-stall', {
     for (const c of Wd.creatures()) {
       const f = Wd.fx(c, 'food');
       if (Wd.cooling(c, 'food', dt)) { f.dwell = 0; continue; }
-      if (Wd.dwell(c, 'food', cfg.stalls.some(s => Wd.inCircle(c, s.zone)), dt) >= cfg.wait) { f.dwell = 0; Wd.cooldown(c, 'food', cfg.cooldown); Wd.feed(c, cfg.food); }
+      if (Wd.dwell(c, 'food', cfg.stalls.some(s => Wd.inCircle(c, s.zone)), dt) >= cfg.wait) { f.dwell = 0; Wd.cooldown(c, 'food', cfg.cooldown); Wd.feed(c, cfg.food); if (c.isPlayer) PI.audio.play('sfx_food_stall'); }
     }
   },
   drawGround(cfg) {

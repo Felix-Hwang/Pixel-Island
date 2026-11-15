@@ -18,7 +18,7 @@ PI.registerInteraction('swamp', 'mud-pit', {
     for (const p of cfg.pits) {
       const dx = p.x - c.x, dy = p.y - c.y, d = Math.hypot(dx, dy);
       if (d > p.r * .92) continue;
-      m.speed *= cfg.speed;
+      m.speed *= cfg.speed; m.ground = 'mud';
       const pull = Math.min(cfg.pull, c.speed * m.speed * .6);
       if (d > .15) { m.driftX += dx / d * pull; m.driftY += dy / d * pull; }
       return;

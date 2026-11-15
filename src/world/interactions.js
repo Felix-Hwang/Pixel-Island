@@ -4,7 +4,8 @@
 //   init(cfg, st)            set up state
 //   bake(cfg, st)            draw static props into the baked frame
 //   update(cfg, st, dt)      per frame; may stun, push or carry creatures
-//   modify(cfg, st, c, m)    per creature per frame; change m.speed, m.accel, m.detect, m.hidden, m.safe, m.food, m.driftX/Y
+//   modify(cfg, st, c, m)    per creature per frame; change m.speed, m.accel, m.detect, m.hidden, m.safe, m.food, m.driftX/Y,
+//                            and set m.ground to 'water' or 'mud' where the creature wades, which picks the sound
 //   blocks(cfg, st, c, x, y) true if creature c may not stand at (x, y)
 //   dim(cfg, st, c)          true if c should be drawn as a dark silhouette without stars
 //   drawGround / draw / drawOver(cfg, st)   paint on the ground, add live objects, or paint over the finished frame
@@ -30,7 +31,7 @@
   Wd.drawOver = () => run('drawOver');
   Wd.mods = c => {
     const m = c.mods;
-    m.speed = 1; m.accel = 1; m.detect = 1; m.hidden = false; m.reveal = 2.5; m.safe = false; m.food = 0; m.driftX = 0; m.driftY = 0;
+    m.speed = 1; m.accel = 1; m.detect = 1; m.hidden = false; m.reveal = 2.5; m.safe = false; m.food = 0; m.driftX = 0; m.driftY = 0; m.ground = '';
     run('modify', c, m);
     return m;
   };

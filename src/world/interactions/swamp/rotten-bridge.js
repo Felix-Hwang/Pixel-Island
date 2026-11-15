@@ -17,6 +17,7 @@ PI.registerInteraction('swamp', 'rotten-bridge', {
       if (on.length || b.timer > 0) b.timer += dt; // once the timer starts it keeps running, even if everyone steps off
       if (b.timer < cfg.hold) continue;
       b.timer = 0; b.down = cfg.restore;
+      PI.audio.at('sfx_bridge_break', b.x, b.y);
       for (const c of on) Wd.fx(c, 'bridge').soak = cfg.soak;
     }
   },
@@ -24,7 +25,7 @@ PI.registerInteraction('swamp', 'rotten-bridge', {
     if (c.fx.bridge && c.fx.bridge.soak > 0) { m.speed *= cfg.slow; return; }
     if (!PI.world.map.inRiver(c.x, c.y)) return;
     if (st.bridges.some(b => !(b.down > 0) && PI.world.inRect(c, b))) return; // standing on an intact bridge
-    m.speed *= cfg.river;
+    m.speed *= cfg.river; m.ground = 'water';
   },
   drawGround(cfg, st) {
     const G = PI.gfx, plank = [G.pack(104, 82, 70), G.pack(124, 98, 80)], rim = G.pack(60, 48, 52), t = PI.state.time;

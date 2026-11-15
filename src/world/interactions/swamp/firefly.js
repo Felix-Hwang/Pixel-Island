@@ -20,7 +20,8 @@ PI.registerInteraction('swamp', 'firefly', {
       if (!p || Math.hypot(p.x - f.x, p.y - f.y) > 1.3 + p.r * .5) continue;
       const at = I.randomPoint((x, y) => I.edge(x, y) < .8 && Math.hypot(x - p.x, y - p.y) > 6);
       f.x = at.x; f.y = at.y; f.wait = 3; // it is caught, and a new one appears elsewhere 3 seconds later
-      if (++st.have >= cfg.need) { st.have = 0; st.bright = cfg.time; }
+      if (++st.have >= cfg.need) { st.have = 0; st.bright = cfg.time; PI.audio.play('sfx_light_grow'); }
+      else PI.audio.play('sfx_firefly', { rate: 1 + (st.have - 1) * .1, gap: 0 }); // each one a little higher than the last
     }
   },
   dim(cfg, st, c) {

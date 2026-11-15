@@ -20,6 +20,7 @@
   PI.ui.transition = async change => {
     if (busy) { await change(); return; }
     busy = true;
+    PI.audio.play('sfx_transition');
     screen.inert = true; // nothing can be pressed until the new scene is fully open
     const Fx = PI.fx, kind = PI.gfx.still() ? 'fade' : KINDS[Math.random() * KINDS.length | 0];
     document.body.classList.add('switching');

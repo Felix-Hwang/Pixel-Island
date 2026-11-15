@@ -21,7 +21,7 @@
     const power = Math.max(cfg.edgeBounce, c.speed * .9);
     c.kx = nx * power; c.ky = ny * power; c.vx = 0; c.vy = 0;
     c.bounce = .16; c.sqv -= 8;
-    if (c.isPlayer) { Fx.shake(cfg.shake.bump, .14); Fx.burst(c.x, c.y, .2, [255, 255, 255], 6, 3); }
+    if (c.isPlayer) { Fx.shake(cfg.shake.bump, .14); Fx.burst(c.x, c.y, .2, [255, 255, 255], 6, 3); PI.audio.play('sfx_bump_edge', { gap: .2 }); }
   }
   function move(c, dx, dy) {
     if (!canStand(c, c.x, c.y)) { // it was pushed somewhere it may not stand, so it heads for the nearest open ground
@@ -88,17 +88,27 @@
     if (k.n >= rule.giveUp) { const to = nearestOpen(c); if (to) { c.x = to.x; c.y = to.y; } k.n = 0; }
   }
   // The player's own effects show as a ring when one starts and a steady trickle of particles while it lasts.
-  let statusKey = '', statusTick = 0;
+  // Each also has a sound: [name, delay]. Water and mud have their own, so a slowing there is not announced twice.
+  const BEGINS = { stun: ['sfx_status_stun', .15], safe: ['sfx_status_safe', 0], hidden: ['sfx_status_hidden', 0], fast: ['sfx_status_fast', .45], slip: ['sfx_slip', 0] };
+  const ENDS = ['stun', 'safe', 'hidden', 'fast'];
+  let statusKey = '', statusTick = 0, ground = '', foggy = false;
   function playerEffects(p, dt) {
-    const list = PI.statusOf(p), key = list.join();
+    const list = PI.statusOf(p), key = list.join(), m = p.mods, Au = PI.audio;
     if (key !== statusKey) {
-      for (const s of list) if (!statusKey.split(',').includes(s)) {
+      const before = statusKey.split(',');
+      for (const s of list) if (!before.includes(s)) {
         Fx.ring(p.x, p.y, .4, p.r + 2, PI.statusColors[s], .4);
         Fx.sparks(p.x, p.y, p.r, PI.statusColors[s], 8, 1);
+        if (BEGINS[s]) Au.play(BEGINS[s][0], { delay: BEGINS[s][1], gap: .6 });
+        else if (!m.ground && s === 'slow') Au.play('sfx_status_slow', { gap: .6 });
+        else if (!m.ground && s === 'drift') Au.play('sfx_cloud_ride', { gap: .6 });
       }
+      if (before.some(s => ENDS.includes(s) && !list.includes(s))) Au.play('sfx_status_end', { gap: .3 });
       statusKey = key;
       PI.ui.hud.update();
     }
+    if (m.ground !== ground) { ground = m.ground; if (ground) Au.play(ground === 'mud' ? 'sfx_mud' : 'sfx_splash', { gap: .4 }); }
+    if (m.detect < .9 !== foggy) { foggy = !foggy; if (foggy) Au.play('sfx_status_blind', { gap: 1 }); }
     statusTick -= dt;
     if (!list.length || statusTick > 0) return;
     statusTick = .1;
@@ -244,7 +254,7 @@
   function frame(now) {
     const dt = Math.min(.05, (now - last) / 1000);
     last = now;
-    if (!document.hidden) { L.update(dt); L.draw(); }
+    if (!document.hidden) { L.update(dt); L.draw(); PI.audio.tick(); }
     requestAnimationFrame(frame);
   }
   L.start = () => {

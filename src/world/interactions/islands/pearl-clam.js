@@ -12,6 +12,7 @@ PI.registerInteraction('islands', 'pearl-clam', {
       if (clam.open && p && !p.ride && Math.hypot(p.x - clam.x, p.y - clam.y) < 1.05 + p.r * .5) {
         clam.shut = cfg.closed; clam.open = false;
         PI.world.feed(p, cfg.food);
+        PI.audio.play('sfx_clam');
       }
     }
   },

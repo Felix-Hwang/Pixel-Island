@@ -19,6 +19,7 @@ PI.registerInteraction('market', 'awning-bounce', {
       if (speed < .6 || !cfg.pads.some(p => Wd.inRect(c, p))) continue;
       Wd.knock(c, c.vx / speed * cfg.distance * 6, c.vy / speed * cfg.distance * 6);
       c.pop = Math.max(c.pop, .5); // squash the body briefly at take-off
+      PI.audio.on(c, 'sfx_awning_bounce');
       Wd.cooldown(c, 'bounce', cfg.cooldown);
     }
   },

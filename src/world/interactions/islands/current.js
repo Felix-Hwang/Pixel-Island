@@ -24,6 +24,7 @@ PI.registerInteraction('islands', 'current', {
   modify(cfg, st, c, m) {
     if (PI.world.map.terrain(c.x, c.y) !== 'sea') return;
     const [ux, uy] = this.flow(cfg, c.x, c.y);
+    m.ground = 'water';
     m.driftX += ux * cfg.strength * c.speed;
     m.driftY += uy * cfg.strength * c.speed;
   },

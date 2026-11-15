@@ -40,7 +40,7 @@ Around a player, half of the creatures can be eaten, a tenth are equals and up t
 - Keyboard: the arrow keys or WASD. Hold two keys to move diagonally.
 - Touch or mouse: press anywhere and drag. The point you press becomes the centre of the stick, and letting go stops you.
 
-The settings change the camera view and turn the enemy pursuit on or off. The exit sign at the top right, or the Esc key, leaves a round and goes back to the main menu.
+The settings change the camera view and turn the enemy pursuit, the music and the sound effects on or off. The exit sign at the top right, or the Esc key, leaves a round and goes back to the main menu.
 
 ## Maps
 
@@ -86,8 +86,9 @@ Every file is a plain script that adds to one global object, `PI`. `index.html` 
 ```
 index.html              load order, canvas, status card, dialog
 icons/                  favicon and app icons
+assets/audio/           9 music tracks and 48 sound effects, as MP3
 src/
-  core/                 namespace, constants, loader, settings, state, rules, input, frame loop, effects, boot
+  core/                 namespace, constants, loader, settings, sound, state, rules, input, frame loop, effects, boot
   gfx/                  renderer: buffers, camera, colour ramps, shapes, shadows, outlines, wind
   creatures/            palette, animation, 15 body templates, senses
   behaviors/            8 movement patterns, one per file
@@ -101,7 +102,7 @@ data/
   senses.js             detection range of every species
   styles.js             temperament of every species on every map
   i18n/                 interface strings, species names and species facts in four languages
-tools/                  the two check pages
+tools/                  the two check pages, and audio/, which writes every sound in assets/audio
 ```
 
 Where to change things:
@@ -112,6 +113,7 @@ Where to change things:
 | Speed, grade, detection or temperament of a species | `data/speeds.js`, `data/grades.js`, `data/senses.js`, `data/styles.js` |
 | What a grade, a range or a temperament does | `src/core/config.js`, and `styles` in a map file |
 | Names, facts and interface text | `data/i18n/` |
+| A sound or a tune | `tools/audio/sfx.js` or `tools/audio/bgm.js`, then run `node tools/audio/build.js` (needs ffmpeg) |
 | Layout and effect numbers of a map | `src/world/maps/<id>.js` |
 | A new body or movement pattern | add one file and one `<script>` line in `index.html` |
 | A new map or terrain effect | add the file and list it in `src/world/manifest.js` |
