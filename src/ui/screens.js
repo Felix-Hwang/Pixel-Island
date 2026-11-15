@@ -132,17 +132,11 @@
       panel.append(icon, logo, start, row, books);
       return { panel, look: 'bare' };
     },
-    // opt.first: shown right after the first language choice, so its button leads on to the main menu
-    guide(opt) {
+    guide() {
       const panel = el('div', 'panel guide');
       panel.append(heading(PI.t('guide.title')));
       for (const key of GUIDE) panel.append(el('h2', null, PI.t('guide.' + key + '.h')), el('p', null, PI.t('guide.' + key + '.p')));
-      const done = button(PI.t(opt.first ? 'menu.next' : 'menu.back'), 'primary', () => Sc.show('title'));
-      done.autofocus = true; done.dataset.back = '';
-      if (!opt.first) done.dataset.sound = 'back';
-      const actions = el('div', 'buttons');
-      actions.append(done);
-      panel.append(actions);
+      panel.append(backButton());
       return { panel };
     },
     settings() {
@@ -236,14 +230,14 @@
   Sc.hide = () => PI.ui.modal.hide();
   // leave a round at once and go back to the main menu
   Sc.exit = () => { if (PI.state.phase === 'play' && !PI.ui.transition.busy()) toMenu(); };
-  Sc.show = (kind, opt = {}) => {
+  Sc.show = kind => {
     if (kind === 'codex' && !PI.i18n.facts[PI.lang()]) { // the facts are only fetched when the field guide is opened
-      const open = () => { PI.i18n.facts[PI.lang()] = PI.i18n.facts[PI.lang()] || {}; Sc.show(kind, opt); };
+      const open = () => { PI.i18n.facts[PI.lang()] = PI.i18n.facts[PI.lang()] || {}; Sc.show(kind); };
       PI.needFacts(PI.lang()).then(open, open);
       return;
     }
     PI.ui.hud.update();
-    const made = builders[kind](opt);
+    const made = builders[kind]();
     PI.ui.modal.show(made.panel, made.look);
   };
 })();

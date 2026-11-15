@@ -10,7 +10,6 @@ PI.i18n.ko = {
   'menu.guide': '게임 방법',
   'menu.settings': '설정',
   'menu.back': '뒤로',
-  'menu.next': '다음',
   'guide.title': '게임 방법',
   'guide.goal.h': '목표',
   'guide.goal.p': '1단계 생물로 시작합니다. 먹이를 먹어 10단계까지 진화하세요. 10단계가 되고 30초가 지나면 최상위 포식자가 되어 게임이 끝납니다.',

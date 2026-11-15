@@ -36,7 +36,7 @@
   document.addEventListener('pi:settings', e => { if (e.detail === 'zoom') fit(); });
   PI.state.phase = 'start';
   PI.loop.start();
-  // On the first run the player chooses a language, reads how to play, and reaches the main menu. Later runs open the menu at once.
+  // On the first run the player chooses a language and then reaches the main menu. Later runs open the menu at once.
   if (PI.lang()) PI.ui.screens.show('title');
-  else PI.ui.language.open(() => PI.ui.screens.show('guide', { first: true }));
+  else PI.ui.language.open(() => PI.ui.screens.show('title'));
 })();

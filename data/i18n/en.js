@@ -9,7 +9,6 @@ PI.i18n.en = {
   'menu.guide': 'How to play',
   'menu.settings': 'Settings',
   'menu.back': 'Back',
-  'menu.next': 'Next',
   'guide.title': 'How to play',
   'guide.goal.h': 'Goal',
   'guide.goal.p': 'You begin as a level 1 creature. Eat to evolve up to level 10. Thirty seconds after you reach level 10 you become the apex predator and the game ends.',

@@ -9,7 +9,6 @@ PI.i18n.ms = {
   'menu.guide': 'Cara bermain',
   'menu.settings': 'Tetapan',
   'menu.back': 'Kembali',
-  'menu.next': 'Seterusnya',
   'guide.title': 'Cara bermain',
   'guide.goal.h': 'Matlamat',
   'guide.goal.p': 'Anda bermula sebagai makhluk tahap 1. Makan untuk berevolusi hingga tahap 10. Tiga puluh saat selepas mencapai tahap 10, anda menjadi pemangsa puncak dan permainan tamat.',

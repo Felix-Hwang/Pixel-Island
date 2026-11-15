@@ -9,7 +9,6 @@ PI.i18n.zh = {
   'menu.guide': '游戏玩法',
   'menu.settings': '设置',
   'menu.back': '返回',
-  'menu.next': '下一步',
   'guide.title': '游戏玩法',
   'guide.goal.h': '目标',
   'guide.goal.p': '你从1级生物开始。不断进食，进化到10级。到达10级30秒后，你将成为顶级掠食者，游戏结束。',
