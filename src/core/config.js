@@ -2,7 +2,7 @@
 // Game constants. Numbers that belong to one map live in that map's file.
 PI.config = {
   zoom: { near: 170, normal: 200, far: 240 }, // game pixels along the shorter side of the screen, per Zoom setting
-  population: 105,
+  population: 84,
   morsels: [0, 70, 30],    // berries on the map at player level 1 and 2
   morselsNear: [0, 6, 3],  // of those, how many stay on or just beside the screen
   morselReach: 9,          // units; at the start of a round the near ones lie this close
@@ -31,10 +31,13 @@ PI.config = {
   },
   meanSpeed: lv => 95 + lv * 9,       // px/s, see data/speeds.js
   speedScale: .056,                   // px/s to world units per second
-  sizeOf: lv => 1.35 + (lv - 1) * .19, // creature size in world units: 1.35 at level 1, 3.06 at level 10
+  sizeOf: lv => 1.35 + (lv - 1) * .0633, // creature size in world units: 1.35 at level 1, 1.92 at level 10
   chaseFactor: .9,
   chaseCap: .9,           // hunters never exceed this share of the player's speed
   stamina: 10, rest: 3,    // seconds a hunter chases, then ignores the player
+  // A player chased for `after` seconds gains `gain` of its speed every second, until it matches its fastest
+  // chaser's own top speed or runs `max` faster than usual. After the chase it loses `fade` every second.
+  rush: { after: 2, gain: .04, fade: .05, max: .15 },
   fleeFactor: .86,
   fleeCap: .92,            // prey never exceeds this share of the player's speed
   fleeRange: .7,           // prey reacts at this share of its detection range
@@ -61,10 +64,10 @@ PI.config = {
   apexDelay: 30,           // seconds at level 10 before the ending
   finale: 5,               // seconds of the ending
   shake: { eat: 2.5, evolve: 5, over: 8, bump: 2, finale: 6 }, // game pixels
-  // Who shares the map with a player of level p: half can be eaten, a tenth are equals and the rest are dangerous.
+  // Who shares the map with a player of level p: half can be eaten, 36% are dangerous and the rest are equals.
   // steps: how many levels below or above, by weight.
-  levelShare: { lower: .5, same: .1, higher: .4 },
-  higherShare: lv => Math.min(.4, .12 + lv * .07), // the dangerous share builds up over levels 1 to 4; equals fill the gap
+  levelShare: { lower: .5, same: .14, higher: .36 },
+  higherShare: lv => Math.min(.36, .108 + lv * .063), // the dangerous share builds up over levels 1 to 4; equals fill the gap
   calm: 6,                 // seconds at the start of a round before hunters go after the player
   calmGap: 6,              // during that time a hunter that comes this close turns away
   levelSteps: [.55, .3, .15],

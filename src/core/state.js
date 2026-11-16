@@ -54,6 +54,7 @@
       morph: null,            // { t, from } while it flashes into a new shape
       lift: 0,                // height above the ground, used by the ending
       stun: 0, invuln: 0, bounce: 0, ride: null, doom: 0,
+      rush: 0, hunted: 0,     // the player only: extra share of speed while chased, and seconds chased so far (rush() in senses.js)
       leaving: 0,             // until this time it walks off screen to make room for new neighbours
       passSide: 0,            // the side (1 or -1) on which it last stepped round an obstacle
       alert: 0,               // seconds left of the mark that shows it has just noticed the player
@@ -85,7 +86,7 @@
     if (c.stun > 0) out.push('stun');
     if (m.safe) out.push('safe');
     if (m.hidden) out.push('hidden');
-    if (m.speed > 1.05) out.push('fast');
+    if (m.speed > 1.05 || c.rush > .02) out.push('fast');
     if (m.speed < .92) out.push('slow');
     if (m.food > 0) out.push('feast');
     if (m.accel < .5) out.push('slip');

@@ -56,6 +56,7 @@
     PI.ai.census();
     const input = PI.input.read(), playing = S.phase === 'play', steady = S.map.steady || 0, v = { x: 0, y: 0 };
     const p = S.player, calm = S.time < S.calmUntil;
+    if (p && playing) PI.ai.rush(p, dt);
     for (const c of S.all()) {
       const m = Wd.mods(c);
       if (c.stun > 0) c.stun -= dt;
@@ -64,7 +65,7 @@
       if (c.alert > 0) c.alert -= dt;
       if (c.leaving && S.time > c.leaving) c.leaving = 0; // it did not get away in time, so it stays
       if (c.ride) { B.tick(c, dt, 0, 0, 0); continue; } // it is being carried, and the interaction sets its position
-      const top = c.speed * m.speed;
+      const top = c.speed * m.speed * (1 + c.rush);
       v.x = 0; v.y = 0;
       if (!(c.stun > 0) && !(c.bounce > 0)) {
         if (c.isPlayer) { if (playing) { v.x = input.x; v.y = input.y; } }

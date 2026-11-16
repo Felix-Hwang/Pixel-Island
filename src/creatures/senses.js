@@ -15,18 +15,26 @@
   A.hunts = () => PI.settings.on('chase') && S.time >= S.calmUntil;
   // Counted once a frame: how many hunters are chasing the player right now, and how many are close by.
   // Both are capped (config.packLimit, config.closeLimit), so danger comes from a few sides and not as a wall.
-  const pack = { chasing: 0, close: 0 };
+  const pack = { chasing: 0, close: 0, pace: 0 }; // pace: the top speed of the fastest chaser
   A.chasing = () => pack.chasing;
   A.mayJoin = p => pack.chasing < cfg.packLimit(p.lv) && (pack.chasing++, true);
   A.census = () => {
     const p = A.player();
-    pack.chasing = 0; pack.close = 0;
+    pack.chasing = 0; pack.close = 0; pack.pace = 0;
     if (!p) return;
     for (const c of S.creatures) {
       if (c.lv <= p.lv) continue;
-      if (S.time - (c.ai.chaseSeen == null ? -9 : c.ai.chaseSeen) < .3) pack.chasing++;
+      if (S.time - (c.ai.chaseSeen == null ? -9 : c.ai.chaseSeen) < .3) { pack.chasing++; pack.pace = Math.max(pack.pace, c.speed); }
       if (Math.hypot(c.x - p.x, c.y - p.y) < 16) pack.close++;
     }
+  };
+  // Called once a frame after census. A player that has been chased for a while speeds up little by little, and
+  // slows down again once nobody chases it (config.rush). Hunters are capped against p.speed, which this leaves alone.
+  A.rush = (p, dt) => {
+    const r = cfg.rush, want = pack.chasing ? Math.min(r.max, Math.max(0, pack.pace / p.speed - 1)) : 0;
+    p.hunted = pack.chasing ? p.hunted + dt : 0;
+    if (want < p.rush) p.rush = Math.max(want, p.rush - r.fade * dt);
+    else if (p.hunted > r.after) p.rush = Math.min(want, p.rush + r.gain * dt);
   };
   // range scales the creature's own detection distance. A hidden player is only noticed up close.
   A.sees = (self, range = 1) => {

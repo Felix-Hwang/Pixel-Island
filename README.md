@@ -7,57 +7,42 @@ Play: https://felix-hwang.github.io/Pixel-Island/
 
 Pixel Island is a single-player browser game. You start as a level 1 creature, eat creatures of a lower level, and evolve until you reach level 10. There are 100 species, ten per level, and five maps.
 
-The game has no build step and no dependencies. Its own software renderer draws every creature and map from balls, capsules and boxes, so the only image files are the icons. The music and the sound effects are synthesized by a script in `tools/audio` and stored as MP3. Everything is a static file, and GitHub Pages serves the repository as it is.
-
-The interface is available in Korean, English, Chinese and Malay. It runs on a phone and on a desktop, in portrait and in landscape. On a phone it can be added to the home screen, and it then opens without the browser's bars.
+The game has no build step and no dependencies. Its own software renderer draws every creature and map, and a script in `tools/audio` synthesizes the music and the sound effects. The interface comes in Korean, English, Chinese and Malay, and the game runs on phones and desktops.
 
 License: [MIT](LICENSE). Made by [Felix](https://github.com/Felix-Hwang).
 
 ## Rules
 
-- Touch a creature of a lower level to eat it. When the food gauge is full, you evolve into a random species of the next level.
-- Touch a creature of a higher level and the round is over. The camera then follows the creature that ate you.
-- Creatures of your own level only push you. AI creatures never eat each other.
-- At levels 1 and 2 you can also eat the berries on the ground, because level 1 has nothing lower to eat.
-- The food needed to leave a level is the level plus 2.
-- Thirty seconds after you reach level 10 the round ends in a win. Every other creature disappears, your creature rises into the sky, and a report lists the map, the play time and each species you played.
-- Hunters leave you alone for the first 6 seconds of a round and turn away if they come close.
-- You cannot be hurt for a moment after you evolve. When that moment ends, any hunter standing on you is thrown back. The same happens when a root shelter stops protecting you and when you step off the ferry.
-- Food from terrain, such as food stalls, clams and the summit flag, fills at most half of a gauge. The rest has to be caught. A food stall stops serving you, and hides its waiting ring, once you have had that half.
-- Prey that has fled for 3.5 seconds runs out of breath and slows down.
-- The three stars above a creature show its level. Levels 1 to 3 light green stars, 4 to 6 blue, 7 to 9 yellow, and level 10 shows three red stars. Small icons above the stars show the effects it is under. Effects that come from the ground, such as slow water or high ground, are shown only above your own creature.
-- Body colour changes only the look.
-- Bites within 2 seconds of each other raise the pitch of the eating sound, one note of a scale per bite.
-- The game keeps your highest level and your longest round. The game-over card shows both and marks a new record. A round played in Peaceful, or started with the `lv` or `species` test parameter, does not count.
-- In your first round two notices say how to move and what to eat. They are shown once.
+- Touch a creature of a lower level to eat it. A full food gauge turns you into a random species of the next level. A level needs its number plus 2 in food.
+- Touch a creature of a higher level and the round is over. Creatures of your own level only push you.
+- At levels 1 and 2 you can also eat the berries on the ground.
+- Thirty seconds after you reach level 10, the round ends in a win.
+- The three stars above a creature show its level. They are green for levels 1 to 3, blue for 4 to 6, yellow for 7 to 9 and red for 10.
+- Around you, half of the creatures can be eaten and up to 36% are hunters.
+- Hunters leave you alone for the first 6 seconds of a round. After that a hunter chases for 10 seconds, then rests for 3.
+- Hunters run a little slower than you, but some lunge at close range. Once a chase has lasted 2 seconds you speed up little by little, until you match the top speed of your fastest chaser or run 15% faster than usual. The extra speed fades when the chase ends.
+- You cannot be hurt for a moment after you evolve.
+- Food from terrain, such as food stalls and clams, fills at most half of a gauge.
+- Species of one level differ in grade (S, A, B, C or D), detection range and temperament. The field guide in the main menu lists them.
 
-Species of one level differ in three ways. The field guide in the main menu lists all of them.
-
-| Trait | Values | Effect |
-| --- | --- | --- |
-| Grade | S, A, B, C, D | A better grade is faster, turns more quickly and has a wider speed margin over hunters and prey. S needs one food fewer and D one more. |
-| Detection | short, medium, wide | How far the species notices the player: 4, 5.5 or 7 units. A hunter also has to be on screen before it notices you. |
-| Temperament | passive, neutral, aggressive | How far it roams, how early it flees, and how long and how fast it chases. Each map sets its own numbers for the three. |
-
-Around a player, half of the creatures can be eaten, a tenth are equals and up to 40% are hunters. Every time you evolve, the creatures near you walk off and new ones arrive from outside the screen. Hunters are slower than the player, but they come looking for you, some lunge at close range, and a few chase at once. One chases for 10 seconds, then rests for 3. The Enemy pursuit setting has three choices. On is the default. Off stops hunters from coming after you, and then a higher level kills only when you run into it. Peaceful also stops them, and touching one only pushes you, so a round cannot be lost.
+The Enemy pursuit setting has three choices, and On is the default. Off stops hunters from coming after you, but touching one still ends the round. In Peaceful a touch only pushes you, so you cannot lose.
 
 ## Controls
 
-- Keyboard: the arrow keys or WASD. Hold two keys to move diagonally. The letter keys are read by their position, so they work in any input language.
-- Touch or mouse: press anywhere and drag. The point you press becomes the centre of the stick, and letting go stops you.
-- Run straight into a trunk, a post or a rock and you step around it without losing speed. Walls stop you.
-- Esc leaves a round and goes back to the main menu. So does the exit sign at the top right. In the guide, the settings, the field guide and the map guide, Esc is the Back button.
+- Keyboard: the arrow keys or WASD. Hold two keys to move diagonally.
+- Touch or mouse: press anywhere and drag. The point you press becomes the centre of the stick.
+- Esc, or the exit sign at the top right, leaves a round.
 
-The settings change the camera view, set the enemy pursuit to Peaceful, Off or On, and turn the music and the sound effects off or on. On a small window two camera views would round to the same size, so Near and Far are always kept one step away from Normal.
+The settings change the camera view, the enemy pursuit, the music and the sound effects.
 
 ## Maps
 
-Each round is played on one of five maps, picked at random. The same map never comes twice in a row. A map is 960 by 752 pixels and the camera follows the player. At the border you are pushed back in. The map guide in the main menu shows a picture of each map and explains its effects.
+Each round is played on one of five maps, picked at random. The map guide in the main menu explains the terrain effects.
 
 | Map | Id | Terrain effects |
 | --- | --- | --- |
-| Wave Beach | `beach` | waves, falling coconuts, parasols to hide under, drink stands that speed you up, tide pools |
-| Market Street | `market` | food stalls, handcarts, a narrow alley, bouncy awnings, hawkers |
+| Wave Beach | `beach` | waves, falling coconuts, parasols, drink stands, tide pools |
+| Market Street | `market` | food stalls, handcarts, a narrow alley, awnings, hawkers |
 | Current Isles | `islands` | a current, a tide, pearl clams, jellyfish, a ferry |
 | Firefly Swamp | `swamp` | fireflies, mud pits, rotten bridges, root shelters, slippery mud |
 | Cloud Mountain | `mountain` | clouds to ride, rock walls, fog, high ground, a summit flag |
@@ -72,11 +57,7 @@ python -m http.server 5310
 
 Then open http://localhost:5310/.
 
-Three squares show in the middle of the screen until the game has loaded.
-
-To publish, set the Pages source of the repository to "GitHub Actions". `.github/workflows/pages.yml` then deploys every push to `main`. `icons/social-preview.png` is the image for the repository's social preview and for the card that chat and social apps show for a link. The two `og:` addresses in `index.html` are absolute, so a copy served from another address has to change them. `manifest.webmanifest` is what lets a phone add the game to its home screen.
-
-Four parameters in the page address set up a test. Each works alone, and a parameter with no value picks at random.
+Four parameters in the page address set up a test. A parameter with no value picks at random.
 
 | Parameter | Value | Example |
 | --- | --- | --- |
@@ -85,68 +66,26 @@ Four parameters in the page address set up a test. Each works alone, and a param
 | `species` | a species id from `data/species` | `?species=otter` |
 | `color` | red, orange, yellow, green, blue, indigo or violet | `?color=blue` |
 
-A species sets its own level, so `species` wins over `lv`. With `?species=` and `?lv=4` together you get a random level 4 species.
+To change a sound, edit `tools/audio/sfx.js` or `tools/audio/bgm.js` and run `node tools/audio/build.js`. The build needs Node.js and ffmpeg.
 
-Two pages check the data. `tools/silhouette-check.html` compares the outlines of all species, and `tools/i18n-check.html` checks that the four languages have the same keys.
-
-To change a sound, edit `tools/audio/sfx.js` or `tools/audio/bgm.js` and run the build. It needs Node.js and ffmpeg.
-
-```bash
-node tools/audio/build.js
-```
+`.github/workflows/pages.yml` deploys every push to `main` once the Pages source of the repository is set to "GitHub Actions".
 
 ## Structure
 
-Every file is a plain script that adds to one global object, `PI`. `index.html` sets the load order, and all paths are relative.
-
-The page loads the engine and the species up front. The rest arrives when it is needed, through `src/core/loader.js` and `src/core/audio.js`:
-
-| What | When |
-| --- | --- |
-| Strings and species names of one language | when that language is chosen |
-| One map and its five terrain effects | when that map is put on screen |
-| Species facts | when the field guide opens |
-| Shared sound effects | after the first key press or touch, because a browser plays no sound before that |
-| A map's own sound effects | when that map is put on screen |
-| The sounds of the ending | when the player reaches level 9 |
-| Music | one track at a time, plus the chase track during a round |
-
-A file that fails to arrive does not stop the game. The page keeps asking for the first map and language until they load. If a later map cannot be fetched, the round is played on the map already on screen. A sound is tried again after 10 seconds.
+Every file is a plain script that adds to one global object, `PI`. `index.html` loads the engine and the species. Maps, languages and sounds load when the game needs them.
 
 ```
-index.html              load order, link preview tags, canvas, loading mark, status card, dialog
-manifest.webmanifest    name, colours and icons for a home-screen install
-icons/                  favicon and app icons
-assets/audio/           9 music tracks and 48 sound effects, as MP3
-src/
-  core/                 namespace, constants, loader, settings, sound, state, records, population, rules, input,
-                        movement, frame loop, effects, boot
-  gfx/                  renderer: buffers, camera, colour ramps, shapes, shadows, outlines, wind
-  creatures/            palette, animation, 15 body templates, senses
-  behaviors/            8 movement patterns, one per file
-  world/                map baking, plants, props, set pieces, the map list, 5 maps, 25 terrain effects (one per file)
-  i18n/                 current language, string lookup, Korean particles
-  ui/                   stars, notices, first-round hints, status card, dialog, flags, portraits, transitions, screens
-data/
-  species/              100 species, one file per level
-  speeds.js             speed of every species
-  grades.js             grade of every species
-  senses.js             detection range of every species
-  styles.js             temperament of every species on every map
-  i18n/                 interface strings, species names and species facts in four languages
-tools/                  the two check pages, and audio/, which writes every sound in assets/audio
+index.html       load order and page shell
+src/core/        constants, state, rules, population, movement, frame loop, sound
+src/gfx/         the renderer
+src/creatures/   body templates, animation, senses
+src/behaviors/   8 movement patterns, one per file
+src/world/       map baking, 5 maps, 25 terrain effects
+src/ui/          screens, notices, status card
+src/i18n/        language and string lookup
+data/            species, speeds, grades, detection ranges, temperaments, text in four languages
+tools/           two data check pages and the audio build
+assets/audio/    9 music tracks and 48 sound effects, as MP3
 ```
 
-Where to change things:
-
-| To change | Edit |
-| --- | --- |
-| The shape and markings of a species | `sil` in `data/species/lvNN.js` |
-| Speed, grade, detection or temperament of a species | `data/speeds.js`, `data/grades.js`, `data/senses.js`, `data/styles.js` |
-| What a grade, a range or a temperament does | `src/core/config.js`, and `styles` in a map file |
-| Difficulty: the share of hunters, how many chase at once, the calm at the start | `levelShare`, `higherShare`, `packLimit`, `closeLimit`, `calm` in `src/core/config.js` |
-| Names, facts and interface text | `data/i18n/` |
-| A sound or a tune | `tools/audio/sfx.js` or `tools/audio/bgm.js`, then run the build |
-| Layout and effect numbers of a map | `src/world/maps/<id>.js` |
-| A new body or movement pattern | add one file and one `<script>` line in `index.html` |
-| A new map or terrain effect | add the file and list it in `src/world/manifest.js`. A sound heard only on that map goes in `LOCAL` in `src/core/audio.js` |
+Balance numbers such as creature size, population, the share of hunters and chase speeds are in `src/core/config.js`. A new map or terrain effect also has to be listed in `src/world/manifest.js`.

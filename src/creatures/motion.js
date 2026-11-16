@@ -60,7 +60,7 @@
       if (mo.look <= 0) {
         c.face += (Math.random() < .5 ? 1 : -1) * STEP;
         mo.a = c.face; mo.look = 1.2 + Math.random() * 3;
-        if (c.k < 1.9 && Math.random() < .35) c.sqv += 3; // small ones also give a start
+        if (c.lv < 4 && Math.random() < .35) c.sqv += 3; // small ones also give a start
       }
     }
   };

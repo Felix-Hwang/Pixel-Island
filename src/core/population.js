@@ -92,6 +92,7 @@
     if (!far) { // nothing edible is left off screen, so one arrives in place of a creature nobody can see
       const spare = S.creatures.find(c => c.lv >= p.lv && !G.visible(c.x, c.y, 60));
       if (spare) S.creatures.splice(S.creatures.indexOf(spare), 1);
+      else if (S.creatures.length >= cfg.population) return; // the map is full and nothing can make room
       far = Gm.spawn(Math.max(1, p.lv - 1 - (Math.random() * 2 | 0)));
     }
     const at = I.randomPoint((x, y) => I.edge(x, y) < .8 && unseen(x, y) && G.visible(x, y, 110) && !PI.world.blocked(far, x, y), 160);
